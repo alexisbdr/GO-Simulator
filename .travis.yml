@@ -1,0 +1,11 @@
+env:
+ - ASSIGN_MAJOR=2 ASSIGN_MINOR=1 TEAM_NAME=21
+
+script:
+ - pushd Deliverables/$ASSIGN_MAJOR/$ASSIGN_MAJOR.$ASSIGN_MINOR
+ - make
+ - chmod u+x ./run
+ - popd
+ - git clone https://github.com/NorthwesternSoftwareConstructionFall19/oracle
+ - chmod u+x ./oracle/run-test-fest.sh
+ - ./oracle/run-test-fest.sh $ASSIGN_MAJOR $ASSIGN_MINOR $TEAM_NAME
