@@ -14,7 +14,7 @@ def test_driver():
         data = sys.stdin.readline()
         if not data:
             break
-        current_json = current_json + data.rstrip('\n')
+        current_json = current_json + data.rstrip('\n').lstrip()
         number_of_objects = 0
         try:
             posn = 0

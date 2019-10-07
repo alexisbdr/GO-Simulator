@@ -22,7 +22,7 @@ class frontend:
             data = sys.stdin.readline()
             if not data:
                 break
-            current_json = current_json + data.rstrip('\n')
+            current_json = current_json + data.rstrip('\n').lstrip()
             try:
                 posn = 0
                 while posn < len(current_json):
