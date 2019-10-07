@@ -5,7 +5,6 @@ from json import JSONDecodeError
 from functools import cmp_to_key
 from backend import backend
 
-
 ## reads in special JSON objects from user using stdin
 ## appends each special JSON object to a list of all objects
 def test_driver():
