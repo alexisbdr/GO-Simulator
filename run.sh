@@ -1,1 +1,1 @@
-python3 main.py some arguments
+python3 frontend.py
