@@ -17,9 +17,7 @@ def test_driver():
         data = sys.stdin.readline()
         if not data:
             break
-        ## readline attaches /n character to each line
-        ## we need to remove that before we can decode the object
-        current_json = current_json + data.rstrip('\n').lstrip()
+        current_json = current_json + data.rstrip('\n')
         number_of_objects = 0
         try:
             posn = 0
