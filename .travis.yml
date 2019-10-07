@@ -4,7 +4,7 @@ env:
 script:
  - pushd Deliverables/$ASSIGN_MAJOR/$ASSIGN_MAJOR.$ASSIGN_MINOR
  - make
- - chmod u+x ./run
+ - chmod u+x ./run.sh
  - popd
  - git clone https://github.com/NorthwesternSoftwareConstructionFall19/oracle
  - chmod u+x ./oracle/run-test-fest.sh
