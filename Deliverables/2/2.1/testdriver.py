@@ -6,7 +6,7 @@ from functools import cmp_to_key
 from backend import backend
 
 def test_driver():
-    backend = backend()
+    back = backend()
     list_of_objects = []
     current_json = ""
     decoder = json.JSONDecoder()
@@ -28,7 +28,7 @@ def test_driver():
                     break
         except JSONDecodeError:
             continue
-    list_of_objects = backend.sort(list_of_objects)
+    list_of_objects = back.sort(list_of_objects)
     print(json.dumps(list_of_objects, separators=(',', ':')))
 
 if __name__ == "__main__":
