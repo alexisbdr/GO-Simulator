@@ -3,7 +3,6 @@ import json
 from typing import List, Any
 from json import JSONDecodeError
 from functools import cmp_to_key
-
 from utilities import compare
 
 class backend:
