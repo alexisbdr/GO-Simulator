@@ -25,7 +25,7 @@ class frontend:
             if not data:
                 break
             ## readline attaches /n character to each line
-            current_json = current_json + data.rstrip('\n')
+            current_json = current_json + data.rstrip('\n').lstrip()
             try:
                 posn = 0
                 while posn < len(current_json):
