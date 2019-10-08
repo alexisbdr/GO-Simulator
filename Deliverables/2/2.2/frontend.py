@@ -5,6 +5,7 @@ from json import JSONDecodeError
 sys.path.append("../2.1")
 from backend import backend
 
+
 class frontend:
     def __init__(self):
         self.backend = backend()
