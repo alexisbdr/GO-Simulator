@@ -29,7 +29,7 @@ def test_driver():
         except JSONDecodeError:
             continue
     list_of_objects = back.sort(list_of_objects)
-    print(json.dumps(list_of_objects, separators=(',', ':')))
+    print(json.dumps(list_of_objects))
 
 if __name__ == "__main__":
     test_driver()
