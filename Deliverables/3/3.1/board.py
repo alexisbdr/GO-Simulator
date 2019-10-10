@@ -59,22 +59,61 @@ class Board:
     def reachable(self, Point: str, Stone: str) -> bool: 
         point = BoardPoint(Point)
         check_maybestone(Stone, "reachable")
-        return find(point, Stone)
+        return self.find(point, Stone)
 
-    def find(self, x: int, y:int, GoalStone: str) -> bool:
+    def find(self, x: int, y: int, GoalStone: str) -> bool:
         currStone = self.board[y][x]
-        if(currStone == GoalStone):
+        if (currStone == GoalStone):
             return True
-        elif(x+1 <= BOARD_COLUMNS_MAX and self.board[y][x+1] == currStone):
-            return find(x+1, y, GoalStone)
-        elif(x-1 >= BOARD_COLUMNS_MIN and self.board[y][x-1] == currStone):
-            return find(x-1, y, GoalStone)
-        elif(y+1 <= BOARD_ROWS_MAX and self.board[y+1][x] == currStone):
-            return find(x, y+1, GoalStone)
-        elif(y-1 >= BOARD_ROWS_MIN and self.board[y-1][x] == currStone):
-            return find(x, y-1, GoalStone)
+        elif (x + 1 <= BOARD_COLUMNS_MAX and self.board[y][x + 1] == currStone):
+            return find(x + 1, y, GoalStone)
+        elif (x - 1 >= BOARD_COLUMNS_MIN and self.board[y][x - 1] == currStone):
+            return find(x - 1, y, GoalStone)
+        elif (y + 1 <= BOARD_ROWS_MAX and self.board[y + 1][x] == currStone):
+            return find(x, y + 1, GoalStone)
+        elif (y - 1 >= BOARD_ROWS_MIN and self.board[y - 1][x] == currStone):
+            return find(x, y - 1, GoalStone)
         else:
             return False
+
+    def find2(self, x: int, y:int, GoalStone: str) -> bool:
+        startStone = self.board[y][x]
+        visited = []
+        stack = []
+        stack.append((x, y))
+        while len(stack) > 0:
+            curr_x, curr_y = stack.pop()
+            if (curr_x, curr_y) in visited:
+                continue
+            if self.board[curr_y][curr_x] == GoalStone:
+                return True
+            if curr_x + 1 <= BOARD_COLUMNS_MAX:
+                rightNeighbor = self.board[curr_y][curr_x + 1]
+                if rightNeighbor == GoalStone:
+                    return True
+                if rightNeighbor == startStone:
+                    stack.append((curr_x + 1, curr_y))
+            if curr_x - 1 >= BOARD_COLUMNS_MIN:
+                leftNeighbor = self.board[curr_y][curr_x - 1]
+                if leftNeighbor == GoalStone:
+                    return True
+                if leftNeighbor == startStone:
+                    stack.append((curr_x - 1, curr_y))
+            if curr_y + 1 <= BOARD_ROWS_MAX:
+                bottomNeighbor = self.board[curr_y + 1][curr_x]
+                if bottomNeighbor == GoalStone:
+                    return True
+                if bottomNeighbor == startStone:
+                    stack.append((curr_x, curr_y + 1))
+            if curr_y - 1 >= BOARD_ROWS_MIN:
+                topNeighbor = self.board[curr_y - 1][curr_x]
+                if topNeighbor == GoalStone:
+                    return True
+                if topNeighbor == startStone:
+                    stack.append((curr_x, curr_y - 1))
+            visited.append((curr_x, curr_y))
+        return False
+
 
     def place(self, Stone: str, Point: str) -> Union(List[List], str):
         point = BoardPoint(Point)
