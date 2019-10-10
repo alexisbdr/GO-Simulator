@@ -35,7 +35,7 @@ def test_driver():
         except JSONDecodeError:  ## continue on to read next line
             continue
     list_of_objects = back.sort(list_of_objects)
-    print(json.dumps(list_of_objects), separators(",",":"))
+    print(json.dumps(list_of_objects), separators=(",",":"))
 
 if __name__ == "__main__":
     test_driver()
