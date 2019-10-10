@@ -1,14 +1,15 @@
 import sys
-import dataclasses
+from dataclasses import dataclass
 import json
 from json import JSONDecodeError
 
-@dataclasses 
+from board import Board
+ 
 class frontend: 
     def __init__(self):
         self.list_of_commands = []
         self.list_of_outputs = []
-        self.readJson()
+        self.readJSON()
         self.executeCommands()
         self.printJson()
 
@@ -32,7 +33,10 @@ class frontend:
 
     def executeCommands(self):
         for command in self.list_of_commands:
-            return
+            board = command[0]
+            statement = command[1]
+            result = Board(board, statement)
+            self.list_of_outputs.append(result)
 
     def printJson(self):
         print(json.dumps(self.list_of_outputs, separators=(',', ':')))

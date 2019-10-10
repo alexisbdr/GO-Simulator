@@ -1,10 +1,10 @@
-import dataclasses
+from dataclasses import dataclass
 import typing
 import enum
 
 from definitions import *
 from dataclasses import field
-from typing import List, Union
+from typing import Any, List, Union
 
 def check_maybestone(Stone: str, Operation:str = ""):
     if(Stone not in MAYBE_STONE):
@@ -14,7 +14,7 @@ def check_stone(Stone: str, Operation: str = ""):
     if(Stone not in STONE):
         raise Exception("Invalid Stone - cannot perform " + Operation + " operation")
 
-@dataclasses
+@dataclass
 class BoardPoint:
 
     PointString: str
@@ -23,19 +23,22 @@ class BoardPoint:
 
     def __post_init__(self):
         separatedString = self.PointString.split("-")
-        self.x = separatedString[0]
-        self.y = separatedString[1]
+        self.x = int(separatedString[0])
+        self.y = int(separatedString[1])
         if(not (self.x >= BOARD_COLUMNS_MIN and self.x <= BOARD_COLUMNS_MAX)):
             raise Exception("Point is out of bonds")
         elif(not (self.y >= BOARD_ROWS_MIN and self.y <= BOARD_COLUMNS_MAX)):
             raise Exception("Point is out of bounds")
     
-@dataclasses
+@dataclass
 class Board: 
 
     board: List[List]
+    statement: List
 
-    def __post_init__(self):
+    def __post_init__(self) -> Any:
+        
+        #Performing Board checks
         if(not len(self.board) == BOARD_ROWS_MAX): 
             raise Exception("Incorrect number of rows")
         for row in self.board: 
@@ -44,6 +47,24 @@ class Board:
             for elem in row: 
                 if elem not in MAYBE_STONE:
                     raise Exception("Invalid Point in Board")
+        
+        #Perform Statement Checks
+        query_command = self.statement[0]
+        if not (query_command in COMMANDS and \
+                len(self.statement) == COMMANDS[query_command]):
+            raise Exception("Invalid Command - Please try again")
+        if query_command == "occupied?":
+            return self.occupied(self.statement[1])
+        elif query_command == "occupies?": 
+            return self.occupies(self.statement[1], self.statement[2])
+        elif query_command == "reachable?":
+            return self.reachable(self.statement[1], self.statement[2])
+        elif query_command == "place":
+            return self.place(self.statement[1], self.statement[2])
+        elif query_command == "remove":
+            return self.remove(self.statement[1], self.statement[2])
+        elif query_command == "get-points":
+            return self.get_points(self.statement[1])
 
     def occupied(self, Point: str) -> bool:
         point = BoardPoint(Point)
@@ -59,22 +80,7 @@ class Board:
     def reachable(self, Point: str, Stone: str) -> bool: 
         point = BoardPoint(Point)
         check_maybestone(Stone, "reachable")
-        return self.find(point, Stone)
-
-    def find(self, x: int, y: int, GoalStone: str) -> bool:
-        currStone = self.board[y][x]
-        if (currStone == GoalStone):
-            return True
-        elif (x + 1 <= BOARD_COLUMNS_MAX and self.board[y][x + 1] == currStone):
-            return find(x + 1, y, GoalStone)
-        elif (x - 1 >= BOARD_COLUMNS_MIN and self.board[y][x - 1] == currStone):
-            return find(x - 1, y, GoalStone)
-        elif (y + 1 <= BOARD_ROWS_MAX and self.board[y + 1][x] == currStone):
-            return find(x, y + 1, GoalStone)
-        elif (y - 1 >= BOARD_ROWS_MIN and self.board[y - 1][x] == currStone):
-            return find(x, y - 1, GoalStone)
-        else:
-            return False
+        return self.find2(point.x, point.y, Stone)
 
     def find2(self, x: int, y:int, GoalStone: str) -> bool:
         startStone = self.board[y][x]
@@ -115,7 +121,7 @@ class Board:
         return False
 
 
-    def place(self, Stone: str, Point: str) -> Union(List[List], str):
+    def place(self, Stone: str, Point: str) -> Union[List[List], str]:
         point = BoardPoint(Point)
         check_stone(Stone, "place")
         if(self.board[point.y][point.x] in STONE):
@@ -123,7 +129,7 @@ class Board:
         self.board[point.y][point.x] = Stone
         return self.board
 
-    def remove(self, Stone: str, Point: str) -> Union(List[List], str):
+    def remove(self, Stone: str, Point: str) -> Union[List[List], str]:
         point = BoardPoint(Point)
         check_stone(Stone, "remove")
         existingStone = self.board[point.y][point.x]
@@ -139,7 +145,7 @@ class Board:
             for column in range(len(self.board)): 
                 if self.board[column][row] == Stone:
                     point_list.append(column,row)
-        point_list.sort(key=lambda k : k[0],k[1])
+        point_list.sort(key = lambda k : (k[0],k[1]))
         map(lambda k : str(k[0])+"-"+str(k[1]), point_list)
         return point_list
 
