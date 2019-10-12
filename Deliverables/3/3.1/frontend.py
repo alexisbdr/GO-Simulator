@@ -25,7 +25,7 @@ class frontend:
                 posn = 0
                 while posn < len(current_json):
                     txt, posn = decoder.raw_decode(current_json)
-                    print(self.list_of_commands)
+                    #print(self.list_of_commands)
                     self.list_of_commands.append(txt)
                     current_json = current_json[posn:].lstrip()
                     posn = 0
@@ -36,11 +36,14 @@ class frontend:
         for command in self.list_of_commands:
             board = command[0]
             statement = command[1]
-            print(board, statement)
             result = Board(board, statement)
+            print("This is what the post_init is returning")
+            print(result)
             self.list_of_outputs.append(result)
 
     def printJson(self):
-        print(json.dumps(self.list_of_outputs, separators=(',', ':')))
+        ##print(json.dumps(self.list_of_outputs, separators=(',', ':')))
+        ##print(self.list_of_outputs)
+        print("REACHED PRINT JSON - UNCOMMENT ONCE FIXED")
 
 
