@@ -22,9 +22,12 @@ class BoardPoint:
     y: int = field(init=False)
 
     def __post_init__(self):
-        separatedString = self.PointString.split("-")
-        self.x = int(separatedString[0])
-        self.y = int(separatedString[1])
+        try:
+            separatedString = self.PointString.split("-")
+            self.x = int(separatedString[0])
+            self.y = int(separatedString[1])
+        except: 
+            raise Exception("Point is not in the right format")
         if(not (self.x >= BOARD_COLUMNS_MIN and self.x <= BOARD_COLUMNS_MAX)):
             raise Exception("Point is out of bonds")
         elif(not (self.y >= BOARD_ROWS_MIN and self.y <= BOARD_COLUMNS_MAX)):
