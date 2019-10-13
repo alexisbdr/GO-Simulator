@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import typing
 import enum
+import json
 
 from definitions import *
 from dataclasses import field
@@ -72,25 +73,25 @@ class Board:
         elif query_command == "get-points":
             self.get_points(self.statement[1])
 
-    def occupied(self, Point: str) -> str:
+    def occupied(self, Point: str) -> bool:
         point = BoardPoint(Point)
         if self.board[point.y_ind][point.x_ind] in STONE:
             self.result = TRUE_OUTPUT
         else: self.result = FALSE_OUTPUT
 
-    def occupies(self, Point: str, Stone: str) -> str:
+    def occupies(self, Stone: str, Point: str) -> bool:
         point = BoardPoint(Point)
         check_stone(Stone, "occupies")
         if(self.board[point.y_ind][point.x_ind] == Stone):
             self.result = TRUE_OUTPUT
         else: self.result = FALSE_OUTPUT
 
-    def reachable(self, Point: str, Stone: str) -> str:
+    def reachable(self, Point: str, Stone: str) -> bool:
         point = BoardPoint(Point)
         check_maybestone(Stone, "reachable")
         self.result = self.find2(point.x_ind, point.y_ind, Stone)
 
-    def find2(self, x: int, y:int, GoalStone: str) -> str:
+    def find2(self, x: int, y:int, GoalStone: str) -> bool:
         startStone = self.board[y][x]
         visited = []
         stack = []
@@ -101,25 +102,25 @@ class Board:
                 continue
             if self.board[curr_y][curr_x] == GoalStone:
                 return TRUE_OUTPUT
-            if curr_x + 1 <= BOARD_COLUMNS_MAX:
+            if curr_x + 1 < BOARD_COLUMNS_MAX:
                 rightNeighbor = self.board[curr_y][curr_x + 1]
                 if rightNeighbor == GoalStone:
                     return TRUE_OUTPUT
                 if rightNeighbor == startStone:
                     stack.append((curr_x + 1, curr_y))
-            if curr_x - 1 >= BOARD_COLUMNS_MIN:
+            if curr_x - 1 > BOARD_COLUMNS_MIN:
                 leftNeighbor = self.board[curr_y][curr_x - 1]
                 if leftNeighbor == GoalStone:
                     return TRUE_OUTPUT
                 if leftNeighbor == startStone:
                     stack.append((curr_x - 1, curr_y))
-            if curr_y + 1 <= BOARD_ROWS_MAX:
+            if curr_y + 1 < BOARD_ROWS_MAX:
                 bottomNeighbor = self.board[curr_y + 1][curr_x]
                 if bottomNeighbor == GoalStone:
                     return TRUE_OUTPUT
                 if bottomNeighbor == startStone:
                     stack.append((curr_x, curr_y + 1))
-            if curr_y - 1 >= BOARD_ROWS_MIN:
+            if curr_y - 1 > BOARD_ROWS_MIN:
                 topNeighbor = self.board[curr_y - 1][curr_x]
                 if topNeighbor == GoalStone:
                     return TRUE_OUTPUT
@@ -144,7 +145,7 @@ class Board:
         if(existingStone != Stone):
             self.result = REMOVE_ERROR_MESSAGE
         else: 
-            self.board[point.y_ind][point.x_ind] = ""
+            self.board[point.y_ind][point.x_ind] = EMPTY_STONE
             self.result = self.board
 
     def get_points(self, Stone: str) -> List:
@@ -155,11 +156,11 @@ class Board:
                 if self.board[column][row] == Stone:
                     point_list.append(column,row)
         point_list.sort(key = lambda k : (k[0],k[1]))
-        map(lambda k : str(k[0])+"-"+str(k[1]), point_list)
+        map(lambda k : str(k[0]+1)+"-"+str(k[1]+1), point_list)
         self.result = point_list
 
     def __repr__(self):
-        return str(self.result) 
+        return json.dumps(self.result) 
 
 
 
