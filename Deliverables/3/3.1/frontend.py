@@ -37,13 +37,7 @@ class frontend:
             board = command[0]
             statement = command[1]
             result = Board(board, statement)
-            print("This is what the post_init is returning")
-            print(result)
             self.list_of_outputs.append(result)
 
     def printJson(self):
-        ##print(json.dumps(self.list_of_outputs, separators=(',', ':')))
-        ##print(self.list_of_outputs)
-        print("REACHED PRINT JSON - UNCOMMENT ONCE FIXED")
-
-
+        print(*self.list_of_outputs, sep="\n")
