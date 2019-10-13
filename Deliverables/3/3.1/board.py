@@ -108,7 +108,7 @@ class Board:
                     return TRUE_OUTPUT
                 if rightNeighbor == startStone:
                     stack.append((curr_x + 1, curr_y))
-            if curr_x - 1 > BOARD_COLUMNS_MIN:
+            if curr_x - 1 > -BOARD_COLUMNS_MIN:
                 leftNeighbor = self.board[curr_y][curr_x - 1]
                 if leftNeighbor == GoalStone:
                     return TRUE_OUTPUT
@@ -120,7 +120,7 @@ class Board:
                     return TRUE_OUTPUT
                 if bottomNeighbor == startStone:
                     stack.append((curr_x, curr_y + 1))
-            if curr_y - 1 > BOARD_ROWS_MIN:
+            if curr_y - 1 > -BOARD_ROWS_MIN:
                 topNeighbor = self.board[curr_y - 1][curr_x]
                 if topNeighbor == GoalStone:
                     return TRUE_OUTPUT
@@ -135,8 +135,9 @@ class Board:
         check_stone(Stone, "place")
         if(self.board[point.y_ind][point.x_ind] in STONE):
             self.result = PLACE_ERROR_MESSAGE
-        self.board[point.y_ind][point.x_ind] = Stone
-        self.result = self.board
+        else: 
+            self.board[point.y_ind][point.x_ind] = Stone
+            self.result = self.board
 
     def remove(self, Stone: str, Point: str) -> Union[List[List], str]:
         point = BoardPoint(Point)
@@ -154,13 +155,19 @@ class Board:
         for row in range(len(self.board)): 
             for column in range(len(self.board)): 
                 if self.board[column][row] == Stone:
-                    point_list.append(column,row)
+                    point_list.append((column,row))
         point_list.sort(key = lambda k : (k[0],k[1]))
-        map(lambda k : str(k[0]+1)+"-"+str(k[1]+1), point_list)
+        point_list = list(map(lambda k : str(k[0]+1)+"-"+str(k[1]+1), point_list))
         self.result = point_list
 
     def __repr__(self):
-        return json.dumps(self.result) 
+        #if self.result == self.board:
+        #    return '\n'.join(json.dumps(b) for b in self.result)
+        return json.dumps(self.result)
+    
+    def __str__(self):
+        return json.dumps(self.result)
+    
 
 
 

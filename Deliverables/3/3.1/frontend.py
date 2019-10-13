@@ -40,4 +40,4 @@ class frontend:
             self.list_of_outputs.append(result)
 
     def printJson(self):
-        print(*self.list_of_outputs, sep="\n")
+        print("[\n"+",\n".join(str(out) for out in self.list_of_outputs)+"\n]")
