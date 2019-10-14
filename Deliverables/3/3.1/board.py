@@ -160,11 +160,6 @@ class Board:
         point_list = list(map(lambda k : str(k[0]+1)+"-"+str(k[1]+1), point_list))
         self.result = point_list
 
-    def __repr__(self):
-        #if self.result == self.board:
-        #    return '\n'.join(json.dumps(b) for b in self.result)
-        return json.dumps(self.result)
-    
     def __str__(self):
         return json.dumps(self.result)
     
