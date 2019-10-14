@@ -158,6 +158,7 @@ class Board:
                     point_list.append((column,row))
         point_list.sort(key = lambda k : (k[0],k[1]))
         point_list = list(map(lambda k : str(k[0]+1)+"-"+str(k[1]+1), point_list))
+        #point_list.sort()
         self.result = point_list
 
     def __str__(self):
