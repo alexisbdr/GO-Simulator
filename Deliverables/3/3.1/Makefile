@@ -5,4 +5,4 @@ all:
 	-sudo python3 -m pip install --user virtualenv
 	-sudo python3 -m virtualenv venv
 	-. venv/bin/activate 
-	-pip install --user -r requirements.txt
+	-sudo python3 -m pip install --user -r requirements.txt
