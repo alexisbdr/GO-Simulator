@@ -18,9 +18,9 @@ def check_stone(Stone: str, Operation: str = ""):
 @dataclass
 class BoardPoint:
 
-    pointstring: str = field(init=False)
     x: int = field(init=False)
     y: int = field(init=False)
+    pointstring: str = ""
 
     def __post_init__(self):
         try:
