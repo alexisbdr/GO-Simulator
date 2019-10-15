@@ -1,5 +1,4 @@
 import sys
-from dataclasses import dataclass
 import json
 from json import JSONDecodeError
 
@@ -40,6 +39,5 @@ class frontend:
             self.list_of_outputs.append(result)
 
     def printJson(self):
-        print(json.dumps([str(out) for out in self.list_of_outputs]))
-        #print(json.dumps(["true", "false", "true"]))
+        print("[\n" + ",\n".join(str(out) for out in self.list_of_outputs) + "\n]")
         

@@ -155,15 +155,13 @@ class Board:
         for row in range(len(self.board)): 
             for column in range(len(self.board)): 
                 if self.board[column][row] == Stone:
-                    point_list.append((column,row))
-        point_list.sort(key = lambda k : (k[0],k[1]))
+                    point_list.append((row,column))
         point_list = list(map(lambda k : str(k[0]+1)+"-"+str(k[1]+1), point_list))
         #point_list.sort()
         self.result = point_list
 
-    def __str__(self):
+    def __repr__(self):
         return json.dumps(self.result)
-    
 
 
 
