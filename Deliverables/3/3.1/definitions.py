@@ -18,4 +18,4 @@ TRUE_OUTPUT = True
 FALSE_OUTPUT = False
 
 PLACE_ERROR_MESSAGE = "This seat is taken!"
-REMOVE_ERROR_MESSAGE = "I am just a Board! I cannot remove what is not there!"
+REMOVE_ERROR_MESSAGE = "I am just a board! I cannot remove what is not there!"
