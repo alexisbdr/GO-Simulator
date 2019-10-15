@@ -4,5 +4,5 @@ all:
 	-sudo apt-get install python3 python3-pip
 	-sudo python3 -m pip install --user virtualenv
 	-sudo python3 -m virtualenv venv
-	-. venv/bin/activate 
+	-. venv/bin/activate
 	-sudo python3 -m pip install --user -r requirements.txt
