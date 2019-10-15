@@ -18,13 +18,13 @@ def check_stone(Stone: str, Operation: str = ""):
 @dataclass
 class BoardPoint:
 
-    PointString: str
+    pointstring: str = field(init=False)
     x: int = field(init=False)
     y: int = field(init=False)
 
     def __post_init__(self):
         try:
-            separatedString = self.PointString.split("-")
+            separatedString = self.pointstring.split("-")
             self.x = int(separatedString[0])
             self.y = int(separatedString[1])
             self.x_ind = self.x - 1
