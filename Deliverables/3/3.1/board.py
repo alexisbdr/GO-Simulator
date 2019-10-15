@@ -157,7 +157,7 @@ class Board:
                 if self.board[column][row] == Stone:
                     point_list.append((row,column))
         point_list = list(map(lambda k : str(k[0]+1)+"-"+str(k[1]+1), point_list))
-        #point_list.sort()
+        point_list.sort()
         self.result = point_list
 
     def __repr__(self):
