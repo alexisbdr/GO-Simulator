@@ -1,61 +1,55 @@
-from dataclasses import dataclass
 import typing
 import enum
 import json
 
 from definitions import *
-from dataclasses import field
 from typing import Any, List, Union
 
-def check_maybestone(Stone: str, Operation:str = ""):
-    if(Stone not in MAYBE_STONE):
+
+def check_maybestone(Stone: str, Operation: str = ""):
+    if (Stone not in MAYBE_STONE):
         raise Exception("Invalid MaybeStone - cannot perform " + Operation + " operation")
 
+
 def check_stone(Stone: str, Operation: str = ""):
-    if(Stone not in STONE):
+    if (Stone not in STONE):
         raise Exception("Invalid Stone - cannot perform " + Operation + " operation")
 
-@dataclass
+
 class BoardPoint:
 
-    x: int = field(init=False)
-    y: int = field(init=False)
-    pointstring: str = ""
-
-    def __post_init__(self):
+    def __init__(self, Point: str):
+        self.PointString = Point
         try:
-            separatedString = self.pointstring.split("-")
+            separatedString = self.PointString.split("-")
             self.x = int(separatedString[0])
             self.y = int(separatedString[1])
             self.x_ind = self.x - 1
             self.y_ind = self.y - 1
-        except: 
+        except:
             raise Exception("Point is not in the right format")
-        if(not (self.x >= BOARD_COLUMNS_MIN and self.x <= BOARD_COLUMNS_MAX)):
+        if (not (self.x >= BOARD_COLUMNS_MIN and self.x <= BOARD_COLUMNS_MAX)):
             raise Exception("Point is out of bonds")
-        elif(not (self.y >= BOARD_ROWS_MIN and self.y <= BOARD_COLUMNS_MAX)):
+        elif (not (self.y >= BOARD_ROWS_MIN and self.y <= BOARD_COLUMNS_MAX)):
             raise Exception("Point is out of bounds")
-    
-@dataclass
-class Board: 
 
-    board: List[List]
-    statement: List
-    result: Any = field(init=False)
 
-    def __post_init__(self) -> Any:
-        
-        #Performing Board checks
-        if(not len(self.board) == BOARD_ROWS_MAX): 
+class Board:
+
+    def __init__(self, Board: List[List], Statement: List):
+        self.board = Board
+        self.statement = Statement
+        # Performing Board checks
+        if (not len(self.board) == BOARD_ROWS_MAX):
             raise Exception("Incorrect number of rows")
-        for row in self.board: 
-            if(not len(row) == BOARD_COLUMNS_MAX):
+        for row in self.board:
+            if (not len(row) == BOARD_COLUMNS_MAX):
                 raise Exception("Incorrect number of columns")
-            for elem in row: 
+            for elem in row:
                 if elem not in MAYBE_STONE:
                     raise Exception("Invalid Point in Board")
-        
-        #Perform Statement Checks
+
+        # Perform Statement Checks
         query_command = self.statement[0]
         if not (query_command in COMMANDS and \
                 len(self.statement) == COMMANDS[query_command]):
@@ -77,21 +71,23 @@ class Board:
         point = BoardPoint(Point)
         if self.board[point.y_ind][point.x_ind] in STONE:
             self.result = TRUE_OUTPUT
-        else: self.result = FALSE_OUTPUT
+        else:
+            self.result = FALSE_OUTPUT
 
     def occupies(self, Stone: str, Point: str) -> bool:
         point = BoardPoint(Point)
         check_stone(Stone, "occupies")
-        if(self.board[point.y_ind][point.x_ind] == Stone):
+        if (self.board[point.y_ind][point.x_ind] == Stone):
             self.result = TRUE_OUTPUT
-        else: self.result = FALSE_OUTPUT
+        else:
+            self.result = FALSE_OUTPUT
 
     def reachable(self, Point: str, Stone: str) -> bool:
         point = BoardPoint(Point)
         check_maybestone(Stone, "reachable")
         self.result = self.find2(point.x_ind, point.y_ind, Stone)
 
-    def find2(self, x: int, y:int, GoalStone: str) -> bool:
+    def find2(self, x: int, y: int, GoalStone: str) -> bool:
         startStone = self.board[y][x]
         visited = []
         stack = []
@@ -129,13 +125,12 @@ class Board:
             visited.append((curr_x, curr_y))
         return FALSE_OUTPUT
 
-
     def place(self, Stone: str, Point: str) -> Union[List[List], str]:
         point = BoardPoint(Point)
         check_stone(Stone, "place")
-        if(self.board[point.y_ind][point.x_ind] in STONE):
+        if (self.board[point.y_ind][point.x_ind] in STONE):
             self.result = PLACE_ERROR_MESSAGE
-        else: 
+        else:
             self.board[point.y_ind][point.x_ind] = Stone
             self.result = self.board
 
@@ -143,20 +138,20 @@ class Board:
         point = BoardPoint(Point)
         check_stone(Stone, "remove")
         existingStone = self.board[point.y_ind][point.x_ind]
-        if(existingStone != Stone):
+        if (existingStone != Stone):
             self.result = REMOVE_ERROR_MESSAGE
-        else: 
+        else:
             self.board[point.y_ind][point.x_ind] = EMPTY_STONE
             self.result = self.board
 
     def get_points(self, Stone: str) -> List:
         check_maybestone(Stone, "get-points")
         point_list = []
-        for row in range(len(self.board)): 
-            for column in range(len(self.board)): 
+        for row in range(len(self.board)):
+            for column in range(len(self.board)):
                 if self.board[column][row] == Stone:
-                    point_list.append((row,column))
-        point_list = list(map(lambda k : str(k[0]+1)+"-"+str(k[1]+1), point_list))
+                    point_list.append((row, column))
+        point_list = list(map(lambda k: str(k[0] + 1) + "-" + str(k[1] + 1), point_list))
         point_list.sort()
         self.result = point_list
 

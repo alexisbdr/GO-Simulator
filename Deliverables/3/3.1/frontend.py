@@ -3,8 +3,9 @@ import json
 from json import JSONDecodeError
 
 from board import Board
- 
-class frontend: 
+
+
+class frontend:
     def __init__(self):
         self.list_of_commands = []
         self.list_of_outputs = []
@@ -24,7 +25,7 @@ class frontend:
                 posn = 0
                 while posn < len(current_json):
                     txt, posn = decoder.raw_decode(current_json)
-                    #print(self.list_of_commands)
+                    # print(self.list_of_commands)
                     self.list_of_commands.append(txt)
                     current_json = current_json[posn:].lstrip()
                     posn = 0
@@ -40,4 +41,3 @@ class frontend:
 
     def printJson(self):
         print("[\n" + ",\n".join(str(out) for out in self.list_of_outputs) + "\n]")
-        
