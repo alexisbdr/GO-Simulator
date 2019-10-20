@@ -100,12 +100,27 @@ def checkTurn(turn1: Tuple(str, str), turn2: Tuple(str, str), turn3: Tuple(str, 
     Input: 
         List of turns that are either "B" "W" or "pass"
     """
-    turns = list(turn1, turn2, turn3)
-    prev = " "
-    for turn in turns:  
-        if turn[0] == prev: 
-            return False
-        prev = turn[0]
+    #Covers sequential turns
+    if turn1[0] == turn2[0] or turn2[0] == turn3[0]:
+        return False
+    #Covers non-order turns after a pass
+    elif turn2[0] == "pass" and turn1[0] != turn3[0]: 
+        return False
+    return True
+
+def checkKo(boards: List[Board]) -> bool: 
+    """
+    Input: 
+        List of boards
+    Output: 
+        False if violates Ko rule
+        True if valid
+    """
+    if boards[0] == boards[2]:
+        return False
+    elif boards[1] == boards[3]:
+        return False
+    
     return True
 
 def rulecheck(command: List[str]):
@@ -117,37 +132,39 @@ def rulecheck(command: List[str]):
     elif len(boards) == 2:
         if not Board(boards[1]).Empty():
             return False
-        turn1 = findAddedPoint(board[1], board[0])
+        turn1 = findAddedPoint(boards[1], boards[0])
         if not turn1 or turn1[0] != "B":
             return False
 
-        move2 = makemove(board[0], command[0], command[1][0])
+        move2 = makemove(boards[0], command[0], command[1][0])
         if not move2:
             return False
         
-
-
+        return True
+        
     elif len(boards) == 3: 
         #Check Valid turns
-        turn1 = findAddedPoint(board[2], board[1])
+        turn1 = findAddedPoint(boards[2], boards[1])
         if not turn1: 
             return False
-        move1 = makemove(board[2], turn1[0], turn1[1])
-        if not move1 or move1 != board[1]:
+        move1 = makemove(boards[2], turn1[0], turn1[1])
+        if not move1 or move1 != boards[1]:
             return False
 
-        turn2 = findAddedPoint(board[1], board[0])
+        turn2 = findAddedPoint(boards[1], boards[0])
         if not turn2: 
             return False
-        move2 = makemove(board[1], turn2[0], turn2[1])
-        if not move2 or move2 != board[0]:
+        move2 = makemove(boards[1], turn2[0], turn2[1])
+        if not move2 or move2 != boards[0]:
             return False
 
-        move3 = makemove(board[0], command[0], command[1][0])
+        move3 = makemove(boards[0], command[0], command[1][0])
         if not move3:
             return False
         turn3 = (command[0], command[1][0])
-        return checkTurn(turn1, turn2, turn3)
+        boards = list(move3, boards[0], boards[1], boards[2])
+
+        return checkTurn(turn1, turn2, turn3) or checkKo(boards)
 
 
     

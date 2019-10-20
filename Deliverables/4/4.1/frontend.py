@@ -36,6 +36,7 @@ class frontend:
         for command in self.list_of_commands:
             #Handling single board -> count score
             output = command_parser(command)
+            self.list_of_outputs.append(output)
                 
     def printJson(self):
         print(json.dumps([str(out) for out in self.list_of_outputs]))
