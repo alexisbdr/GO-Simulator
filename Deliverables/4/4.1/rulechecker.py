@@ -20,9 +20,9 @@ def command_parser(command: List[str]):
             else: 
                 return True
         else: 
-            rulecheck(command)
+            return rulecheck(command)
 
-def makemove(board: Board, Point: str, Stone: str) -> Board:
+def makemove(board: Board, Stone: str, Point: str) -> Board:
     """
     Inputs
         board: the board that represents the initial state on which we will apply the move
@@ -66,9 +66,9 @@ def findAddedPoint(board1: Board, board2: Board) -> Union[Tuple(str, str), bool]
     board1 = Board(board1)
     board2 = Board(board2)
     board1_b = board1.get_points("B")
-    board2_b = board1.get_points("B")
+    board2_b = board2.get_points("B")
     board1_w = board1.get_points("W")
-    board2_b = board2.get_points("W")
+    board2_w = board2.get_points("W")
 
     diff_b = len(board2_b) - len(board1_b)
     diff_w = len(board2_w) - len(board1_w)
@@ -115,17 +115,39 @@ def rulecheck(command: List[str]):
     if len(boards) == 1:
         return Board(boards).Empty() and command[0] == "B"
     elif len(boards) == 2:
-        if Board(boards[1]).Empty()
+        if not Board(boards[1]).Empty():
+            return False
+        turn1 = findAddedPoint(board[1], board[0])
+        if not turn1 or turn1[0] != "B":
+            return False
+
+        move2 = makemove(board[0], command[0], command[1][0])
+        if not move2:
+            return False
+        
+
+
     elif len(boards) == 3: 
         #Check Valid turns
         turn1 = findAddedPoint(board[2], board[1])
         if not turn1: 
             return False
+        move1 = makemove(board[2], turn1[0], turn1[1])
+        if not move1 or move1 != board[1]:
+            return False
+
         turn2 = findAddedPoint(board[1], board[0])
         if not turn2: 
             return False
+        move2 = makemove(board[1], turn2[0], turn2[1])
+        if not move2 or move2 != board[0]:
+            return False
+
+        move3 = makemove(board[0], command[0], command[1][0])
+        if not move3:
+            return False
         turn3 = (command[0], command[1][0])
-        check_turns(turn1, turn2, turn3)
+        return checkTurn(turn1, turn2, turn3)
 
 
     

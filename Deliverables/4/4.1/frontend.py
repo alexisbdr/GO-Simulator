@@ -1,6 +1,7 @@
 import sys
 import json
 from json import JSONDecodeError
+from rulechecker import *
 
 from board import Board
  
@@ -34,8 +35,7 @@ class frontend:
     def executeCommands(self):
         for command in self.list_of_commands:
             #Handling single board -> count score
-            if len(command) == 0:
-                board = Board(command[0])
+            output = command_parser(command)
                 
     def printJson(self):
         print(json.dumps([str(out) for out in self.list_of_outputs]))
