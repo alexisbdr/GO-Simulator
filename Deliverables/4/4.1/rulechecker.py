@@ -126,7 +126,7 @@ def rulecheck(command: List[str]):
     boards = command[1][1]
     #Check Empty Board 
     if len(boards) == 1:
-        return Board(boards).Empty() and command[0] == "B"
+        return Board(boards[0]).Empty() and command[0] == "B"
     elif len(boards) == 2:
         if not Board(boards[1]).Empty():
             return False
