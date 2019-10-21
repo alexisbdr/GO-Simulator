@@ -147,12 +147,12 @@ class Board:
         return self.board
 
     def get_points(self, Stone: str) -> List:
-        check_stone(Stone, "get-points")
+        check_maybestone(Stone, "get-points")
         point_list = []
         for row in range(len(self.board)): 
             for column in range(len(self.board)): 
                 if self.board[column][row] == Stone:
-                    point_list.append((column,row))
+                    point_list.append((row,column))
         point_list = list(map(lambda k : str(k[0]+1)+"-"+str(k[1]+1), point_list))
         point_list.sort()
         return point_list

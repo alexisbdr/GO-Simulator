@@ -1,16 +1,14 @@
 import json
-from typing import List, Union
+from typing import List, Union, Tuple
 
 
 from board import Board
 from definitions import *
 
-def command_parser(command: List[str]):
-    if len(command) == 0 or len(command) > 2:
-        raise Exception("Invalid number of arguments")
+def command_parser(command: List[str]) -> bool:
     #Handle Scoring
-    elif len(command) == 1: 
-        return Board(command[0]).count_score()
+    if len(command) == 19: 
+        return Board(command).count_score()
     else:
         #Handle pass command
         if command[1] == "pass":
@@ -51,7 +49,7 @@ def makemove(board: Board, Stone: str, Point: str) -> Board:
         return False
     return updated_board
 
-def findAddedPoint(board1: Board, board2: Board) -> Union[Tuple(str, str), bool]:
+def findAddedPoint(board1: Board, board2: Board) -> Union[Tuple[str, str], bool]:
     """
     Inputs
         board1: the board that represents the initial state
@@ -95,7 +93,7 @@ def findAddedPoint(board1: Board, board2: Board) -> Union[Tuple(str, str), bool]
             added = set(board2_w) - set(board1_w)
             return ("W", list(added)[0])
 
-def checkTurn(turn1: Tuple(str, str), turn2: Tuple(str, str), turn3: Tuple(str, str)):
+def checkTurn(turn1: Tuple[str, str], turn2: Tuple[str, str], turn3: Tuple[str, str]):
     """
     Input: 
         List of turns that are either "B" "W" or "pass"
