@@ -33,11 +33,13 @@ class frontend:
                 continue
 
     def executeCommands(self):
+        count = 0
         for command in self.list_of_commands:
             #Handling single board -> count score
-            output = command_parser(command)
+            output = command_parser(command, count)
             self.list_of_outputs.append(output)
+            count+=1
                 
     def printJson(self):
-        print(json.dumps([str(out) for out in self.list_of_outputs]))
+        print(json.dumps([out for out in self.list_of_outputs]))
         
