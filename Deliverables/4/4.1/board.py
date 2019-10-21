@@ -143,7 +143,7 @@ class Board:
         points_to_check = self.get_points(Stone)
         for point in points_to_check: 
             if not self.reachable(point, EMPTY_STONE):
-                self.remove(Stone, point)
+                self.board = self.remove(Stone, point)
         return self.board
 
     def get_points(self, Stone: str) -> List:
