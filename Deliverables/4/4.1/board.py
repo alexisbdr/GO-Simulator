@@ -164,6 +164,8 @@ class Board:
         score = {}
         score["B"] = len(self.get_points("B"))
         score["W"] = len(self.get_points("W"))
+        if score["B"] == 0 and score["W"] == 0: 
+            return score
         empty_stones = self.get_points(" ")
         for point in empty_stones: 
             reach_b = self.reachable(point, "B")
