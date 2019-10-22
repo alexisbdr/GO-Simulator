@@ -46,11 +46,11 @@ def makemove(board: Board, Stone: str, Point: str) -> Board:
     board = Board(board)
     #Check for pass
     if Stone == "pass":
-        print(count, "passing move ")
+        #print(count, "passing move ")
         return board.board
     #Check empty intersection
     if board.occupied(Point):
-        print(count,"spot occupied invalid")
+        #print(count,"spot occupied invalid")
         return False
 
     board.place(Stone, Point)
@@ -63,7 +63,7 @@ def makemove(board: Board, Stone: str, Point: str) -> Board:
 
     #Illegal Suicide
     if suicide_board != updated_board.board: 
-        print(count, "suicide")
+        #print(count, "suicide")
         return False
     return updated_board.board
 
@@ -95,19 +95,19 @@ def findAddedPoint(board1: Board, board2: Board) -> Union[Tuple[str, str], bool]
         return ("pass", "")
     #Check for invalid added stone at previously occupied position
     elif any(x in board1_b for x in board2_w) or any(x in board1_w for x in board2_b):
-        print(count, "prev position")
+        #print(count, "prev position")
         return False
     #Check if both white and black decrease
     elif diff_b < 0 and diff_w < 0: 
-        print(count, "decrease")
+        #print(count, "decrease")
         return False
     #Check for increase of both white and black pieces
     elif diff_b >= 1 and diff_w >= 1:
-        print(count, "both white and black increase")
+        #print(count, "both white and black increase")
         return False
     #Check for increase of either black and white by more than 1
     elif diff_b > 1 or diff_w > 1:
-        print(count, "increase by more than 1")
+        #print(count, "increase by more than 1")
         return False
     else: 
         if diff_b == 1: 
@@ -125,11 +125,11 @@ def checkTurn(turn1: Tuple[str, str], turn2: Tuple[str, str], turn3: Tuple[str, 
     global count
     #Covers sequential turns
     if turn1[0] == turn2[0] or turn2[0] == turn3[0]:
-        print(count, "Sequential turns invalid")
+        #print(count, "Sequential turns invalid")
         return False
     #Covers non-order turns after a pass
     elif turn2[0] == "pass" and turn1[0] != turn3[0]: 
-        print(count, "Invalid order after a pass")
+        #print(count, "Invalid order after a pass")
         return False
     return True
 
@@ -142,11 +142,10 @@ def checkKo(board1, board2, board3, board4) -> bool:
         True if valid
     """
     if board1 == board3:
-        print(count, "Ko - 0-2")
+        #print(count, "Ko - 0-2")
         return False
     if board2 == board4:
-
-        print(count, "Ko - 1-3")
+        #print(count, "Ko - 1-3")
         return False
     
     return True
@@ -180,7 +179,7 @@ def rulecheck(command: List[str]):
             return False
         move1 = makemove(boards[2], turn1[0], turn1[1])
         if not move1 or move1 != boards[1]:
-            print(count, "invalid move1")
+            #print(count, "invalid move1")
             return False
 
         turn2 = findAddedPoint(boards[1], boards[0])
@@ -188,7 +187,7 @@ def rulecheck(command: List[str]):
             return False
         move2 = makemove(boards[1], turn2[0], turn2[1])
         if not move2 or move2 != boards[0]:
-            print(count, "invalid move2")
+            #print(count, "invalid move2")
             return False
 
         move3 = makemove(boards[0], command[0], command[1][0])
@@ -200,7 +199,8 @@ def rulecheck(command: List[str]):
 
 #        print("[\n" + ",\n".join(str(out) for out in boards[0]) + "\n")
  ##      print("[\n" + ",\n".join(str(out) for out in boards[2]) + "\n")
-        
+        if Board(_boards[2]).Empty() and Board(_boards[1]).Empty() and turn2[0] != "W":
+            return False
         return checkTurn(turn1, turn2, turn3) and checkKo(move3, _boards[0], _boards[1], _boards[2])
 
 

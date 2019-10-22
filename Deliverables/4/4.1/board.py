@@ -141,9 +141,12 @@ class Board:
     
     def remove_nonliberties(self, Stone: str):
         points_to_check = self.get_points(Stone)
+        points_to_remove = []
         for point in points_to_check: 
             if not self.reachable(point, EMPTY_STONE):
-                self.remove(Stone, point)
+                points_to_remove.append(point)
+        for point in points_to_remove:
+            self.board = self.remove(Stone, point)
         return self.board
 
     def get_points(self, Stone: str) -> List:
