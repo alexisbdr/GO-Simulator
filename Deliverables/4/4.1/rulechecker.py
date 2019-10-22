@@ -195,6 +195,7 @@ def rulecheck(command: List[str]):
         if not move3:
             return False
         turn3 = (command[0], command[1][0])
+        
         #print("[\n" + ",\n".join(str(out) for out in move3) + "\n")
 
 #        print("[\n" + ",\n".join(str(out) for out in boards[0]) + "\n")
