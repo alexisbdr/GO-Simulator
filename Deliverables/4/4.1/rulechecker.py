@@ -198,7 +198,8 @@ def rulecheck(command: List[str]):
 
 #        print("[\n" + ",\n".join(str(out) for out in boards[0]) + "\n")
  ##      print("[\n" + ",\n".join(str(out) for out in boards[2]) + "\n")
-        
+        if Board(_boards[2]).Empty() and Board(_boards[1]).Empty() and turn2[0] != "W":
+            return False
         return checkTurn(turn1, turn2, turn3) and checkKo(move3, _boards[0], _boards[1], _boards[2])
 
 
