@@ -171,7 +171,7 @@ def checkhistory(boards: List[str], stone: str):
         if Board(_boards[2]).Empty() and Board(_boards[1]).Empty() and turn2[0] != "W":
             return False
 
-        return turn1 != turn2 and boards[0] != boards[2]
+        return checkTurn(turn1, turn2, (stone, "")) and boards[0] != boards[2]
 
 def rulecheck(boards: List[str], stone: str, position: str):
     """

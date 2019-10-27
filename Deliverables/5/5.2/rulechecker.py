@@ -26,11 +26,9 @@ def makemove(board: Board, Stone: str, Point: str) -> Board:
     board = Board(board)
     #Check for pass
     if Stone == "pass":
-        #print(count, "passing move ")
         return board.board
     #Check empty intersection
     if board.occupied(Point):
-        #print(count,"spot occupied invalid")
         return False
 
     board.place(Stone, Point)
@@ -40,10 +38,8 @@ def makemove(board: Board, Stone: str, Point: str) -> Board:
     updated_board = Board(updated_board)
     suicide_board = deepcopy(updated_board)
     suicide_board = suicide_board.remove_nonliberties(Stone)
-
     #Illegal Suicide
-    if suicide_board != updated_board.board: 
-        #print(count, "suicide")
+    if suicide_board != updated_board.board:
         return False
     return updated_board.board
 
@@ -157,21 +153,21 @@ def checkhistory(boards: List[str], stone: str):
             return False
         move1 = makemove(boards[2], turn1[0], turn1[1])
         if not move1 or move1 != boards[1]:
-            #print(count, "invalid move1")
             return False
 
         turn2 = findAddedPoint(boards[1], boards[0])
-        if not turn2: 
+        if not turn2:
+            #print("invalid turn2")
             return False
         move2 = makemove(boards[1], turn2[0], turn2[1])
         if not move2 or move2 != boards[0]:
-            #print(count, "invalid move2")
+            #print("invalid move2")
             return False
         
         if Board(_boards[2]).Empty() and Board(_boards[1]).Empty() and turn2[0] != "W":
             return False
 
-        return turn1 != turn2 and boards[0] != boards[2]
+        return checkTurn(turn1, turn2, (stone, "")) and boards[0] != boards[2]
 
 def rulecheck(boards: List[str], stone: str, position: str):
     """
