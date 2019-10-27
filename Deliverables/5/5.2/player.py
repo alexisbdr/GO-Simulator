@@ -35,8 +35,7 @@ class Player:
                 new_point = str(row + 1) + "-" + str(column + 1)
                 if rulecheck(boards, self.get_color(), new_point):
                     valid_point = new_point if valid_point is None else valid_point
-                    check_board = deepcopy(boards[0])
-                    if Board(check_board).check_future_liberties(new_point, self.get_color()):
+                    if Board(boards[0]).check_future_liberties(new_point, self.get_color()):
                         return new_point
         if valid_point: return valid_point
         else: return "pass"

@@ -34,7 +34,7 @@ class BoardPoint:
 class Board: 
 
     def __init__(self, Board: List[List]):
-        self.board = Board
+        self.board = deepcopy(Board)
         
         #Performing Board checks
         if(not len(self.board) == BOARD_ROWS_MAX): 
