@@ -10,6 +10,7 @@ class Game:
     def __init__(self):
         self.player1 = None
         self.turn_count = 0
+        self.play_depth = N
 
     def parse_command(self, command: List[str]) -> bool:
         self.turn_count+=1
@@ -24,6 +25,6 @@ class Game:
         elif command[0] == "make-a-move":
             if not checkhistory(command[1], self.player1.get_color()): 
                 return ILLEGAL_HISTORY_MESSAGE
-            return self.player1.make_move(command[1])
+            return self.player1.make_move(command[1], self.play_depth)
         else:
             raise Exception("Invalid command with statement" + command[0])

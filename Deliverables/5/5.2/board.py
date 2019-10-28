@@ -147,7 +147,6 @@ class Board:
         opposite_stone = "B" if Stone == "W" else "W"
         old_board = deepcopy(self.board)
         if old_board != self.remove_nonliberties(opposite_stone):
-            print("Capture")
             return True
         return False
 

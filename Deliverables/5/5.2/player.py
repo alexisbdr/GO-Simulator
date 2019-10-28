@@ -27,20 +27,11 @@ class Player:
             return self.stone
         else: 
             raise Exception("Player color has not been set")
-    
-    def make_move(self, boards:List) -> str:
-        valid_point = None
-        for row in range(BOARD_ROWS_MAX):
-            for column in range(BOARD_COLUMNS_MAX):
-                new_point = str(row + 1) + "-" + str(column + 1)
-                if rulecheck(boards, self.get_color(), new_point):
-                    valid_point = new_point if valid_point is None else valid_point
-                    if Board(boards[0]).check_future_liberties(new_point, self.get_color()):
-                        return new_point
-        if valid_point: return valid_point
-        else: return "pass"
 
     def all_valid_moves(self, boards: List, stone: str) -> List[str]:
+        """
+        Returns a list of valid moves for a given board history and stone
+        """
         valid_moves = []
         for row in range(BOARD_ROWS_MAX):
             for column in range(BOARD_COLUMNS_MAX):
@@ -49,21 +40,72 @@ class Player:
                     valid_moves.append(new_point)
         return valid_moves
 
-    def make_move_2(self, boards:List) -> str:
-        valid_moves = self.all_valid_moves(boards, self.get_color()) ## get all possible moves
+    def make_move(self, boards: List, n: int) -> str:
+        """
+        Determines the make-move strategy based on the parameter n
+        Returns: 
+            -"pass" if there are no valid moves
+            -first valid point by column-row order
+            -first valid point that leads to a capture of the opponent
+            -first valid point of a sequence of moves that lead to a capture
+        """ 
+        if n > 1:
+            result = self.make_move_recursive([], boards, n)
+            if result:
+                print(result) 
+                return result
+        
+        valid_moves = self.all_valid_moves(boards, self.get_color())
+        #If list is empty then there are no valid moves
+        if not valid_moves: 
+            return "pass"
+        capture_point = self.make_move_capture(boards, valid_moves)
+        #If no moves lead to an opponent capture - return first valid point
+        if not capture_point:
+            return valid_moves[0]
+        return capture_point
+    
+    def make_move_capture(self, boards:List, valid_moves:List[str]) -> Union[bool, str]:
+        """
+        Returns first valid point that leads to a capture of the opponent's pieces
+        False otherwise 
+        """
+        boards = deepcopy(boards)
+        for point in valid_moves: 
+            if Board(boards[0]).check_future_liberties(point, self.get_color()):
+                return point
+        return False
+
+    def make_move_recursive(self, list_of_moves: List, boards:List, n: int) -> str:
+        """
+        Steps: 
+            1.Finds and iterates through valid player moves
+            2.For each valid player move 
+            3.Find and iterate through valid opponent moves
+            4.Make valid opponent move
+            5.Call self recursive move on new update board state after player and opponent valid moves
+        """
+        boards = deepcopy(boards)
+        valid_moves = self.all_valid_moves(boards, self.get_color()) 
+        if n == 1:
+            if self.make_move_capture(boards, valid_moves):
+                return list_of_moves[0]
+            else: 
+                return None
         opposite_stone = "B" if self.get_color() == "W" else "W"
         for move in valid_moves:
+            list_of_moves.append(move)
             new_board = makemove(boards[0], self.get_color(), move)
-            valid_opponent_moves = self.all_valid_moves(self, [new_board, boards[0], boards[1]], opposite_stone)
-            all_moves_lead_to_capture = True
+            valid_opponent_moves = self.all_valid_moves([new_board, boards[0], boards[1]], opposite_stone)
             for opponent_move in valid_opponent_moves:
                 new_board2 = makemove(new_board, opposite_stone, opponent_move)
-                if not self.make_move([new_board2, new_board, boards[0]]): ## change so that it returns false if we cant capture right away
-                    all_moves_lead_to_capture = False
-            if all_moves_lead_to_capture:
-                return move
-        return --
-    
-    
+                result = self.make_move_recursive(list_of_moves, [new_board2, new_board, boards[0]], n-1)
+                if result is None: 
+                    break
+                else: 
+                    continue
+                return list_of_moves[0]
+        return None
+
     def update_game_state(self, args):
         raise NotImplementedError

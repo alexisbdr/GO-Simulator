@@ -21,3 +21,4 @@ PLACE_ERROR_MESSAGE = "This seat is taken!"
 REMOVE_ERROR_MESSAGE = "I am just a Board! I cannot remove what is not there!"
 ILLEGAL_HISTORY_MESSAGE = "This history makes no sense!"
 
+N = 2
