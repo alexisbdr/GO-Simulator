@@ -80,6 +80,27 @@ class Player:
                 return point
         return False
 
+    def make_move_capture_two(self, boards:List, point: str) -> Union[bool, str]:
+        """
+        Returns first valid point that leads to a capture of the opponent's pieces
+        False otherwise
+        """
+        boards = deepcopy(boards)
+        if Board(boards[0]).check_future_liberties(point, self.get_color()):
+            return True
+        return False
+
+    def make_move_two(self, boards: List, n: int):
+        valid_moves = self.all_valid_moves(boards, self.get_color())
+        capture_moves = []
+        for move in valid_moves:
+            if self.make_move_capture_two(boards, move):
+                capture_moves.append(move)
+        if len(capture_moves) >= n:
+            return valid_moves[0]
+        else:
+            return capture_moves[0]
+
     def make_move_recursive(self, list_of_moves: List, boards:List, n: int) -> str:
         """
         Steps: 
