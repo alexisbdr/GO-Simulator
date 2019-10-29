@@ -2,6 +2,7 @@ import typing
 import enum
 import json
 from copy import deepcopy
+from itertools import product
 
 from definitions import *
 from typing import Any, List, Union
@@ -13,6 +14,12 @@ def check_maybestone(Stone: str, Operation:str = ""):
 def check_stone(Stone: str, Operation: str = ""):
     if(Stone not in STONE):
         raise Exception("Invalid Stone - cannot perform " + Operation + " operation")
+
+def get_all_string_points() -> List[str]:
+    return [
+        str(row+1)+"-"+str(column+1) for row, column in \
+            product(range(BOARD_COLUMNS_MAX), range(BOARD_ROWS_MAX))
+    ]
 
 class BoardPoint:
 
@@ -60,7 +67,7 @@ class Board:
                 if self.board[column][row] in STONE:
                     return False
         return True
-
+    
     def occupied(self, Point: str) -> bool:
         if self.Get(Point) in STONE:
             return TRUE_OUTPUT
