@@ -56,7 +56,6 @@ class Player:
         if n > 1:
             result = self.make_move_recursive([], boards, n)
             if result:
-                print(result) 
                 return result
         
         valid_moves = self.all_valid_moves(boards, self.get_color())
@@ -120,16 +119,22 @@ class Player:
         opposite_stone = "B" if self.get_color() == "W" else "W"
         for move in valid_moves:
             list_of_moves.append(move)
+            if self.make_move_capture(boards, [move]):
+                return list_of_moves[0]
             new_board = makemove(boards[0], self.get_color(), move)
             valid_opponent_moves = self.all_valid_moves([new_board, boards[0], boards[1]], opposite_stone)
+            leads_to_capture = True
             for opponent_move in valid_opponent_moves:
                 new_board2 = makemove(new_board, opposite_stone, opponent_move)
                 result = self.make_move_recursive(list_of_moves, [new_board2, new_board, boards[0]], n-1)
                 if result is None:
+                    leads_to_capture = False
                     break
                 else:
                     continue
+            if leads_to_capture:
                 return list_of_moves[0]
+            list_of_moves.pop()
         return None
 
     def update_game_state(self, args):
