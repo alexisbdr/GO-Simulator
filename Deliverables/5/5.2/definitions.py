@@ -16,6 +16,7 @@ COMMANDS = {"occupied?": 2,
 #OUTPUTS AND MESSAGES
 TRUE_OUTPUT = True
 FALSE_OUTPUT = False
+PASS_OUTPUT = "pass"
 
 PLACE_ERROR_MESSAGE = "This seat is taken!"
 REMOVE_ERROR_MESSAGE = "I am just a Board! I cannot remove what is not there!"

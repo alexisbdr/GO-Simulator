@@ -49,19 +49,15 @@ class Player:
             -first valid point that leads to a capture of the opponent
             -first valid point of a sequence of moves that lead to a capture
         """
-        if len(boards) == 1 or len(boards) == 2:
-            valid_moves = self.all_valid_moves(boards, self.get_color())
-            return valid_moves[0]
-
         if n > 1:
-            result = self.make_move_recursive([], boards, n)
+            result = self.make_move_two(boards, n)
             if result:
                 return result
         
         valid_moves = self.all_valid_moves(boards, self.get_color())
         #If list is empty then there are no valid moves
         if not valid_moves: 
-            return "pass"
+            return PASS_OUTPUT
         capture_point = self.make_move_capture(boards, valid_moves)
         #If no moves lead to an opponent capture - return first valid point
         if not capture_point:
@@ -90,15 +86,29 @@ class Player:
         return False
 
     def make_move_two(self, boards: List, n: int):
+        
+        if len(boards) == 1 or len(boards) == 2:
+            valid_moves = self.all_valid_moves(boards, self.get_color())
+            return valid_moves[0]
+
         valid_moves = self.all_valid_moves(boards, self.get_color())
         capture_moves = []
+
         for move in valid_moves:
             if self.make_move_capture_two(boards, move):
                 capture_moves.append(move)
-        if len(capture_moves) >= n:
-            return valid_moves[0]
-        else:
+        if n == 1 and capture_moves: 
             return capture_moves[0]
+        elif n == 1 and valid_moves:
+            return valid_moves[0]
+        elif n > 1 and len(capture_moves) > 1:
+            return valid_moves[0]
+        elif n > 1 and capture_moves: 
+            return capture_moves[0]
+        elif n > 1 and valid_moves: 
+            return valid_moves[0] 
+        else: 
+            return PASS_OUTPUT
 
     def make_move_recursive(self, list_of_moves: List, boards:List, n: int) -> str:
         """
