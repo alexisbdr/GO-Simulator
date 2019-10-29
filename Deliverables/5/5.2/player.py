@@ -48,7 +48,11 @@ class Player:
             -first valid point by column-row order
             -first valid point that leads to a capture of the opponent
             -first valid point of a sequence of moves that lead to a capture
-        """ 
+        """
+        if len(boards) == 1 or len(boards) == 2:
+            valid_moves = self.all_valid_moves(boards, self.get_color())
+            return valid_moves[0]
+
         if n > 1:
             result = self.make_move_recursive([], boards, n)
             if result:
@@ -86,11 +90,11 @@ class Player:
             5.Call self recursive move on new update board state after player and opponent valid moves
         """
         boards = deepcopy(boards)
-        valid_moves = self.all_valid_moves(boards, self.get_color()) 
+        valid_moves = self.all_valid_moves(boards, self.get_color())
         if n == 1:
             if self.make_move_capture(boards, valid_moves):
                 return list_of_moves[0]
-            else: 
+            else:
                 return None
         opposite_stone = "B" if self.get_color() == "W" else "W"
         for move in valid_moves:
@@ -100,9 +104,9 @@ class Player:
             for opponent_move in valid_opponent_moves:
                 new_board2 = makemove(new_board, opposite_stone, opponent_move)
                 result = self.make_move_recursive(list_of_moves, [new_board2, new_board, boards[0]], n-1)
-                if result is None: 
+                if result is None:
                     break
-                else: 
+                else:
                     continue
                 return list_of_moves[0]
         return None
