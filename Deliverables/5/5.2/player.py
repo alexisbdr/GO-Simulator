@@ -35,12 +35,12 @@ class Player:
         """
         Returns a list of valid moves for a given board history and stone
         """
-        valid_moves, valid_capture_moves = []
+        valid_moves, valid_capture_moves = [], []
         all_string_points = get_all_string_points()
         for new_point in all_string_points: 
                 if rulecheck(boards, stone, new_point):
                     valid_moves.append(new_point)
-                    if self.make_move_capture_two(boards, stone):
+                    if self.make_move_capture_two(boards, new_point):
                         valid_capture_moves.append(new_point)
         return valid_moves, valid_capture_moves
 
@@ -90,26 +90,28 @@ class Player:
         return False
 
     def make_move_two(self, boards: List, n: int):
-        
+
         valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_color())
         if len(boards) == 1 or len(boards) == 2:
             return valid_moves[0]
 
-        if n == 1 and valid_capture_moves: 
+        if n == 1 and valid_capture_moves:
             return valid_capture_moves[0]
         elif n == 1 and valid_moves:
             return valid_moves[0]
-        elif n > 1 and len(valid_capture_moves) > 1:
-            return valid_moves[0]
-        elif n > 1 and valid_capture_moves: 
-            return valid_capture_moves[0]
-        elif n > 1 and valid_moves: 
-            return valid_moves[0] 
-        else: 
+        elif n > 1:
+            capture = self.make_move_recursive([], boards, n) # or call make_move_points_of_interest here
+            if capture:
+                return capture
+            elif valid_moves:
+                return valid_moves[0]
+            else:
+                return PASS_OUTPUT
+        else:
             return PASS_OUTPUT
 
     def make_move_points_of_interest(self, boards: List, n: int) -> str:
-        
+
         boards = deepcopy(boards)
         valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_color())
         for move in valid_moves:
@@ -118,14 +120,14 @@ class Player:
             valid_opponent_moves, valid_opponent_capture_moves = \
                 self.all_valid_moves(new_boards, self.get_opponent_color())
             leads_to_capture = True
-            for opponent_move in valid_opponent_moves: 
+            for opponent_move in valid_opponent_moves:
                 if opponent_move in valid_opponent_capture_moves or \
-                    opponent_move in valid_capture_moves: 
+                        opponent_move in valid_capture_moves:
                     new_board2 = makemove(new_board, self.get_opponent_color(), opponent_move)
                     new_boards = [new_board2, new_board, boards[0]]
                     new_valid_moves, new_valid_capture_moves = \
                         self.all_valid_moves(new_boards, self.get_color())
-                    if not new_valid_capture_moves: 
+                    if not new_valid_capture_moves:
                         leads_to_capture = False
             if leads_to_capture:
                 return move
@@ -141,28 +143,31 @@ class Player:
             5.Call self recursive move on new update board state after player and opponent valid moves
         """
         boards = deepcopy(boards)
-        valid_moves = self.all_valid_moves(boards, self.get_color())
-        if n == 1:
+        valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_color())
+        opposite_stone = self.get_opponent_color()
+        if n == 1: # if n == 1, we need to make a capture right away
             if self.make_move_capture(boards, valid_moves):
                 return list_of_moves[0]
             else:
                 return None
-        opposite_stone = self.get_opponent_color()
         for move in valid_moves:
             list_of_moves.append(move)
             if self.make_move_capture(boards, [move]):
                 return list_of_moves[0]
             new_board = makemove(boards[0], self.get_color(), move)
-            valid_opponent_moves = self.all_valid_moves([new_board, boards[0], boards[1]], opposite_stone)
+            valid_opponent_moves, valid_opponent_capture_moves = self.all_valid_moves([new_board, boards[0], boards[1]], opposite_stone)
             leads_to_capture = True
             for opponent_move in valid_opponent_moves:
-                new_board2 = makemove(new_board, opposite_stone, opponent_move)
-                result = self.make_move_recursive(list_of_moves, [new_board2, new_board, boards[0]], n-1)
-                if result is None:
-                    leads_to_capture = False
-                    break
-                else:
-                    continue
+                #if opponent_move in valid_opponent_capture_moves or \
+                #        opponent_move in valid_capture_moves: <-- tried adding this, didn't work for some reason
+                ## but I will try debugging
+                    new_board2 = makemove(new_board, opposite_stone, opponent_move)
+                    result = self.make_move_recursive(list_of_moves, [new_board2, new_board, boards[0]], n-1)
+                    if result is None:
+                        leads_to_capture = False
+                        break
+                    else:
+                        continue
             if leads_to_capture:
                 return list_of_moves[0]
             list_of_moves.pop()
