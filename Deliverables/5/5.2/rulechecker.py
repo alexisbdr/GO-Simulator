@@ -6,7 +6,7 @@ from copy import deepcopy
 from board import Board
 from definitions import *
 
-def makemove(board: Board, Stone: str, Point: str) -> Board:
+def apply_move(board: Board, Stone: str, Point: str) -> Board:
     """
     Inputs
         board: the board that represents the initial state on which we will apply the move
@@ -151,7 +151,7 @@ def checkhistory(boards: List[str], stone: str):
         turn1 = findAddedPoint(boards[2], boards[1])
         if not turn1: 
             return False
-        move1 = makemove(boards[2], turn1[0], turn1[1])
+        move1 = apply_move(boards[2], turn1[0], turn1[1])
         if not move1 or move1 != boards[1]:
             return False
 
@@ -159,7 +159,7 @@ def checkhistory(boards: List[str], stone: str):
         if not turn2:
             #print("invalid turn2")
             return False
-        move2 = makemove(boards[1], turn2[0], turn2[1])
+        move2 = apply_move(boards[1], turn2[0], turn2[1])
         if not move2 or move2 != boards[0]:
             #print("invalid move2")
             return False
@@ -182,7 +182,12 @@ def rulecheck(boards: List[str], stone: str, position: str):
     _boards = deepcopy(boards)
     #Check Empty Board 
     if len(boards) == 1:
-        return Board(boards[0]).Empty() and stone == "B"
+        return rulecheck_one(boards, stone)
+
+def rulecheck_one(boards: List[str], stone: str) -> bool:
+    return Board(boards[0]).Empty() and stone == "B"
+
+def rule_check_two(boards: List[str], stone: str) ->
     elif len(boards) == 2:
         if not Board(boards[1]).Empty():
             return False
@@ -190,7 +195,7 @@ def rulecheck(boards: List[str], stone: str, position: str):
         if not turn1 or turn1[0] == "W" or stone == "B":
             return False
 
-        move2 = makemove(boards[0], stone, position)
+        move2 = apply_move(boards[0], stone, position)
         if not move2:
             return False
         
@@ -201,7 +206,7 @@ def rulecheck(boards: List[str], stone: str, position: str):
         turn1 = findAddedPoint(boards[2], boards[1])
         if not turn1: 
             return False
-        move1 = makemove(boards[2], turn1[0], turn1[1])
+        move1 = apply_move(boards[2], turn1[0], turn1[1])
         if not move1 or move1 != boards[1]:
             #print(count, "invalid move1")
             return False
@@ -209,12 +214,12 @@ def rulecheck(boards: List[str], stone: str, position: str):
         turn2 = findAddedPoint(boards[1], boards[0])
         if not turn2: 
             return False
-        move2 = makemove(boards[1], turn2[0], turn2[1])
+        move2 = apply_move(boards[1], turn2[0], turn2[1])
         if not move2 or move2 != boards[0]:
             #print(count, "invalid move2")
             return False
 
-        move3 = makemove(boards[0], stone, position)
+        move3 = apply_move(boards[0], stone, position)
         if not move3:
             return False
         turn3 = (stone, position)

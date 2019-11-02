@@ -83,7 +83,7 @@ class Board:
         point = BoardPoint(Point)
         check_maybestone(Stone, "reachable")
         return self.find2(point.x_ind, point.y_ind, Stone)
-
+    
     def find2(self, x: int, y:int, GoalStone: str) -> bool:
         startStone = self.board[y][x]
         visited = []

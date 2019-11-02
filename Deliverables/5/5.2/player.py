@@ -9,8 +9,8 @@ from definitions import *
 
 class Player:
 
-    def __init__(self):
-        self.name = "no name"
+    def __init__(self, name: str):
+        self.name = name
         self.stone = ""
 
     #some methods we will need

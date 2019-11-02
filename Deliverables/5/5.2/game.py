@@ -5,10 +5,11 @@ from player import Player
 from rulechecker import checkhistory
 from definitions import *
 
-class Game: 
+class Referee: 
 
     def __init__(self):
         self.player1 = None
+        self.player2 = None
         self.turn_count = 0
         self.play_depth = N
 
