@@ -58,12 +58,12 @@ class Referee:
         if not self.player1: 
             self.player1 = Player(command, "B")
             self.start_game()
-            return self.player1.get_stone()
+            return self.player1.get_stone(), None
         elif not self.player2: 
             self.player2 = Player(command, "W")
-            return self.player2.get_stone()
+            return self.player2.get_stone(), self.boards
         else:
-            return self.update_state(command)
+            return self.update_state(command), None
 
             
 
