@@ -32,7 +32,6 @@ class Referee:
         return False
     
     def score_winner(self, score: dict) -> str:
-        print('score', score)
         if score["B"] == score["W"]:
             return sorted([self.player1.get_name(), self.player2.get_name()])
         winner_key = max(score, key = score.get)
