@@ -40,9 +40,10 @@ class BoardPoint:
 
 class Board: 
 
-    def __init__(self, Board: List[List]):
+    def __init__(self, Board: List[List] = None):
         self.board = deepcopy(Board)
-        
+        if Board is None: 
+            self.EmptyBoard()        
         #Performing Board checks
         if(not len(self.board) == BOARD_ROWS_MAX): 
             raise Exception("Incorrect number of rows")
@@ -53,29 +54,41 @@ class Board:
                 if elem not in MAYBE_STONE:
                     raise Exception("Invalid Point in Board")
 
-    def Get(self, Point: str) -> str:
+    def GetPoint(self, Point: str) -> str:
         point = BoardPoint(Point)
         return self.board[point.y - 1][point.x - 1]
+    
+    def GetBoard(self) -> List[List]:
+        return self.board
     
     def Set(self, Point: str, Stone: str):
         point = BoardPoint(Point)
         self.board[point.y - 1][point.x - 1] = Stone
     
-    def Empty(self) -> bool:
+    def isEmpty(self) -> bool:
         for row in range(len(self.board)):
             for column in range(len(self.board)):
                 if self.board[column][row] in STONE:
                     return False
         return True
     
+    def EmptyBoard(self) -> List[List[str]]:
+        board = []
+        for row in range(BOARD_ROWS_MAX):
+            row = []
+            for column in range(BOARD_COLUMNS_MAX):
+                row.append(EMPTY_STONE)
+            board.append(row)
+        self.board = board
+    
     def occupied(self, Point: str) -> bool:
-        if self.Get(Point) in STONE:
+        if self.GetPoint(Point) in STONE:
             return TRUE_OUTPUT
         else: return FALSE_OUTPUT
 
     def occupies(self, Stone: str, Point: str) -> bool:
         check_stone(Stone, "occupies")
-        if(self.Get(Point) == Stone):
+        if(self.GetPoint(Point) == Stone):
             return TRUE_OUTPUT
         else: return FALSE_OUTPUT
 

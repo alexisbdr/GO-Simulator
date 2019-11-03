@@ -25,7 +25,7 @@ def makemove(board: Board, Stone: str, Point: str) -> Board:
     board = deepcopy(board)
     board = Board(board)
     #Check for pass
-    if Stone == "pass":
+    if Point == "pass":
         return board.board
     #Check empty intersection
     if board.occupied(Point):
@@ -137,9 +137,9 @@ def checkhistory(boards: List[str], stone: str):
     _boards = deepcopy(boards)
     #Check Empty Board 
     if len(boards) == 1:
-        return Board(boards[0]).Empty() and stone == "B"
+        return Board(boards[0]).isEmpty() and stone == "B"
     elif len(boards) == 2:
-        if not Board(boards[1]).Empty():
+        if not Board(boards[1]).isEmpty():
             return False
         turn1 = findAddedPoint(boards[1], boards[0])
         if not turn1 or turn1[0] == "W" or stone == "B":
@@ -164,7 +164,7 @@ def checkhistory(boards: List[str], stone: str):
             #print("invalid move2")
             return False
         
-        if Board(_boards[2]).Empty() and Board(_boards[1]).Empty() and turn2[0] != "W":
+        if Board(_boards[2]).isEmpty() and Board(_boards[1]).isEmpty() and turn2[0] != "W":
             return False
 
         return checkTurn(turn1, turn2, (stone, "")) and boards[0] != boards[2]
@@ -180,11 +180,11 @@ def rulecheck(boards: List[str], stone: str, position: str):
     """
     #Make a copy because the order of boards gets messed up --> for checkKo
     _boards = deepcopy(boards)
-    #Check Empty Board 
+    #Check isEmpty Board 
     if len(boards) == 1:
-        return Board(boards[0]).Empty() and stone == "B"
+        return Board(boards[0]).isEmpty() and stone == "B"
     elif len(boards) == 2:
-        if not Board(boards[1]).Empty():
+        if not Board(boards[1]).isEmpty():
             return False
         turn1 = findAddedPoint(boards[1], boards[0])
         if not turn1 or turn1[0] == "W" or stone == "B":
@@ -219,7 +219,7 @@ def rulecheck(boards: List[str], stone: str, position: str):
             return False
         turn3 = (stone, position)
         
-        if Board(_boards[2]).Empty() and Board(_boards[1]).Empty() and turn2[0] != "W":
+        if Board(_boards[2]).isEmpty() and Board(_boards[1]).isEmpty() and turn2[0] != "W":
             return False
         return checkTurn(turn1, turn2, turn3) and checkKo(move3, _boards[0], _boards[1], _boards[2])
 

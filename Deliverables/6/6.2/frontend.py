@@ -3,7 +3,7 @@ import json
 from json import JSONDecodeError
 from rulechecker import *
 
-from game import Game
+from referee import Referee
 
 class frontend: 
     def __init__(self):
@@ -33,10 +33,10 @@ class frontend:
                 continue
 
     def executeCommands(self):
-        game = Game()
+        referee = Referee()
         for command in self.list_of_commands:
             #Handling single board -> count score
-            output = game.parse_command(command)
+            output = referee.parse_command(command)
             self.list_of_outputs.append(output) if output else None
                 
     def printJson(self):
