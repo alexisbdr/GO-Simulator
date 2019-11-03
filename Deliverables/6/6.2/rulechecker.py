@@ -25,7 +25,7 @@ def makemove(board: Board, Stone: str, Point: str) -> Board:
     board = deepcopy(board)
     board = Board(board)
     #Check for pass
-    if Point == "pass":
+    if Point == PASS_OUTPUT:
         return board.board
     #Check empty intersection
     if board.occupied(Point):
@@ -68,7 +68,7 @@ def findAddedPoint(board1: Board, board2: Board) -> Union[Tuple[str, str], bool]
     diff_w = len(board2_w) - len(board1_w)
     #Check for pass
     if board1_b == board2_b and board1_w == board2_w:
-        return ("pass", "")
+        return (EMPTY_STONE, PASS_OUTPUT)
     #Check for invalid added stone at previously occupied position
     elif any(x in board1_b for x in board2_w) or any(x in board1_w for x in board2_b):
         #print(count, "prev position")

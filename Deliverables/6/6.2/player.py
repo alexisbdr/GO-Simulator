@@ -28,7 +28,7 @@ class Player:
         else: 
             raise Exception("Player color has not been set")
     
-    def make_move(self, Point: str, Boards: List[List]) :
+    def make_move(self, Point: str, Boards: List[List]):
         if rulecheck(Boards, self.get_stone(), Point):
             return makemove(Boards[0], self.get_stone(), Point)
         return None

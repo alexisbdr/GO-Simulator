@@ -32,6 +32,7 @@ class Referee:
         return False
     
     def score_winner(self, score: dict) -> str:
+        print('score', score)
         if score["B"] == score["W"]:
             return sorted([self.player1.get_name(), self.player2.get_name()])
         winner_key = max(score, key = score.get)
@@ -41,7 +42,7 @@ class Referee:
     
     def update_state(self, Point: str):
         if self.winner_player:
-            return
+            return 
         if self.check_pass_flag(Point):
             return self.score_winner(Board(self.boards[0]).count_score())
         new_board = self.current_player.make_move(Point, self.boards) 
@@ -52,7 +53,7 @@ class Referee:
         else:
             self.switch_player()
             self.winner_player = self.current_player.get_name()
-            return self.winner_player
+            return [self.winner_player]
 
     def parse_command(self, command: List[str]) -> bool:
         if not self.player1: 
