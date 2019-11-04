@@ -19,6 +19,7 @@ class Referee:
         self.current_player = self.player1
     
     def update_boards(self, new_board):
+        self.old_boards = self.boards
         self.boards = [new_board] + self.boards[:2]
     
     def switch_player(self):
@@ -48,7 +49,7 @@ class Referee:
         if new_board:
             self.update_boards(new_board)
             self.switch_player()
-            return self.boards
+            return self.old_boards
         else:
             self.switch_player()
             self.winner_player = self.current_player.get_name()
