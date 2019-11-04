@@ -45,7 +45,7 @@ class Referee:
             return None, None
         if self.check_pass_flag(Point):
             self.winner_player = self.score_winner(Board(self.boards[0]).count_score())
-            return self.boards, [self.winner_player]
+            return self.boards, self.winner_player
         new_board = self.current_player.make_move(Point, self.boards) 
         if new_board:
             self.update_boards(new_board)
