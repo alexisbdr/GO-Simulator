@@ -36,9 +36,8 @@ class frontend:
         referee = Referee()
         for command in self.list_of_commands:
             #Handling single board -> count score
-            output, output1 = referee.parse_command(command)
+            output = referee.parse_command(command)
             self.list_of_outputs.append(output) if output else None
-            self.list_of_outputs.append(output1) if output1 else None
                 
     def printJson(self):
         print(json.dumps([out for out in self.list_of_outputs]))
