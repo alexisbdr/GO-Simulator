@@ -42,27 +42,28 @@ class Referee:
     
     def update_state(self, Point: str):
         if self.winner_player:
-            return 
+            return None, None
         if self.check_pass_flag(Point):
-            return self.score_winner(Board(self.boards[0]).count_score())
+            self.winner_player = self.score_winner(Board(self.boards[0]).count_score())
+            return self.old_boards, [self.winner_player]
         new_board = self.current_player.make_move(Point, self.boards) 
         if new_board:
             self.update_boards(new_board)
             self.switch_player()
-            return self.old_boards
+            return self.old_boards, None
         else:
             self.switch_player()
             self.winner_player = self.current_player.get_name()
-            return [self.winner_player]
+            return self.old_boards, [self.winner_player]
 
     def parse_command(self, command: List[str]) -> bool:
         if not self.player1: 
             self.player1 = Player(command, "B")
             self.start_game()
-            return self.player1.get_stone()
+            return self.player1.get_stone(), None
         elif not self.player2: 
             self.player2 = Player(command, "W")
-            return self.player2.get_stone()
+            return self.player2.get_stone(), None
         else:
             return self.update_state(command)
 
