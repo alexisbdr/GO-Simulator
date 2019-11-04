@@ -45,7 +45,7 @@ class Referee:
             return None, None
         if self.check_pass_flag(Point):
             self.winner_player = self.score_winner(Board(self.boards[0]).count_score())
-            return self.old_boards, [self.winner_player]
+            return self.boards, [self.winner_player]
         new_board = self.current_player.make_move(Point, self.boards) 
         if new_board:
             self.update_boards(new_board)
@@ -54,7 +54,7 @@ class Referee:
         else:
             self.switch_player()
             self.winner_player = self.current_player.get_name()
-            return self.old_boards, [self.winner_player]
+            return self.boards, [self.winner_player]
 
     def parse_command(self, command: List[str]) -> bool:
         if not self.player1: 
