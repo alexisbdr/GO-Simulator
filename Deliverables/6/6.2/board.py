@@ -3,17 +3,18 @@ import enum
 import json
 from copy import deepcopy
 from itertools import product
+from exceptions import MaybestoneException, StoneException, BoardPointException, BoardException
 
 from definitions import *
 from typing import Any, List, Union
 
 def check_maybestone(Stone: str, Operation:str = ""):
     if(Stone not in MAYBE_STONE):
-        raise Exception("Invalid MaybeStone - cannot perform " + Operation + " operation")
+        raise MaybestoneException("Invalid MaybeStone - cannot perform " + Operation + " operation")
 
 def check_stone(Stone: str, Operation: str = ""):
     if(Stone not in STONE):
-        raise Exception("Invalid Stone - cannot perform " + Operation + " operation")
+        raise StoneException("Invalid Stone - cannot perform " + Operation + " operation")
 
 def get_all_string_points() -> List[str]:
     return [
@@ -32,11 +33,11 @@ class BoardPoint:
             self.x_ind = self.x - 1
             self.y_ind = self.y - 1
         except: 
-            raise Exception("Point is not in the right format")
+            raise BoardPointException("Point is not in the right format")
         if(not (self.x >= BOARD_COLUMNS_MIN and self.x <= BOARD_COLUMNS_MAX)):
-            raise Exception("Point is out of bonds")
+            raise BoardPointException("Point is out of bonds")
         elif(not (self.y >= BOARD_ROWS_MIN and self.y <= BOARD_COLUMNS_MAX)):
-            raise Exception("Point is out of bounds")
+            raise BoardPointException("Point is out of bounds")
 
 class Board: 
 
@@ -46,13 +47,13 @@ class Board:
             self.EmptyBoard()        
         #Performing Board checks
         if(not len(self.board) == BOARD_ROWS_MAX): 
-            raise Exception("Incorrect number of rows")
+            raise BoardException("Incorrect number of rows")
         for row in self.board: 
             if(not len(row) == BOARD_COLUMNS_MAX):
-                raise Exception("Incorrect number of columns")
+                raise BoardException("Incorrect number of columns")
             for elem in row: 
                 if elem not in MAYBE_STONE:
-                    raise Exception("Invalid Point in Board")
+                    raise BoardException("Invalid Point in Board")
 
     def GetPoint(self, Point: str) -> str:
         point = BoardPoint(Point)

@@ -6,6 +6,7 @@ from copy import deepcopy
 from board import Board,get_all_string_points
 from rulechecker import makemove, rulecheck
 from definitions import *
+from exceptions import PlayerException
 
 class Player:
 
@@ -19,14 +20,14 @@ class Player:
     
     def set_stone(self, stone: str):
         if stone not in STONE:
-            raise Exception("Invalid Stone in Player")
+            raise PlayerException("Invalid Stone in Player")
         self.stone = stone
     
     def get_stone(self):
         if self.stone:
             return self.stone
         else: 
-            raise Exception("Player color has not been set")
+            raise PlayerException("Player color has not been set")
     
     def make_move(self, Point: str, Boards: List[List]):
         if rulecheck(Boards, self.get_stone(), Point):
