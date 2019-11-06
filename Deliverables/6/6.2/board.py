@@ -37,6 +37,40 @@ class BoardPoint:
             raise Exception("Point is out of bonds")
         elif(not (self.y >= BOARD_ROWS_MIN and self.y <= BOARD_COLUMNS_MAX)):
             raise Exception("Point is out of bounds")
+    
+    def to_string(self, x: int, y: int) -> str:
+        return str(x) + "-" + str(y)
+
+    def to_coord(self, Point: str):
+        return Point.split("-")[0], Point.split("-")[1]
+
+    def right_neighbor(self) -> str:
+        if self.x + 1 <= BOARD_COLUMNS_MAX:
+            return self.to_string(self.x + 1, self.y)
+        return None
+
+    def left_neighbor(self) -> str: 
+        if self.x - 1 >= BOARD_COLUMNS_MIN: 
+            return self.to_string(self.x - 1, self.y)
+        return None
+
+    def up_neighbor(self) -> str: 
+        if self.y - 1 >= BOARD_ROWS_MIN:
+            return self.to_string(self.x, self.y - 1)
+        return None
+
+    def down_neighbor(self) -> str: 
+        if self.y + 1 <= BOARD_ROWS_MAX: 
+            return self.to_string(self.x, self.y + 1)
+        return None
+
+    def neighbors(self) -> List[str]:
+        return [
+            self.right_neighbor(), 
+            self.left_neighbor(), 
+            self.up_neighbor(), 
+            self.down_neighbor()
+            ]
 
 class Board: 
 
@@ -54,7 +88,7 @@ class Board:
                 if elem not in MAYBE_STONE:
                     raise Exception("Invalid Point in Board")
 
-    def GetPoint(self, Point: str) -> str:
+    def GetStone(self, Point: str) -> str:
         point = BoardPoint(Point)
         return self.board[point.y - 1][point.x - 1]
     
@@ -82,57 +116,38 @@ class Board:
         self.board = board
     
     def occupied(self, Point: str) -> bool:
-        if self.GetPoint(Point) in STONE:
+        if self.GetStone(Point) in STONE:
             return TRUE_OUTPUT
         else: return FALSE_OUTPUT
 
     def occupies(self, Stone: str, Point: str) -> bool:
         check_stone(Stone, "occupies")
-        if(self.GetPoint(Point) == Stone):
+        if(self.GetStone(Point) == Stone):
             return TRUE_OUTPUT
         else: return FALSE_OUTPUT
 
     def reachable(self, Point: str, Stone: str) -> bool:
         point = BoardPoint(Point)
         check_maybestone(Stone, "reachable")
-        return self.find2(point.x_ind, point.y_ind, Stone)
+        return self.find2(Point, Stone)
 
-    def find2(self, x: int, y:int, GoalStone: str) -> bool:
-        startStone = self.board[y][x]
+    def find2(self, Point: str, GoalStone: str) -> bool:
+        startStone = self.GetStone(Point)
         visited = []
         stack = []
-        stack.append((x, y))
+        stack.append((Point))
         while len(stack) > 0:
-            curr_x, curr_y = stack.pop()
-            if (curr_x, curr_y) in visited:
+            curr_point = stack.pop()
+            if curr_point in visited:
                 continue
-            if self.board[curr_y][curr_x] == GoalStone:
+            if self.GetStone(curr_point) == GoalStone:
                 return TRUE_OUTPUT
-            if curr_x + 1 < BOARD_COLUMNS_MAX:
-                rightNeighbor = self.board[curr_y][curr_x + 1]
-                if rightNeighbor == GoalStone:
+            for point in BoardPoint(curr_point).neighbors():
+                if point and self.GetStone(point) == GoalStone:
                     return TRUE_OUTPUT
-                if rightNeighbor == startStone:
-                    stack.append((curr_x + 1, curr_y))
-            if curr_x - 1 > -BOARD_COLUMNS_MIN:
-                leftNeighbor = self.board[curr_y][curr_x - 1]
-                if leftNeighbor == GoalStone:
-                    return TRUE_OUTPUT
-                if leftNeighbor == startStone:
-                    stack.append((curr_x - 1, curr_y))
-            if curr_y + 1 < BOARD_ROWS_MAX:
-                bottomNeighbor = self.board[curr_y + 1][curr_x]
-                if bottomNeighbor == GoalStone:
-                    return TRUE_OUTPUT
-                if bottomNeighbor == startStone:
-                    stack.append((curr_x, curr_y + 1))
-            if curr_y - 1 > -BOARD_ROWS_MIN:
-                topNeighbor = self.board[curr_y - 1][curr_x]
-                if topNeighbor == GoalStone:
-                    return TRUE_OUTPUT
-                if topNeighbor == startStone:
-                    stack.append((curr_x, curr_y - 1))
-            visited.append((curr_x, curr_y))
+                if point and self.GetStone(point) == startStone:
+                    stack.append(point)
+            visited.append(curr_point)
         return FALSE_OUTPUT
 
 

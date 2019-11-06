@@ -4,8 +4,37 @@ from typing import List, Union
 from copy import deepcopy
 
 from board import Board,get_all_string_points
-from rulechecker import makemove, rulecheck
+from rulechecker import makemove, rulecheck_one, rulecheck_two, rulecheck_three
 from definitions import *
+
+class BoardHistory:
+    
+    def __init__(self, Boards: List[List[str]]):
+        self.length = len(Boards)
+        if self.length > 3: 
+            raise ValueError("Incorrect number of boards in history")
+        self.list_of_boards = []
+        for board in Boards:
+            self.list_of_boards.append(Board(board))
+    
+    def is_valid(self):
+        if self.length == 1: 
+            return rulecheck_one(self.list_of_boards, self.stone, self.point)
+        elif self.length == 2: 
+            return rulecheck_two(self.list_of_boards, self.stone, self.point)
+        return rulecheck_three(self.list_of_boards, self.stone, self.point)
+    
+    def add_point(self, Stone: str, Point: str): 
+        self.stone = Stone
+        self.point = Point
+        self.valid_history = self.is_valid()
+    
+    def make_valid_move(self):
+        if self.is_valid():
+            new_board = makemove(self.list_of_boards[0], self.stone, self.point)
+            return new_board.GetBoard()
+        return None
+            
 
 class Player:
 
@@ -28,9 +57,9 @@ class Player:
         else: 
             raise Exception("Player color has not been set")
     
-    def make_move(self, Point: str, Boards: List[List]):
-        if rulecheck(Boards, self.get_stone(), Point):
-            return makemove(Boards[0], self.get_stone(), Point)
-        return None
+    def move(self, Point: str, Boards: List[List]):
+        boardhistory = BoardHistory(Boards)
+        boardhistory.add_point(self.get_stone(), Point) 
+        return boardhistory.make_valid_move()
         
 
