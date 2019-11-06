@@ -31,7 +31,6 @@ class BoardHistory:
     
     def make_valid_move(self):
         if self.valid_history:
-            print("valid")
             new_board = makemove(self.list_of_boards[0], self.stone, self.point)
             return new_board.GetBoard()
         return None
@@ -60,7 +59,6 @@ class Player:
     
     def move(self, Point: str, Boards: List[List]):
         boardhistory = BoardHistory(Boards)
-        print("check ")
         boardhistory.add_point(self.get_stone(), Point) 
         return boardhistory.make_valid_move()
         
