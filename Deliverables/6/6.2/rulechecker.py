@@ -153,7 +153,7 @@ def rulecheck_three(boards: List[Board], stone: str, position: str) -> bool:
     if not turn1: 
         return False
     move1 = makemove(_boards[2], turn1[0], turn1[1])
-    if not move1 or move1 != _boards[1].GetBoard():
+    if not move1 or move1.GetBoard() != _boards[1].GetBoard():
         #print(count, "invalid move1")
         return False
 
@@ -161,7 +161,7 @@ def rulecheck_three(boards: List[Board], stone: str, position: str) -> bool:
     if not turn2: 
         return False
     move2 = makemove(_boards[1], turn2[0], turn2[1])
-    if not move2 or move2 != boards[0].GetBoard():
+    if not move2 or move2.GetBoard() != boards[0].GetBoard():
         #print(count, "invalid move2")
         return False
 

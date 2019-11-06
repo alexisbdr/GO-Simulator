@@ -20,7 +20,7 @@ class BoardHistory:
     def is_valid(self):
         if self.length == 1: 
             return rulecheck_one(self.list_of_boards, self.stone, self.point)
-        elif self.length == 2: 
+        if self.length == 2: 
             return rulecheck_two(self.list_of_boards, self.stone, self.point)
         return rulecheck_three(self.list_of_boards, self.stone, self.point)
     
@@ -30,7 +30,8 @@ class BoardHistory:
         self.valid_history = self.is_valid()
     
     def make_valid_move(self):
-        if self.is_valid():
+        if self.valid_history:
+            print("valid")
             new_board = makemove(self.list_of_boards[0], self.stone, self.point)
             return new_board.GetBoard()
         return None
@@ -59,6 +60,7 @@ class Player:
     
     def move(self, Point: str, Boards: List[List]):
         boardhistory = BoardHistory(Boards)
+        print("check ")
         boardhistory.add_point(self.get_stone(), Point) 
         return boardhistory.make_valid_move()
         
