@@ -5,6 +5,13 @@ from rulechecker import *
 
 from referee import Referee
 
+import socket
+
+HOST = '127.0.0.1'  # The server's hostname or IP address
+PORT = 8080       # The port used by the server
+
+
+
 class frontend: 
     def __init__(self):
         self.list_of_commands = []
@@ -34,11 +41,17 @@ class frontend:
 
     def executeCommands(self):
         referee = Referee()
-        for command in self.list_of_commands:
-            #Handling single board -> count score
-            output, output1 = referee.parse_command(command)
-            self.list_of_outputs.append(output) if output else None
-            self.list_of_outputs.append(output1) if output1 else None
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((HOST, PORT))
+            for command in self.list_of_commands:
+            
+                s.sendall(command)
+                data = s.recv(1024)
+                print('Received', repr(data))
+                #Handling single board -> count score
+                """output, output1 = referee.parse_command(command)
+                self.list_of_outputs.append(output) if output else None
+                self.list_of_outputs.append(output1) if output1 else None"""
                 
     def printJson(self):
         print(json.dumps([out for out in self.list_of_outputs]))
