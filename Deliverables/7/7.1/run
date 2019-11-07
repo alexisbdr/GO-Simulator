@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python3 driver_referee.py <&0 & python3 remote_referee.py
