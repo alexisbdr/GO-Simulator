@@ -23,39 +23,49 @@ class DriverReferee:
     def create_server_conn(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((self.host , self.port))
-        self.server_socket.listen(1)
+        self.server_socket.listen(5)
         self.started = False
+        print("Listening for client . . .")
         self.conn, self.addr = self.server_socket.accept()
-        #print("Connected to client at ", addr)
+        print("Connected to client at ", self.addr)
 
-    def parse_command(self, commands: List) -> List:
+    def parse_command(self):
         #figure out what to call on proxy and call it
         #Let's change this to a factory ---- $$$$
+        commands = readJSON(sys.stdin.read())
         outputs = []
         while True:
             try:  
                 command = commands.pop(0)
             except IndexError:
                 break
+
             if command[0] == "register":
-                self.player = ProxyPlayer(self.conn, self.addr)
-                output = self.player.get_name()
+                self.player = ProxyPlayer()
+                self.player.set_conn(self.conn)
+                output = self.player.get_name(command)
         
             elif command[0] == "receive-stones":
-                self.player.set_color(command)
-                return None
+                output = self.player.set_color(command)
 
             elif command[0] == "make-a-move":
                 output = self.player.make_move(command)
+
             else:
-                raise Exception("Invalid command with statement" + command[0])
+                output = CRAZY_GO
             
             output = output.decode('UTF-8')
             if output.strip() == CRAZY_GO:
-                self.conn.close()
+                self.close_connection()
                 break
+            elif output == 'RECEIVE':
+                continue
             elif output: 
                 outputs.append(output)
-        
+
+        self.close_connection()
         return outputs
         
+    def close_connection(self):
+        self.player.close()
+

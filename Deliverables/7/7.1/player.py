@@ -13,10 +13,11 @@ class Player:
     def __init__(self):
         self.name = "no name"
         self.stone = ""
+        self.load_config()
     
     def load_config(self):
         config = readConfig(PLAYER_CONFIG_PATH)
-        self.depth = config[0]["depth"]
+        self.depth = config[0]
 
     #some methods we will need
     def get_name(self) -> str:
@@ -58,8 +59,8 @@ class Player:
             -first valid point that leads to a capture of the opponent
             -first valid point of a sequence of moves that lead to a capture
         """
-        if n > 1:
-            result = self.make_move_two(boards, n)
+        if self.depth > 1:
+            result = self.make_move_two(boards)
             if result:
                 return result
         
@@ -105,7 +106,7 @@ class Player:
         elif self.depth == 1 and valid_moves:
             return valid_moves[0]
         elif self.depth > 1:
-            capture = self.make_move_recursive([], boards) # or call make_move_points_of_interest here
+            capture = self.make_move_recursive([], boards, self.depth) # or call make_move_points_of_interest here
             if capture:
                 return capture
             elif valid_moves:

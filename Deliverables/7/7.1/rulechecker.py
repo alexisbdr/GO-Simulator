@@ -1,8 +1,6 @@
 import json
 from typing import List, Union, Tuple
 from copy import deepcopy
-
-
 from board import Board
 from definitions import *
 

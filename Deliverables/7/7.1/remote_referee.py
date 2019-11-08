@@ -26,6 +26,6 @@ class RemoteReferee:
         elif command[0] == "make-a-move":
             if not checkhistory(command[1], self.player1.get_color()): 
                 return ILLEGAL_HISTORY_MESSAGE
-            return self.player1.make_move_two(command[1], self.play_depth)
+            return self.player1.make_move_two(command[1])
         else:
             raise Exception("Invalid command with statement" + command[0])
