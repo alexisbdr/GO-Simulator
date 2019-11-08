@@ -22,4 +22,10 @@ PLACE_ERROR_MESSAGE = "This seat is taken!"
 REMOVE_ERROR_MESSAGE = "I am just a Board! I cannot remove what is not there!"
 ILLEGAL_HISTORY_MESSAGE = "This history makes no sense!"
 
+#Config files
+GO_CONFIG_PATH = "go.config"
+PLAYER_CONFIG_PATH = "go-player.config"
+
+CRAZY_GO = "GO has gone crazy!"
+
 N = 1

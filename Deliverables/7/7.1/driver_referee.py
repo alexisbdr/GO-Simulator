@@ -1,44 +1,61 @@
-
 import socket
 import sys
-from json_reader import readJSON
-import selectors
+from utilities import readJSON
+from typing import List
 
-def main():
+from definitions import *
+from proxy_player import ProxyPlayer
+
+class DriverReferee:
     
+    def __init__(self):
+        self.load_config()
+        self.create_server_conn()
     
-    file = open('go.config', 'r')
-    file = file.read()
-    netData = readJSON(file)
-    netData = netData[0]
-    HOST = netData['IP']
-    PORT = netData['port']
+    def load_config(self):
+        config_file = open(GO_CONFIG_PATH, 'r')
+        config_file = config_file.read()
+        netData = readJSON(config_file)
+        netData = netData[0]
+        self.host = netData['IP']
+        self.port = netData['port']
     
-    
+    def create_server_conn(self):
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind((self.host , self.port))
+        self.server_socket.listen(1)
+        self.started = False
+        self.conn, self.addr = self.server_socket.accept()
+        #print("Connected to client at ", addr)
 
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((HOST, PORT))
-    server_socket.listen(5)
-    started = False
+    def parse_command(self, commands: List) -> List:
+        #figure out what to call on proxy and call it
+        #Let's change this to a factory ---- $$$$
+        outputs = []
+        while True:
+            try:  
+                command = commands.pop(0)
+            except IndexError:
+                break
+            if command[0] == "register":
+                self.player = ProxyPlayer(self.conn, self.addr)
+                output = self.player.get_name()
+        
+            elif command[0] == "receive-stones":
+                self.player.set_color(command)
+                return None
 
-    print("Listening for client . . .")
-    conn, addr = server_socket.accept()
-    print("Connected to client at ", addr)
-    while True:
-        output = conn.recv(131072)
-        started = True
-        if output.strip() == b"starting" and started:
-            conn.send(str.encode(sys.stdin.read()))
-        elif output.strip() == b"Disconnecting":
-            conn.close()
-            sys.exit("Received disconnect message. Shutting down")
-            conn.send("dack")
-        elif output:
-            print("Message recieved from client:")
-            print(output.decode('utf-8'))
-            conn.send(b"end")
-
-
-if __name__ == "__main__":
-    main()
-
+            elif command[0] == "make-a-move":
+                output = self.player.make_move(command)
+            else:
+                raise Exception("Invalid command with statement" + command[0])
+            
+            output = output.decode('UTF-8')
+            if output.strip() == CRAZY_GO:
+                self.conn.close()
+                break
+            elif output: 
+                outputs.append(output)
+        
+        return outputs
+        

@@ -6,12 +6,17 @@ from copy import deepcopy
 from board import Board,get_all_string_points
 from rulechecker import *
 from definitions import *
+from utilities import readConfig
 
 class Player:
 
     def __init__(self):
         self.name = "no name"
         self.stone = ""
+    
+    def load_config(self):
+        config = readConfig(PLAYER_CONFIG_PATH)
+        self.depth = config[0]["depth"]
 
     #some methods we will need
     def get_name(self) -> str:
@@ -89,18 +94,18 @@ class Player:
             return True
         return False
 
-    def make_move_two(self, boards: List, n: int):
+    def make_move_two(self, boards: List):
 
         valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_color())
         if len(boards) == 1 or len(boards) == 2:
             return valid_moves[0]
 
-        if n == 1 and valid_capture_moves:
+        if self.depth == 1 and valid_capture_moves:
             return valid_capture_moves[0]
-        elif n == 1 and valid_moves:
+        elif self.depth == 1 and valid_moves:
             return valid_moves[0]
-        elif n > 1:
-            capture = self.make_move_recursive([], boards, n) # or call make_move_points_of_interest here
+        elif self.depth > 1:
+            capture = self.make_move_recursive([], boards) # or call make_move_points_of_interest here
             if capture:
                 return capture
             elif valid_moves:
@@ -110,7 +115,7 @@ class Player:
         else:
             return PASS_OUTPUT
 
-    def make_move_points_of_interest(self, boards: List, n: int) -> str:
+    def make_move_points_of_interest(self, boards: List) -> str:
 
         boards = deepcopy(boards)
         valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_color())

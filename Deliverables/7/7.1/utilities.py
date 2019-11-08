@@ -14,3 +14,9 @@ def readJSON(text):
             end += 1
 
     return objs
+
+def readConfig(path: str): 
+    file = open(path, 'r')
+    file = file.read()
+
+    return readJSON(file)
