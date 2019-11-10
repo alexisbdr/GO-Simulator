@@ -35,7 +35,7 @@ class RemoteReferee:
                 connected = True
             except ConnectionRefusedError:
                 iter += 1
-                if iter == 3:
+                if iter == 20:
                     sys.exit()
                 self.client_socket.close()
                 time.sleep(2)
@@ -47,6 +47,7 @@ class RemoteReferee:
             resp = self.client_socket.recv(self.buffer) 
             resp = resp.decode("UTF-8")
             if resp == "close":
+                self.client_socket.shutdown(1)
                 self.client_socket.close()
                 #print("Client closed")
                 break

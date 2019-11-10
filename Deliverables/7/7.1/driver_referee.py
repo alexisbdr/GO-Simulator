@@ -5,6 +5,7 @@ from typing import List
 
 from definitions import *
 from proxy_player import ProxyPlayer
+import time
 
 class DriverReferee:
     
@@ -21,13 +22,21 @@ class DriverReferee:
         self.port = netData['port']
     
     def create_server_conn(self):
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            self.server_socket.bind((self.host , self.port))
-        except OSError:
-            print("Socket error. Try again")
-            sys.exit()
-        self.server_socket.listen(5)
+        connected = False
+        iter = 0
+        while not connected:
+            try:
+                self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.server_socket.bind((self.host , self.port))
+                connected = True
+            except OSError:
+                iter += 1
+                if iter == 20:
+                    sys.exit()
+                self.server_socket.close()
+                time.sleep(2)
+                continue
+        self.server_socket.listen(1)
         self.started = False
         #print("Listening for client . . .")
         self.conn, self.addr = self.server_socket.accept()
@@ -72,5 +81,6 @@ class DriverReferee:
         
     def close_connection(self):
         self.player.close()
+        self.conn.shutdown(1)
         self.conn.close()
 
