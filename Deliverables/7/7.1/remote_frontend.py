@@ -59,7 +59,6 @@ class RemoteReferee:
     def parse_command(self, command):
         if command[0] == "register":
             if isinstance(self.player, Player):
-                #print("player already registered")
                 return CRAZY_GO
             self.player = Player()
             return self.player.get_name()
@@ -68,17 +67,15 @@ class RemoteReferee:
             try:
                 self.player.set_color(command[1])
                 return 'RECEIVE'
-            except StoneException:
+            except (StoneException, AttributeError):
                 return CRAZY_GO
-            
-        
+          
         elif command[0] == "make-a-move":
-            try:
-                if not checkhistory(command[1], self.player.get_color()): 
-                    return ILLEGAL_HISTORY_MESSAGE
-                return self.player.make_move_two(command[1])
-            except StoneException:
+            if not isinstance(self.player, Player) or self.player.get_color == "":
                 return CRAZY_GO
+            if not checkhistory(command[1], self.player.get_color()): 
+                return ILLEGAL_HISTORY_MESSAGE
+            return self.player.make_move_two(command[1])
         else:
             return CRAZY_GO
 

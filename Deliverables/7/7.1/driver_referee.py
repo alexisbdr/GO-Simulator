@@ -29,6 +29,8 @@ class DriverReferee:
         self.started = False
         #print("Listening for client . . .")
         self.conn, self.addr = self.server_socket.accept()
+        self.player = ProxyPlayer()
+        self.player.set_conn(self.conn)
         #print("Connected to client at ", self.addr)
 
     def parse_command(self):
@@ -43,8 +45,6 @@ class DriverReferee:
                 break
 
             if command[0] == "register":
-                self.player = ProxyPlayer()
-                self.player.set_conn(self.conn)
                 output = self.player.get_name(command)
         
             elif command[0] == "receive-stones":
@@ -54,7 +54,7 @@ class DriverReferee:
                 output = self.player.make_move(command)
 
             else:
-                output = CRAZY_GO
+                output = str.encode(CRAZY_GO)
             
             output = output.decode('UTF-8')
             if output.strip() == CRAZY_GO:

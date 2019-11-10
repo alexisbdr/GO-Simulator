@@ -25,6 +25,8 @@ class Player:
         return self.name
     
     def set_color(self, stone: str):
+        if self.stone in STONE:
+            raise StoneException("Player is already registered")
         if stone not in STONE:
             raise StoneException("Invalid Stone in Player")
         self.stone = stone
