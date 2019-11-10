@@ -7,6 +7,7 @@ from board import Board,get_all_string_points
 from rulechecker import *
 from definitions import *
 from utilities import readConfig
+from exceptions import PlayerException, StoneException
 
 class Player:
 
@@ -25,14 +26,14 @@ class Player:
     
     def set_color(self, stone: str):
         if stone not in STONE:
-            raise Exception("Invalid Stone in Player")
+            raise StoneException("Invalid Stone in Player")
         self.stone = stone
     
     def get_color(self):
         if self.stone:
             return self.stone
         else: 
-            raise Exception("Player color has not been set")
+            raise StoneException("Player color has not been set")
     
     def get_opponent_color(self):
         return "B" if self.get_color() == "W" else "W"

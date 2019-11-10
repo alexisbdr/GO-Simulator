@@ -22,12 +22,16 @@ class DriverReferee:
     
     def create_server_conn(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.bind((self.host , self.port))
+        try:
+            self.server_socket.bind((self.host , self.port))
+        except OSError:
+            print("Socket error. Try again")
+            sys.exit()
         self.server_socket.listen(5)
         self.started = False
-        print("Listening for client . . .")
+        #print("Listening for client . . .")
         self.conn, self.addr = self.server_socket.accept()
-        print("Connected to client at ", self.addr)
+        #print("Connected to client at ", self.addr)
 
     def parse_command(self):
         #figure out what to call on proxy and call it
@@ -56,7 +60,7 @@ class DriverReferee:
             
             output = output.decode('UTF-8')
             if output.strip() == CRAZY_GO:
-                self.close_connection()
+                outputs.append(output)
                 break
             elif output == 'RECEIVE':
                 continue
@@ -68,4 +72,5 @@ class DriverReferee:
         
     def close_connection(self):
         self.player.close()
+        self.conn.close()
 
