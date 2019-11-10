@@ -22,20 +22,9 @@ class DriverReferee:
         self.port = netData['port']
     
     def create_server_conn(self):
-        connected = False
-        iter = 0
-        while not connected:
-            try:
-                self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.server_socket.bind((self.host , self.port))
-                connected = True
-            except OSError:
-                iter += 1
-                if iter == 20:
-                    sys.exit()
-                self.server_socket.close()
-                time.sleep(2)
-                continue
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_socket.bind((self.host , self.port))
         self.server_socket.listen(1)
         self.started = False
         #print("Listening for client . . .")
