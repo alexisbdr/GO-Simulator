@@ -5,7 +5,7 @@ from player import Player
 from rulechecker import checkhistory
 from definitions import *
 
-class Referee: 
+class Game: 
 
     def __init__(self):
         self.player1 = None
@@ -16,7 +16,7 @@ class Referee:
     def parse_command(self, command: List[str]) -> bool:
         self.turn_count+=1
         if command[0] == "register":
-            self.player1 = Player()
+            self.player1 = Player("no name")
             return self.player1.get_name()
         
         elif command[0] == "receive-stones":

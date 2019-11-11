@@ -182,12 +182,8 @@ def rulecheck(boards: List[str], stone: str, position: str):
     _boards = deepcopy(boards)
     #Check Empty Board 
     if len(boards) == 1:
-        return rulecheck_one(boards, stone)
+        return Board(boards[0]).Empty() and stone == "B"
 
-def rulecheck_one(boards: List[str], stone: str) -> bool:
-    return Board(boards[0]).Empty() and stone == "B"
-
-def rule_check_two(boards: List[str], stone: str) ->
     elif len(boards) == 2:
         if not Board(boards[1]).Empty():
             return False

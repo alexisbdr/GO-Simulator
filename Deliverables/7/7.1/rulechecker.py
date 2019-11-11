@@ -124,6 +124,20 @@ def checkKo(board1, board2, board3, board4) -> bool:
     
     return True
 
+def check_initial_board(board):
+    """
+    Checks if the first board in the history has any stones that should have been removed
+    """
+    old_board = deepcopy(board)
+    b_check = old_board.remove_nonliberties("B")
+    if old_board != b_check: 
+        return False
+    old_board = deepcopy(board)
+    w_check = old_board.remove_nonliberties("W")
+    if old_board != w_check: 
+        return False
+    return True
+
 def checkhistory(boards: List[str], stone: str):
     """
     Input: 
@@ -156,7 +170,9 @@ def checkhistory(boards: List[str], stone: str):
             return False
         return True
         
-    elif len(boards) == 3: 
+    elif len(boards) == 3:
+        if not check_initial_board(boards[2]):
+            return False
         #Check Valid turns
         turn1 = findAddedPoint(boards[2].get_board(), boards[1].get_board())
         if not turn1: 
