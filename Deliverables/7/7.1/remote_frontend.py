@@ -71,11 +71,14 @@ class RemoteReferee:
                 return CRAZY_GO
           
         elif command[0] == "make-a-move":
-            if not isinstance(self.player, Player) or self.player.get_color == "":
+            try:
+                if not isinstance(self.player, Player) or self.player.get_color == "":
+                    return CRAZY_GO
+                if not checkhistory(command[1], self.player.get_color()): 
+                    return ILLEGAL_HISTORY_MESSAGE
+                return self.player.make_move_two(command[1])
+            except (StoneException, BoardException):
                 return CRAZY_GO
-            if not checkhistory(command[1], self.player.get_color()): 
-                return ILLEGAL_HISTORY_MESSAGE
-            return self.player.make_move_two(command[1])
         else:
             return CRAZY_GO
 

@@ -3,6 +3,7 @@ from typing import List, Union, Tuple
 from copy import deepcopy
 from board import Board
 from definitions import *
+from exceptions import BoardException
 
 def makemove(board: Board, Stone: str, Point: str) -> Board:
     """
@@ -131,41 +132,52 @@ def checkhistory(boards: List[str], stone: str):
     Output: 
         true or false on whether the history of the boards is valid/invalid
     """
+
+    boards_objects = []
+    if not isinstance(boards, List):
+        raise BoardException("Boards must be a list of strings")
+    for board in boards:
+        boards_objects.append(Board(board))
+    if len(boards_objects) > 3:
+        raise BoardException("Boards list cannot be more than length 3")
+
+    boards = boards_objects
+
     #Make a copy because the order of boards gets messed up --> for checkKo
     _boards = deepcopy(boards)
     #Check Empty Board 
     if len(boards) == 1:
-        return Board(boards[0]).Empty() and stone == "B"
+        return boards[0].Empty() and stone == "B"
     elif len(boards) == 2:
-        if not Board(boards[1]).Empty():
+        if not boards[1].Empty():
             return False
-        turn1 = findAddedPoint(boards[1], boards[0])
+        turn1 = findAddedPoint(boards[1].get_board(), boards[0].get_board())
         if not turn1 or turn1[0] == "W" or stone == "B":
             return False
         return True
         
     elif len(boards) == 3: 
         #Check Valid turns
-        turn1 = findAddedPoint(boards[2], boards[1])
+        turn1 = findAddedPoint(boards[2].get_board(), boards[1].get_board())
         if not turn1: 
             return False
-        move1 = makemove(boards[2], turn1[0], turn1[1])
-        if not move1 or move1 != boards[1]:
+        move1 = makemove(boards[2].get_board(), turn1[0], turn1[1])
+        if not move1 or move1 != boards[1].get_board():
             return False
 
-        turn2 = findAddedPoint(boards[1], boards[0])
+        turn2 = findAddedPoint(boards[1].get_board(), boards[0].get_board())
         if not turn2:
             #print("invalid turn2")
             return False
-        move2 = makemove(boards[1], turn2[0], turn2[1])
-        if not move2 or move2 != boards[0]:
+        move2 = makemove(boards[1].get_board(), turn2[0], turn2[1])
+        if not move2 or move2 != boards[0].get_board():
             #print("invalid move2")
             return False
         
-        if Board(_boards[2]).Empty() and Board(_boards[1]).Empty() and turn2[0] != "W":
+        if _boards[2].Empty() and _boards[1].Empty() and turn2[0] != "W":
             return False
 
-        return checkTurn(turn1, turn2, (stone, "")) and boards[0] != boards[2]
+        return checkTurn(turn1, turn2, (stone, "")) and boards[0].get_board() != boards[2].get_board()
 
 def rulecheck(boards: List[str], stone: str, position: str):
     """

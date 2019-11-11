@@ -68,6 +68,9 @@ class Board:
                 if self.board[column][row] in STONE:
                     return False
         return True
+
+    def get_board(self):
+        return self.board
     
     def occupied(self, Point: str) -> bool:
         if self.Get(Point) in STONE:
