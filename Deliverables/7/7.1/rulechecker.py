@@ -128,13 +128,18 @@ def check_initial_board(board):
     """
     Checks if the first board in the history has any stones that should have been removed
     """
+    
     old_board = deepcopy(board)
     b_check = old_board.remove_nonliberties("B")
-    if old_board != b_check: 
+    """for row in b_check:
+        print(row)
+    for row in old_board.get_board():
+        print(row)"""
+    if board.get_board() != b_check: 
         return False
     old_board = deepcopy(board)
     w_check = old_board.remove_nonliberties("W")
-    if old_board != w_check: 
+    if board.get_board() != w_check: 
         return False
     return True
 
