@@ -11,7 +11,8 @@ from utilities import readConfig
 from exceptions import PlayerException, StoneException
 
 class DefaultPlayer(AbstractPlayer):
-    def make_move(self, boards: List, n: int):# -> str:
+
+    def make_move(self, boards: List):# -> str:
         """
         Determines the make-move strategy based on the parameter n
         Returns: 

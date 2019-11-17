@@ -36,11 +36,18 @@ class Administrator:
         self.proxy_player = PlayerFactory(connection=self.conn).create()
         self.default_player = PlayerFactory(path=self.default_player_path).create()
         print("Connected to client at ", self.addr)
+        self.start_game()
         
 
     def start_game(self):
         choice = random.randint(0, 1)
-        referee = Referee(self.proxy_player, self.default_player) if choice else Referee(self.default_player, self.proxy_player)
+        if choice:
+            print("Proxy is player 1")
+            referee = Referee(self.proxy_player, self.default_player)
+        else:
+            print("Default is player 1")
+            referee = Referee(self.default_player, self.proxy_player)
+       # referee = Referee(self.proxy_player, self.default_player) if choice else Referee(self.default_player, self.proxy_player)
         print(json.dumps(referee.get_winner()))
         self.close_connection()
         

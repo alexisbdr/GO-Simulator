@@ -4,6 +4,7 @@ from typing import List
 from board import Board
 from rulechecker import checkhistory, place_stone
 from definitions import *
+import json
 
 class Referee: 
 
@@ -15,6 +16,7 @@ class Referee:
 
         self.player1.set_stone("B")
         self.player2.set_stone("W")
+        
         self.start_game()
     
     def get_winner(self):
@@ -57,11 +59,16 @@ class Referee:
         return
 
     def start_game(self): 
+        print("Starting game")
         self.boards = [Board().get_board()]
+        for row in self.boards[0]:
+            print(row)
+        print(self.boards[0])
         self.current_player = self.player1
         while not self.winner_player:
             point = self.current_player.make_move(self.boards)
             self.update_state(point)
+        print("There is a winner")
 
 
             

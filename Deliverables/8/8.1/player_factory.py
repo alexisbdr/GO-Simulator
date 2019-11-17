@@ -19,4 +19,5 @@ class PlayerFactory():
 
     def createDefault(self):
         module = __import__(self.path, fromlist=[DEFAULT_PLAYER_CLASS])
-        return getattr(module, DEFAULT_PLAYER_CLASS)
+        myclass = getattr(module, DEFAULT_PLAYER_CLASS)
+        return myclass()

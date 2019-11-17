@@ -21,12 +21,14 @@ class ProxyPlayer(AbstractPlayer):
 
     def set_stone(self, color):
         self.stone = color
-        command = ["receive-stones"].append(color)
+        command = ["receive-stones"]
+        command.append(color)
         self.conn.send(str.encode(json.dumps(command)))
         self.conn.recv(1024).decode("UTF-8")
 
     def make_move(self, boards):
-        command = ["make-a-move"].append(boards)
+        command = ["make-a-move"]
+        command.append(boards)
         self.conn.send(str.encode(json.dumps(command)))
         return self.conn.recv(1024).decode("UTF-8")
 

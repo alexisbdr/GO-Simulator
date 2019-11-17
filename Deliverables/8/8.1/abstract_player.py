@@ -10,7 +10,7 @@ from utilities import readConfig
 from exceptions import PlayerException, StoneException
 from abc import ABC, abstractmethod
 
-class AbstractPlayer:
+class AbstractPlayer(ABC):
 
     def __init__(self):
         self.name = "no name"
@@ -22,7 +22,7 @@ class AbstractPlayer:
         self.depth = config[0]
 
     #some methods we will need
-    def get_name(self) -> str:
+    def get_name(self):# -> str:
         return self.name
     
     def set_stone(self, stone: str):

@@ -3,7 +3,7 @@ import json
 from json import JSONDecodeError
 from rulechecker import *
 from utilities import readConfig, readJSON
-from random_valid_player import RandomValidPlayer
+from remote_valid_player import RemoteValidPlayer
 import time
 import socket
 from exceptions import *
@@ -57,10 +57,11 @@ class RemoteReferee:
                 self.client_socket.send(str.encode(output))
 
     def parse_command(self, command):
+        print(command)
         if command[0] == "register":
-            if isinstance(self.player, RandomValidPlayer):
+            if isinstance(self.player, RemoteValidPlayer):
                 return CRAZY_GO
-            self.player = RandomValidPlayer()
+            self.player = RemoteValidPlayer()
             return self.player.get_name()
     
         elif command[0] == "receive-stones":
@@ -71,14 +72,14 @@ class RemoteReferee:
                 return CRAZY_GO
           
         elif command[0] == "make-a-move":
-            try:
-                if not isinstance(self.player, RandomValidPlayer) or self.player.get_color == "":
-                    return CRAZY_GO
-                if not checkhistory(command[1], self.player.get_color()): 
-                    return ILLEGAL_HISTORY_MESSAGE
-                return self.player.make_move_two(command[1])
-            except (StoneException, BoardException, IndexError):
+            #try:
+            if not isinstance(self.player, RemoteValidPlayer) or self.player.get_color == "":
                 return CRAZY_GO
+            if not checkhistory(command[1], self.player.get_color()): 
+                return ILLEGAL_HISTORY_MESSAGE
+            return self.player.make_move(command[1])
+            #except (StoneException, BoardException, IndexError):
+                #return CRAZY_GO
         else:
             return CRAZY_GO
 
