@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python3 frontend.py <&0 & python3 remote_frontend.py
