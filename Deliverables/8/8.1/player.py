@@ -16,21 +16,30 @@ class AbstractPlayer(ABC):
         self.name = "no name"
         self.stone = ""
         self.load_config()
+        self.registered = False
     
     def load_config(self):
         config = readConfig(PLAYER_CONFIG_PATH)
         self.depth = config[0]
 
-    def set_name(self, name: str):
-        self.name = name
+    def register(self):
+        if self.registered:
+            raise PlayerException("Player has already been registered")
+        self.registered = True
+        return self.name
+        
 
     #some methods we will need
     def get_name(self):# -> str:
-        return self.name
+        if self.registered:
+            return self.name
+        raise PlayerException("Player has not been registered yet")
     
     def set_stone(self, stone: str):
+        if not self.registered:
+            raise PlayerException("Player has not been registered yet")
         if self.stone in STONE:
-            raise StoneException("Player is already registered")
+            raise StoneException("Player has already received stones")
         if stone not in STONE:
             raise StoneException("Invalid Stone in Player")
         self.stone = stone
@@ -62,9 +71,12 @@ class ProxyPlayer(AbstractPlayer):
 
     def set_conn(self, conn):
         self.conn = conn
+    
+    def register(self):
+        self.name = self.send(["register"])
+        return
         
     def get_name(self):
-        self.name = self.send(["register"])
         return self.name
     
     def get_stone(self):
@@ -97,6 +109,9 @@ class ProxyPlayer(AbstractPlayer):
 
 
 class DefaultPlayer(AbstractPlayer):
+    def __init__(self):
+        super().__init__()
+        self.name = "Default Player"
 
     def make_move(self, boards: List):# -> str:
         """
@@ -107,6 +122,11 @@ class DefaultPlayer(AbstractPlayer):
             -first valid point that leads to a capture of the opponent
             -first valid point of a sequence of moves that lead to a capture
         """
+
+        #choice = random.randint(0, 100)
+        #if not choice:
+            #return self.make_invalid_move(boards)
+
         if self.depth > 1:
             result = self.make_move_future(boards)
             if result:
@@ -121,6 +141,9 @@ class DefaultPlayer(AbstractPlayer):
         if not capture_point:
             return valid_moves[0]
         return capture_point
+
+    def make_invalid_move(self, boards:List):
+        return str(BOARD_COLUMNS_MAX + 1) + "-" + str(BOARD_COLUMNS_MAX + 1)
     
     def make_move_capture(self, boards:List, valid_moves:List[str]):# -> Union[bool, str]:
         """
@@ -221,6 +244,10 @@ class DefaultPlayer(AbstractPlayer):
 
 
 class RemoteValidPlayer(AbstractPlayer):
+    def __init__(self):
+        super().__init__()
+        self.name = "Remote Player"
+
     def make_move(self, boards: List):# -> str:
         """
         Determines the make-move strategy based on the parameter n
@@ -233,8 +260,8 @@ class RemoteValidPlayer(AbstractPlayer):
 
         choice = random.randint(0, 100)
         if not choice:
-            #return self.make_invalid_move(boards)
-            return "close"
+            return self.make_invalid_move(boards)
+            #return "close"
         return self.make_valid_move(boards)
 
 

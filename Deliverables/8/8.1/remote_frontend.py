@@ -66,6 +66,7 @@ class RemoteReferee:
             if isinstance(self.player, RemoteValidPlayer):
                 return CRAZY_GO
             self.player = RemoteValidPlayer()
+            self.player.register()
             return self.player.get_name()
     
         elif command[0] == "receive-stones":

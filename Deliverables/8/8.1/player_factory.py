@@ -15,12 +15,11 @@ class PlayerFactory():
     def createProxy(self):
         player = ProxyPlayer()
         player.set_conn(self.connection)
-        player.set_name("Remote Player")
         return player
 
     def createDefault(self):
         module = __import__(self.path, fromlist=[DEFAULT_PLAYER_CLASS])
         myclass = getattr(module, DEFAULT_PLAYER_CLASS)
         player = myclass()
-        player.set_name("Default Player")
+        #player.set_name("Default Player")
         return player

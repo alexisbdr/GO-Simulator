@@ -14,9 +14,6 @@ class Referee:
         self.player2 = player2
         self.pass_flag = False
         self.winner_player = None
-
-       
-        
         self.start_game()
     
     def get_winner(self):
@@ -62,8 +59,8 @@ class Referee:
 
     def start_game(self): 
 
-        self.player1.get_name()
-        self.player2.get_name()
+        self.player1.register()
+        self.player2.register()
         self.player1.set_stone("B")
         self.player2.set_stone("W")
 
