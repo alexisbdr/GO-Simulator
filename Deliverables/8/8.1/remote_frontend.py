@@ -62,7 +62,6 @@ class RemoteReferee:
             
 
     def parse_command(self, command):
-        print(command)
         if command[0] == "register":
             if isinstance(self.player, RemoteValidPlayer):
                 return CRAZY_GO
@@ -79,7 +78,6 @@ class RemoteReferee:
         elif command[0] == "make-a-move":
             try:
                 if not isinstance(self.player, RemoteValidPlayer) or self.player.get_stone() == "":
-                    print("not the right instance")
                     return CRAZY_GO
                 if not checkhistory(command[1], self.player.get_stone()): 
                     return ILLEGAL_HISTORY_MESSAGE
