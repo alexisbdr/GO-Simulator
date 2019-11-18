@@ -31,12 +31,9 @@ class Administrator:
         self.server_socket.bind((self.host , self.port))
         self.server_socket.listen(1)
         self.started = False
-        print("Listening for client . . .")
         self.conn, self.addr = self.server_socket.accept()
         self.proxy_player = PlayerFactory(connection=self.conn).create()
-        
         self.default_player = PlayerFactory(path=self.default_player_path).create()
-        print("Connected to client at ", self.addr)
         self.start_game()
         
 
@@ -44,10 +41,8 @@ class Administrator:
         
         choice = random.randint(0, 1)
         if choice:
-            print("Proxy is player 1")
             referee = Referee(self.proxy_player, self.default_player)
         else:
-            print("Default is player 1")
             referee = Referee(self.default_player, self.proxy_player)
        # referee = Referee(self.proxy_player, self.default_player) if choice else Referee(self.default_player, self.proxy_player)
         print(json.dumps(referee.get_winner()))

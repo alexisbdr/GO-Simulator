@@ -52,7 +52,6 @@ class Referee:
             new_board = place_stone(self.boards[0], self.current_player.get_stone(), Point) 
         except BoardPointException:
             new_board = False
-        print(new_board)
         if new_board:
             self.update_boards(new_board)
             self.switch_player()
@@ -62,7 +61,6 @@ class Referee:
         return
 
     def start_game(self): 
-        print("Starting game")
 
         self.player1.get_name()
         self.player2.get_name()
@@ -74,7 +72,6 @@ class Referee:
         while not self.winner_player:
             point = self.current_player.make_move(self.boards)
             self.update_state(point)
-        print("There is a winner")
 
 
             
