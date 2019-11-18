@@ -35,7 +35,7 @@ class BoardPoint:
         except: 
             raise BoardPointException("Point is not in the right format")
         if(not (self.x >= BOARD_COLUMNS_MIN and self.x <= BOARD_COLUMNS_MAX)):
-            raise BoardPointException("Point is out of bonds")
+            raise BoardPointException("Point is out of bounds")
         elif(not (self.y >= BOARD_ROWS_MIN and self.y <= BOARD_COLUMNS_MAX)):
             raise BoardPointException("Point is out of bounds")
 
@@ -140,7 +140,7 @@ class Board:
     def place(self, Stone: str, Point: str) -> Union[List[List], str]:
         check_stone(Stone, "place")
         if self.occupied(Point):
-            return PLACE_ERROR_MESSAGE
+            raise BoardException("Point is occupied")
         else: 
             self.Set(Point, Stone)
             return self.board

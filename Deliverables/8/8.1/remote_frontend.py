@@ -3,7 +3,7 @@ import json
 from json import JSONDecodeError
 from rulechecker import *
 from utilities import readConfig, readJSON
-from remote_valid_player import RemoteValidPlayer
+from player import RemoteValidPlayer
 import time
 import socket
 from exceptions import *
@@ -46,15 +46,20 @@ class RemoteReferee:
         while True: 
             resp = self.client_socket.recv(self.buffer) 
             resp = resp.decode("UTF-8")
-            if resp == "close":
-                self.client_socket.shutdown(1)
+            if not resp:
+                #self.client_socket.shutdown(1)
                 self.client_socket.close()
                 #print("Client closed")
                 break
             elif resp: 
                 resp_json = readJSON(resp)
                 output = self.parse_command(resp_json[0])
+                if output == "close":
+                    self.client_socket.shutdown(1)
+                    self.client_socket.close()
+                    break
                 self.client_socket.send(str.encode(output))
+            
 
     def parse_command(self, command):
         print(command)
@@ -72,14 +77,15 @@ class RemoteReferee:
                 return CRAZY_GO
           
         elif command[0] == "make-a-move":
-            #try:
-            if not isinstance(self.player, RemoteValidPlayer) or self.player.get_color == "":
+            try:
+                if not isinstance(self.player, RemoteValidPlayer) or self.player.get_stone() == "":
+                    print("not the right instance")
+                    return CRAZY_GO
+                if not checkhistory(command[1], self.player.get_stone()): 
+                    return ILLEGAL_HISTORY_MESSAGE
+                return self.player.make_move(command[1])   
+            except (StoneException, BoardException, IndexError):
                 return CRAZY_GO
-            if not checkhistory(command[1], self.player.get_color()): 
-                return ILLEGAL_HISTORY_MESSAGE
-            return self.player.make_move(command[1])
-            #except (StoneException, BoardException, IndexError):
-                #return CRAZY_GO
         else:
             return CRAZY_GO
 

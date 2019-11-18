@@ -5,7 +5,7 @@ from board import Board
 from definitions import *
 from exceptions import BoardException
 
-def place_stone(board: Board, Stone: str, Point: str) -> Board:
+def place_stone(board: Board, Stone: str, Point: str):# -> Board:
     """
     Inputs
         board: the board that represents the initial state on which we will apply the move
@@ -24,7 +24,7 @@ def place_stone(board: Board, Stone: str, Point: str) -> Board:
     board = deepcopy(board)
     board = Board(board)
     #Check for pass
-    if Stone == "pass":
+    if Stone == "pass" or Point == "pass":
         return board.board
     #Check empty intersection
     if board.occupied(Point):

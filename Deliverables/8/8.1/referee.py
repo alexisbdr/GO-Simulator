@@ -5,6 +5,7 @@ from board import Board
 from rulechecker import checkhistory, place_stone
 from definitions import *
 import json
+from exceptions import BoardPointException
 
 class Referee: 
 
@@ -14,8 +15,7 @@ class Referee:
         self.pass_flag = False
         self.winner_player = None
 
-        self.player1.set_stone("B")
-        self.player2.set_stone("W")
+       
         
         self.start_game()
     
@@ -48,22 +48,28 @@ class Referee:
         if self.check_pass_flag(Point):
             self.winner_player = self.score_winner(Board(self.boards[0]).count_score())
             return
-        new_board = place_stone(self.boards[0], self.current_player.get_color(), Point) 
+        try:
+            new_board = place_stone(self.boards[0], self.current_player.get_stone(), Point) 
+        except BoardPointException:
+            new_board = False
         print(new_board)
         if new_board:
             self.update_boards(new_board)
             self.switch_player()
         else:
             self.switch_player()
-            self.winner_player = self.current_player.get_name()
+            self.winner_player = [self.current_player.get_name()]
         return
 
     def start_game(self): 
         print("Starting game")
+
+        self.player1.get_name()
+        self.player2.get_name()
+        self.player1.set_stone("B")
+        self.player2.set_stone("W")
+
         self.boards = [Board().get_board()]
-        for row in self.boards[0]:
-            print(row)
-        print(self.boards[0])
         self.current_player = self.player1
         while not self.winner_player:
             point = self.current_player.make_move(self.boards)

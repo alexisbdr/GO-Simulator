@@ -34,12 +34,14 @@ class Administrator:
         print("Listening for client . . .")
         self.conn, self.addr = self.server_socket.accept()
         self.proxy_player = PlayerFactory(connection=self.conn).create()
+        
         self.default_player = PlayerFactory(path=self.default_player_path).create()
         print("Connected to client at ", self.addr)
         self.start_game()
         
 
     def start_game(self):
+        
         choice = random.randint(0, 1)
         if choice:
             print("Proxy is player 1")
