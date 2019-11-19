@@ -87,8 +87,10 @@ class ProxyPlayer(AbstractPlayer):
         self.conn.send(str.encode(json.dumps(message)))
         resp = self.conn.recv(1024).decode("UTF-8")
         if not resp:
-            return self.close()
+            return False
         return resp
+
+
     
 
 class DefaultPlayer(AbstractPlayer):
@@ -111,9 +113,9 @@ class DefaultPlayer(AbstractPlayer):
             -first valid point of a sequence of moves that lead to a capture
         """
 
-        #choice = random.randint(0, 100)
-        #if not choice:
-            #return self.make_invalid_move(boards)
+        """choice = random.randint(0, 100)
+        if not choice:
+            return self.make_invalid_move(boards)"""
 
         empty_points = Board(boards[0]).get_points(" ")
         if len(empty_points) == 1:
@@ -255,14 +257,14 @@ class RemoteValidPlayer(AbstractPlayer):
             -first valid point of a sequence of moves that lead to a capture
         """
 
-        empty_points = Board(boards[0]).get_points(" ")
+        """empty_points = Board(boards[0]).get_points(" ")
         if len(empty_points) == 1:
-            return "pass"
+            return "pass"""
 
-        choice = random.randint(0, 100)
-        #if not choice:
+        """choice = random.randint(0, 100)
+        if not choice:
             #return self.make_invalid_move(boards)
-            #return "close"
+            return "close"""
         return self.make_valid_move(boards)
 
 

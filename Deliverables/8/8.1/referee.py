@@ -49,12 +49,14 @@ class Referee:
             new_board = place_stone(self.boards[0], self.current_player.get_stone(), Point) 
         except BoardPointException:
             new_board = False
-        print(self.current_player.get_name(), Point)
-        for row in new_board:
-            print(row)
+        #print(self.current_player.get_name(), Point)
+        
         if new_board:
+            #for row in new_board:
+                #print(row)
             self.update_boards(new_board)
             self.switch_player()
+            
         else:
             self.switch_player()
             self.winner_player = [self.current_player.get_name()]
