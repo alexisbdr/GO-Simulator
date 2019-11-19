@@ -47,7 +47,7 @@ class RemoteReferee:
             resp = self.client_socket.recv(self.buffer) 
             resp = resp.decode("UTF-8")
             if not resp:
-                #self.client_socket.shutdown(1)
+                self.client_socket.shutdown(socket.SHUT_WR)
                 self.client_socket.close()
                 #print("Client closed")
                 break

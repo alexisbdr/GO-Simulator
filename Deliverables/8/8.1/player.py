@@ -13,14 +13,10 @@ import random
 class AbstractPlayer(ABC):
 
     def __init__(self):
-        self.name = "no name"
+        self.name = ""
         self.stone = ""
-        self.load_config()
         self.registered = False
     
-    def load_config(self):
-        config = readConfig(PLAYER_CONFIG_PATH)
-        self.depth = config[0]
 
     def register(self):
         if self.registered:
@@ -28,7 +24,6 @@ class AbstractPlayer(ABC):
         self.registered = True
         return self.name
         
-
     #some methods we will need
     def get_name(self):# -> str:
         if self.registered:
@@ -73,17 +68,12 @@ class ProxyPlayer(AbstractPlayer):
         self.conn = conn
     
     def register(self):
+        super().register()
         self.name = self.send(["register"])
         return
-        
-    def get_name(self):
-        return self.name
     
-    def get_stone(self):
-        return self.stone
-
     def set_stone(self, color):
-        self.stone = color
+        super().set_stone(color)
         command = ["receive-stones"]
         command.append(color)
         self.send(command)
@@ -99,19 +89,17 @@ class ProxyPlayer(AbstractPlayer):
         if not resp:
             return self.close()
         return resp
-
-
-    def close(self):
-        return "close"
-
     
-
-
 
 class DefaultPlayer(AbstractPlayer):
     def __init__(self):
         super().__init__()
         self.name = "Default Player"
+        self.load_config()
+
+    def load_config(self):
+        config = readConfig(PLAYER_CONFIG_PATH)
+        self.depth = config[0]
 
     def make_move(self, boards: List):# -> str:
         """
@@ -126,6 +114,10 @@ class DefaultPlayer(AbstractPlayer):
         #choice = random.randint(0, 100)
         #if not choice:
             #return self.make_invalid_move(boards)
+
+        empty_points = Board(boards[0]).get_points(" ")
+        if len(empty_points) == 1:
+            return "pass"
 
         if self.depth > 1:
             result = self.make_move_future(boards)
@@ -247,6 +239,11 @@ class RemoteValidPlayer(AbstractPlayer):
     def __init__(self):
         super().__init__()
         self.name = "Remote Player"
+        self.load_config()
+
+    def load_config(self):
+        config = readConfig(PLAYER_CONFIG_PATH)
+        self.depth = config[0]
 
     def make_move(self, boards: List):# -> str:
         """
@@ -258,9 +255,13 @@ class RemoteValidPlayer(AbstractPlayer):
             -first valid point of a sequence of moves that lead to a capture
         """
 
+        empty_points = Board(boards[0]).get_points(" ")
+        if len(empty_points) == 1:
+            return "pass"
+
         choice = random.randint(0, 100)
-        if not choice:
-            return self.make_invalid_move(boards)
+        #if not choice:
+            #return self.make_invalid_move(boards)
             #return "close"
         return self.make_valid_move(boards)
 

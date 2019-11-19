@@ -49,8 +49,7 @@ class Administrator:
         self.close_connection()
         
     def close_connection(self):
-        self.proxy_player.close()
-        self.conn.shutdown(1)
+        self.conn.shutdown(socket.SHUT_WR)
         self.conn.close()
 
 
