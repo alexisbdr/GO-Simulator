@@ -10,6 +10,7 @@ from exceptions import PlayerException, StoneException
 from abc import ABC, abstractmethod
 import random
 import copy
+#kill $(lsof -t -i:8080)
 
 class AbstractPlayer(ABC):
 
@@ -39,6 +40,10 @@ class AbstractPlayer(ABC):
         if stone not in STONE:
             raise StoneException("Invalid Stone in Player")
         self.stone = stone
+
+    def receive_stones(self, stone: str):
+        self.set_stone(stone)
+        return "RECEIVE"
     
     def get_stone(self):
         if self.stone:
@@ -64,31 +69,43 @@ class ProxyPlayer(AbstractPlayer):
     def _init__(self):
         self.name = ""
         self.stone = ""
+        
 
     def set_conn(self, conn):
         self.conn = conn
+        self.client_connected = True
     
     def register(self):
         super().register()
         self.name = self.send(["register"])
-        return
+        return self.name
+
+    def receive_stones(self, color):
+        super().set_stone(color)
+        command = ["receive-stones"]
+        command.append(color)
+        return self.send(command)
     
     def set_stone(self, color):
         super().set_stone(color)
         command = ["receive-stones"]
         command.append(color)
-        self.send(command)
+        return self.send(command)
 
     def make_move(self, boards):
         command = ["make-a-move"]
         command.append(boards)
         return self.send(command)
+    
+    def is_connected(self):
+        return self.client_connected
 
     def send(self, message):
         self.conn.send(str.encode(json.dumps(message)))
         resp = self.conn.recv(1024).decode("UTF-8")
         if not resp:
-            return "client has closed"
+            self.client_connected = False
+            return False
         return resp
 
 
@@ -402,7 +419,7 @@ class RandomPlayer(AbstractPlayer):
         if distribution == 1:
             return "close"
 
-        pass_flag = random.randint(0,50)
+        """pass_flag = random.randint(0,50)
         empty_points = Board(boards[0]).get_points(" ")
         if len(empty_points) == 1 and not pass_flag:
             return "pass"
@@ -413,7 +430,7 @@ class RandomPlayer(AbstractPlayer):
                 return move
         
         if distribution == 6:
-            return self.get_outofbounds_move(boards)
+            return self.get_outofbounds_move(boards)"""
 
         return self.make_valid_move(boards)
 

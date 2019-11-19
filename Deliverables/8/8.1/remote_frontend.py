@@ -65,6 +65,7 @@ class RemoteReferee:
 
     def parse_command(self, command):
         if command[0] == "register":
+            
             if isinstance(self.player, RandomPlayer):
                 return CRAZY_GO
             self.player = RandomPlayer()

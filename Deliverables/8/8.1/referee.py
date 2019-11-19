@@ -14,6 +14,7 @@ class Referee:
         self.player2 = player2
         self.pass_flag = False
         self.winner_player = None
+        self.game_over = False
         self.start_game()
     
     def get_winner(self):
@@ -45,6 +46,7 @@ class Referee:
         #print(self.current_player.get_name(), Point)
         if self.check_pass_flag(Point):
             self.winner_player = self.score_winner(Board(self.boards[0]).count_score())
+            self.game_over = True
             return
         try:
             new_board = place_stone(self.boards[0], self.current_player.get_stone(), Point) 
@@ -61,18 +63,37 @@ class Referee:
         else:
             self.switch_player()
             self.winner_player = [self.current_player.get_name()]
+            self.game_over = True
         return
 
     def start_game(self): 
 
-        self.player1.register()
-        self.player2.register()
-        self.player1.set_stone("B")
-        self.player2.set_stone("W")
+        resp = self.player1.register()
+        if not resp:
+            self.winner_player = []
+            self.game_over = True
+            return
+        resp = self.player2.register()
+        if not resp:
+            self.winner_player = []
+            self.game_over = True
+            return
+
+        resp = self.player1.receive_stones("B")
+        if not resp:
+            self.winner_player = []
+            self.game_over = True
+            return
+        resp = self.player2.receive_stones("W")
+        if not resp:
+            self.winner_player = []
+            self.game_over = True
+            return
+
 
         self.boards = [Board().get_board()]
         self.current_player = self.player1
-        while not self.winner_player:
+        while not self.game_over:
             point = self.current_player.make_move(self.boards)
             self.update_state(point)
 
