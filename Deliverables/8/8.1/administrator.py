@@ -49,9 +49,11 @@ class Administrator:
         self.close_connection()
         
     def close_connection(self):
-        self.proxy_player.close()
-        self.conn.shutdown(1)
-        self.conn.close()
+        if self.proxy_player.is_connected():
+            self.conn.shutdown(1)
+            self.conn.close()
+        else:
+            self.conn.close()
 
 
 Administrator()
