@@ -9,6 +9,7 @@ from utilities import readConfig
 from exceptions import PlayerException, StoneException
 from abc import ABC, abstractmethod
 import random
+import copy
 
 class AbstractPlayer(ABC):
 
@@ -87,11 +88,9 @@ class ProxyPlayer(AbstractPlayer):
         self.conn.send(str.encode(json.dumps(message)))
         resp = self.conn.recv(1024).decode("UTF-8")
         if not resp:
-            return False
+            return "client has closed"
         return resp
 
-
-    
 
 class DefaultPlayer(AbstractPlayer):
     def __init__(self):
@@ -390,3 +389,82 @@ class RemoteValidPlayer(AbstractPlayer):
                 return list_of_moves[0]
             list_of_moves.pop()
         return None
+
+class RandomPlayer(AbstractPlayer):
+    def __init__(self):
+        super().__init__()
+        self.name = "Remote Player"
+
+    def make_move(self, boards: List):# -> str:
+        
+        distribution = random.randint(0,100)
+    
+        if distribution == 1:
+            return "close"
+
+        pass_flag = random.randint(0,50)
+        empty_points = Board(boards[0]).get_points(" ")
+        if len(empty_points) == 1 and not pass_flag:
+            return "pass"
+
+        if distribution > 1 and distribution < 5:
+            move = self.get_suicide_move(boards)
+            if move:
+                return move
+        
+        if distribution == 6:
+            return self.get_outofbounds_move(boards)
+
+        return self.make_valid_move(boards)
+
+
+    def make_valid_move(self, boards):    
+        
+        
+        valid_moves = self.all_valid_moves(boards, self.stone)
+        #print(valid_moves)
+        if valid_moves:
+            choice_index = random.randint(0, len(valid_moves)-1)
+            return valid_moves[choice_index]
+        return "pass"
+
+
+    def all_valid_moves(self, boards: List, stone: str):# -> List[str]:
+        """
+        Returns a list of valid moves for a given board history and stone
+        """
+        valid_moves = []
+        all_string_points = get_all_string_points()
+        for new_point in all_string_points: 
+                if rulecheck(boards, stone, new_point):
+                    valid_moves.append(new_point)
+                    
+        return valid_moves 
+
+    
+    def get_occupied_move(self, boards):
+        board = Board(boards[0])
+        opposite_points = board.get_points(self.get_opponent_color())
+        choice_index = random.randint(0, len(opposite_points))
+        return opposite_points[choice_index]
+    
+    def get_outofbounds_move(self, boards):
+        return str(BOARD_COLUMNS_MAX + 1) + "-" + str(BOARD_COLUMNS_MAX + 1)
+
+
+    def get_suicide_move(self, boards):
+        board = Board(boards[0])
+        empty_points = board.get_points(" ")
+        suicide_points = []
+        for point in empty_points:
+            board_copy = copy.deepcopy(board)
+            board_copy.place(point, self.stone)
+            result = board_copy.reachable(point, " ")
+            if not result:
+                suicide_points.append(point)
+        
+        if suicide_points:
+            choice_index = random.randint(0, len(suicide_points))
+            return suicide_points[choice_index]
+
+        return False

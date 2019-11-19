@@ -42,6 +42,7 @@ class Referee:
         return [self.winner_player]
     
     def update_state(self, Point: str):
+        #print(self.current_player.get_name(), Point)
         if self.check_pass_flag(Point):
             self.winner_player = self.score_winner(Board(self.boards[0]).count_score())
             return
@@ -49,7 +50,7 @@ class Referee:
             new_board = place_stone(self.boards[0], self.current_player.get_stone(), Point) 
         except BoardPointException:
             new_board = False
-        #print(self.current_player.get_name(), Point)
+        
         
         if new_board:
             #for row in new_board:

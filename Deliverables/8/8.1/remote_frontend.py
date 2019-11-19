@@ -3,7 +3,7 @@ import json
 from json import JSONDecodeError
 from rulechecker import *
 from utilities import readConfig, readJSON
-from player import RemoteValidPlayer
+from player import RandomPlayer
 import time
 import socket
 from exceptions import *
@@ -46,14 +46,16 @@ class RemoteReferee:
         while True: 
             resp = self.client_socket.recv(self.buffer) 
             resp = resp.decode("UTF-8")
+            #there is nothing coming from the server, so it has disconnected
             if not resp:
-                self.client_socket.shutdown(socket.SHUT_WR)
+                #self.client_socket.shutdown(socket.SHUT_WR)
                 self.client_socket.close()
                 #print("Client closed")
                 break
             elif resp: 
                 resp_json = readJSON(resp)
                 output = self.parse_command(resp_json[0])
+                #print(output)
                 if output == "close":
                     self.client_socket.shutdown(1)
                     self.client_socket.close()
@@ -63,9 +65,9 @@ class RemoteReferee:
 
     def parse_command(self, command):
         if command[0] == "register":
-            if isinstance(self.player, RemoteValidPlayer):
+            if isinstance(self.player, RandomPlayer):
                 return CRAZY_GO
-            self.player = RemoteValidPlayer()
+            self.player = RandomPlayer()
             self.player.register()
             return self.player.get_name()
     
@@ -78,12 +80,13 @@ class RemoteReferee:
           
         elif command[0] == "make-a-move":
             try:
-                if not isinstance(self.player, RemoteValidPlayer) or self.player.get_stone() == "":
+                if not isinstance(self.player, RandomPlayer) or self.player.get_stone() == "":
                     return CRAZY_GO
                 if not checkhistory(command[1], self.player.get_stone()): 
                     return ILLEGAL_HISTORY_MESSAGE
                 return self.player.make_move(command[1])   
             except (StoneException, BoardException, IndexError):
+                #print("2")
                 return CRAZY_GO
         else:
             return CRAZY_GO
