@@ -52,8 +52,6 @@ class AbstractPlayer(ABC):
     def update_game_state(self, args):
         raise NotImplementedError
 
-
-
 class ProxyPlayer(AbstractPlayer):
     
     def _init__(self):
@@ -93,9 +91,6 @@ class ProxyPlayer(AbstractPlayer):
         return "close"
 
     
-
-
-
 class DefaultPlayer(AbstractPlayer):
 
     def make_move(self, boards: List):# -> str:
@@ -218,9 +213,125 @@ class DefaultPlayer(AbstractPlayer):
             list_of_moves.pop()
         return None
 
+class ValidPlayer(AbstractPlayer):
+    """
+    Randomly chooses and plays through either the Turing or Simple Player
+    """
 
+    def __init__(self):
+        valid_players = ValidPlayer.__subclasses__()
+        choice = random.randint(0, len(valid_players))
+        self.player = valid_players[choice]()
+    
+    def make_move(self, boards: List):
+        return self.player.make_move(boards)
 
-class RemoteValidPlayer(AbstractPlayer):
+class SimpleValidPlayers(ValidPlayer):
+    """
+    Randomly choose one of the players following the simple strategy, these include: 
+        Classic, Reversed, Random
+    """
+    
+    def __init__(self):
+        #Choose valid player from list
+        valid_players = SimpleValidPlayers.__subclasses__()
+        choice = random.randint(0,len(valid_players))
+        self.player = valid_players[choice]()
+    
+    def all_valid_moves(self, boards: List, stone: str):
+        """
+        Returns a list of valid moves for a given board history and stone
+        """
+        valid_moves = []
+        all_string_points = get_all_string_points()
+        for new_point in all_string_points: 
+            if rulecheck(boards, stone, new_point):
+                valid_moves.append(new_point)
+        return valid_moves
+    
+    def make_move(self, boards: List):
+        return self.player.make_move()
+
+class ClassicValidPlayer(SimpleValidPlayers):
+    """
+    Makes first valid move TopLeft
+    """
+    def make_move(self, boards:List):
+        valid_moves = self.all_valid_moves(boards, self.get_stone())
+        return valid_moves[0]
+
+class ReveresedValidPlayer(SimpleValidPlayers):
+    """
+    Makes first valid move BottomRight
+    """
+    def make_move(self, boards:List):
+        valid_moves = self.all_valid_moves(boards, self.get_stone())
+        return valid_moves[-1]
+
+class RandomValidPlayer(SimpleValidPlayers):
+    """
+    Makes random valid moves anywhere it fucking wants
+    """
+    def make_move(self, boards: List):
+        valid_moves = self.all_valid_moves(boards, self.get_stone())
+        choice = random.randint(0, len(valid_moves))
+        return valid_moves[choice]
+
+class TuringValidPlayers(ValidPlayer):
+
+    
+class TuringValidPlayer(ValidPlayer):
+    """
+    The n=1 strategy from  assignment 4
+    """
+    def make_move_capture(self, boards:List, valid_moves:List[str]):# -> Union[bool, str]:
+        """
+        Returns first valid point that leads to a capture of the opponent's pieces
+        False otherwise 
+        """
+        boards = deepcopy(boards)
+        for point in valid_moves: 
+            if Board(boards[0]).check_future_liberties(point, self.get_stone()):
+                return point
+        return False
+        
+    def all_valid_moves(self, boards: List, stone: str):# -> List[str]:
+        """
+        Returns a list of valid moves for a given board history and stone
+        """
+        valid_moves, valid_capture_moves = [], []
+        all_string_points = get_all_string_points()
+        for new_point in all_string_points: 
+                if rulecheck(boards, stone, new_point):
+                    valid_moves.append(new_point)
+                    if self.find_next_capture_move(boards, new_point):
+                        valid_capture_moves.append(new_point)
+        return valid_moves, valid_capture_moves
+
+    def find_next_capture_move(self, boards:List, point: str):# -> Union[bool, str]:
+        """
+        Returns first valid point that leads to a capture of the opponent's pieces
+        False otherwise
+        """
+        boards = deepcopy(boards)
+        if Board(boards[0]).check_future_liberties(point, self.get_stone()):
+            return True
+        return False
+
+    def make_move(self, boards: List):# -> str:
+
+        valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_stone())
+        #If list is empty then there are no valid moves
+        if not valid_moves: 
+            return PASS_OUTPUT
+        capture_point = self.make_move_capture(boards, valid_moves)
+        #If no moves lead to an opponent capture - return first valid point
+        if not capture_point:
+            return valid_moves[0]
+        return capture_point
+    
+class TuringAdvancedValidPlayer(ValidPlayer):
+
     def make_move(self, boards: List):# -> str:
         """
         Determines the make-move strategy based on the parameter n
@@ -238,7 +349,7 @@ class RemoteValidPlayer(AbstractPlayer):
         return self.make_valid_move(boards)
 
 
-        """if self.depth > 1:
+        if self.depth > 1:
             result = self.make_move_future(boards)
             if result:
                 return result
@@ -251,7 +362,7 @@ class RemoteValidPlayer(AbstractPlayer):
         #If no moves lead to an opponent capture - return first valid point
         if not capture_point:
             return valid_moves[0]
-        return capture_point"""
+        return capture_point
 
 
     def make_valid_move(self, boards:List):
