@@ -350,7 +350,6 @@ class TuringValidPlayer(CapturePlayers):
         self.name = "Turing Valid Player"
 
     def make_move(self, boards: List):# -> str:
-
         valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_stone())
         #If list is empty then there are no valid moves
         if not valid_moves: 
@@ -370,7 +369,6 @@ class TuringAdvancedValidPlayer(CapturePlayers):
         self.name = "Turing Advanced Valid Player"
 
     def make_move(self, boards: List):
-       
         valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_stone())
         if len(boards) == 1 or len(boards) == 2:
             return valid_moves[0]

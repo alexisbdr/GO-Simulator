@@ -5,10 +5,9 @@ import random
 
 
 class PlayerFactory():
-    def __init__(self, connection=None, path=None, player_cls=None):
+    def __init__(self, connection=None, path=None):
         self.connection = connection
         self.path = path
-        self.player_cls = player_cls
 
     def create(self):
         if self.connection:
@@ -33,6 +32,8 @@ class PlayerFactory():
         def all_subclasses(cls):
             return set(cls.__subclasses__()).union(
                 [s for c in cls.__subclasses__() for s in all_subclasses(c)]) 
-        valid_players = all_subclasses(self.player_cls)
+        if random.randint(0,1):
+            valid_players = list(all_subclasses(CapturePlayers))
+        else: valid_players = list(all_subclasses(SimpleValidPlayers))
         choice = random.randint(0, len(valid_players) -1)
         return valid_players[choice]()
