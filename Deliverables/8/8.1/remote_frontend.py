@@ -70,7 +70,6 @@ class RemoteReferee:
                 return CRAZY_GO
             self.player = PlayerFactory(remote=True).create()
             self.player.register()
-            print(self.player.get_name())
             return self.player.get_name()
     
         elif command[0] == "receive-stones":

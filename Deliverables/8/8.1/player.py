@@ -296,8 +296,10 @@ class RandomValidPlayer(SimpleValidPlayers):
         
     def make_move(self, boards: List):
         valid_moves = self.all_valid_moves(boards, self.get_stone())
-        choice = random.randint(0, len(valid_moves) - 1)
-        return valid_moves[choice]
+        if valid_moves:
+            choice = random.randint(0, len(valid_moves) - 1)
+            return valid_moves[choice]
+        return "pass"
 
 class EndGameValidPlayer(SimpleValidPlayers):
 
