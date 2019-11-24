@@ -309,7 +309,7 @@ class EndGameValidPlayer(SimpleValidPlayers):
         self.turn = 0
     
     def make_move(self, boards: List):
-        if self.turn == pass_turn or self.pass_flag:
+        if self.turn == self.pass_turn or self.pass_flag:
             self.pass_flag = True
             return "pass"
         valid_moves = self.all_valid_moves(boards, self.get_stone())
@@ -381,7 +381,7 @@ class TuringAdvancedValidPlayer(CapturePlayers):
 
     def __init__(self):
         super().__init__()
-        self.depth = random.randint(2,3)
+        self.depth = 2
         self.name = "Turing Advanced Valid Player"
 
     def make_move(self, boards: List):

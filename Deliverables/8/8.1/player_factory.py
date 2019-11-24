@@ -38,11 +38,13 @@ class PlayerFactory():
             return set(cls.__subclasses__()).union(
                 [s for c in cls.__subclasses__() for s in all_subclasses(c)]) 
         choice = random.randint(0,2)
-        if choice:
+        print(choice)
+        if not choice:
             valid_players = list(all_subclasses(CapturePlayers))
         elif choice == 1: 
             valid_players = list(all_subclasses(SimpleValidPlayers))
-        elif choice == 2:
+        else:
             valid_players = list(all_subclasses(InvalidPlayers))
+        print(valid_players)
         choice = random.randint(0, len(valid_players) -1)
         return valid_players[choice]()

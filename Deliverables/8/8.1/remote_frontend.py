@@ -7,7 +7,6 @@ from utilities import readJSON
 from player_factory import PlayerFactory
 import time
 import socket
-from exceptions import ConnectionRefusedError
 from exceptions import StoneException
 from exceptions import BoardException
 
@@ -69,8 +68,9 @@ class RemoteReferee:
         if command[0] == "register":
             if self.player:
                 return CRAZY_GO
-            self.player = PlayerFactory().create(remote=True)
+            self.player = PlayerFactory(remote=True).create()
             self.player.register()
+            print(self.player.get_name())
             return self.player.get_name()
     
         elif command[0] == "receive-stones":
