@@ -2,12 +2,14 @@ import sys
 import json
 from json import JSONDecodeError
 from rulechecker import *
-from utilities import readConfig, readJSON
+from utilities import readConfig
+from utilities import readJSON
 from player_factory import PlayerFactory
-from player import SimpleValidPlayers, CapturePlayers
 import time
 import socket
-from exceptions import *
+from exceptions import ConnectionRefusedError
+from exceptions import StoneException
+from exceptions import BoardException
 
 class RemoteReferee: 
     
@@ -65,10 +67,9 @@ class RemoteReferee:
 
     def parse_command(self, command):
         if command[0] == "register":
-            if isinstance(self.player, SimpleValidPlayers) or \
-                isinstance(self.player, CapturePlayers):
+            if self.player:
                 return CRAZY_GO
-            self.player = PlayerFactory().create()
+            self.player = PlayerFactory().create(remote=True)
             self.player.register()
             return self.player.get_name()
     
@@ -81,8 +82,7 @@ class RemoteReferee:
           
         elif command[0] == "make-a-move":
             try:
-                if not self.player or \
-                    self.player.get_stone() == "":
+                if not self.player or self.player.get_stone() == "":
                     return CRAZY_GO
                 if not checkhistory(command[1], self.player.get_stone()): 
                     return ILLEGAL_HISTORY_MESSAGE

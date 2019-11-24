@@ -274,7 +274,7 @@ class ClassicValidPlayer(SimpleValidPlayers):
         valid_moves = self.all_valid_moves(boards, self.get_stone())
         return valid_moves[0]
 
-class ReveresedValidPlayer(SimpleValidPlayers):
+class ReversedValidPlayer(SimpleValidPlayers):
     """
     Makes first valid move BottomRight
     """
@@ -298,6 +298,22 @@ class RandomValidPlayer(SimpleValidPlayers):
         valid_moves = self.all_valid_moves(boards, self.get_stone())
         choice = random.randint(0, len(valid_moves) - 1)
         return valid_moves[choice]
+
+class EndGameValidPlayer(SimpleValidPlayers):
+
+    def __init__(self):
+        super().__init__()
+        self.name = "End Game Valid Player"
+        self.pass_flag = False
+        self.pass_turn = random.randint(0,100)
+        self.turn = 0
+    
+    def make_move(self, boards: List):
+        if self.turn == pass_turn or self.pass_flag:
+            self.pass_flag = True
+            return "pass"
+        valid_moves = self.all_valid_moves(boards, self.get_stone())
+        return valid_moves[0]
 
 class CapturePlayers(AbstractPlayer):
     """
@@ -432,3 +448,100 @@ class TuringAdvancedValidPlayer(CapturePlayers):
                 return list_of_moves[choice]
             list_of_moves.pop()
         return None
+
+class InvalidPlayers(AbstractPlayer):
+    
+    def __init__(self):
+        super().__init__()
+        self.invalid_turn = random.randint(0,100)
+        self.turn = 0
+
+    def make_valid_move(self, boards):    
+        
+        
+        valid_moves = self.all_valid_moves(boards, self.stone)
+        #print(valid_moves)
+        if valid_moves:
+            choice_index = random.randint(0, len(valid_moves)-1)
+            return valid_moves[choice_index]
+        return "pass"
+
+    def all_valid_moves(self, boards: List, stone: str):# -> List[str]:
+        """
+        Returns a list of valid moves for a given board history and stone
+        """
+        valid_moves = []
+        all_string_points = get_all_string_points()
+        for new_point in all_string_points: 
+                if rulecheck(boards, stone, new_point):
+                    valid_moves.append(new_point)
+                    
+        return valid_moves 
+
+class OccupiedInvalidPlayer(InvalidPlayers):
+    
+    def __init__(self):
+        super().__init__()
+        self.name = "Occupied Invalid Player"
+    
+    def make_move(self, boards: List):
+        
+        if self.turn == self.invalid_turn:
+            return self.get_occupied_move(boards)
+        else:
+            self.turn+=1 
+            return self.make_valid_move(boards)
+
+    def get_occupied_move(self, boards):
+        board = Board(boards[0])
+        opposite_points = board.get_points(self.get_opponent_color())
+        choice_index = random.randint(0, len(opposite_points))
+        return opposite_points[choice_index]
+
+class SuicideInvalidPlayer(InvalidPlayers):
+
+    def __init__(self):
+        super().__init__()
+        self.name = "Suicide Invalid Player"
+    
+    def make_move(self, boards: List):
+        
+        if self.turn == self.invalid_turn:
+            return self.get_suicide_move(boards)
+        else:
+            self.turn+=1 
+            return self.make_valid_move(boards)
+        
+    def get_suicide_move(self, boards):
+        board = Board(boards[0])
+        empty_points = board.get_points(" ")
+        suicide_points = []
+        for point in empty_points:
+            board_copy = copy.deepcopy(board)
+            board_copy.place(point, self.stone)
+            result = board_copy.reachable(point, " ")
+            if not result:
+                suicide_points.append(point)
+        
+        if suicide_points:
+            choice_index = random.randint(0, len(suicide_points))
+            return suicide_points[choice_index]
+
+        return False
+
+class OutOfBoundsInvalidPlayer(InvalidPlayers):
+
+    def __init__(self):
+        super().__init__()
+        self.name = "Out of Bounds Invalid Player"
+
+    def make_move(self, boards: List):
+        if self.turn == self.invalid_turn:
+            return self.get_outofbounds_move(boards)
+        else:
+            self.turn+=1 
+            return self.make_valid_move(boards)
+      
+    def get_outofbounds_move(self, boards):
+        return str(BOARD_COLUMNS_MAX + 1) + "-" + str(BOARD_COLUMNS_MAX + 1)
+    
