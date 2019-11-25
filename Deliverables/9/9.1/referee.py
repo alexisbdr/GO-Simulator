@@ -53,7 +53,7 @@ class Referee:
             self.switch_player()
         else:
             self.switch_player()
-            self.end_game(cheating=True)
+            self.end_game()
             self.game_over = True
         return
 
@@ -79,23 +79,25 @@ class Referee:
     def end_game(self, cheating=False):
         """
         Sets the results list:
-        [(winner_player: score), (loser_player: score), cheating_flag]
+        [(winner_player, score, cheating_flag), (loser_player, score, cheating_flag)]
         """
+        #Update both players with the end game signal - think about the ordering in this
+        resp1 = self.player1.end_game()
+        resp2 = self.player2.end_game()
+        
         score = self.boards[0].count_score()
         score_player1 = score["B"]
         score_player2 = score["W"]
         if not cheating:
-            self.results = [(self.player1, score_player1), 
-                (self.player2, score_player2)]
+            #Send end message to both and see if one of them disconnects
+            self.results = [[self.player1, score_player1], 
+                [self.player2, score_player2], cheating]
             self.results = sorted(self.results, key=lambda x : x[1], reversed=True)
-            self.results.append(cheating)
         else:
             if self.current_player == self.player1:
-                self.results = [(self.current_player, score_player1), (self.player2, score_player2)]
-                self.results.append(cheating)
+                self.results = [(self.current_player, score_player1), (self.player2, score_player2), cheating]
             else:
-                self.results = [(self.current_player, score_player2), (self.player1, score_player1)]
-                self.results.append(cheating)
+                self.results = [(self.current_player, score_player2), (self.player1, score_player1), cheating]
 
         
 

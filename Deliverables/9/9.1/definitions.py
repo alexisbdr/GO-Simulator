@@ -30,3 +30,5 @@ CRAZY_GO = "GO has gone crazy!"
 N = 1
 
 DEFAULT_PLAYER_CLASS = "DefaultPlayer"
+
+CHEATING_PLAYER = "cheat"

@@ -9,6 +9,7 @@ import time
 import socket
 from exceptions import StoneException
 from exceptions import BoardException
+from exceptions import PlayerException
 
 class RemoteReferee: 
     
@@ -28,11 +29,13 @@ class RemoteReferee:
         connected = False
         #Connect
         iter = 0
+        print("trying to connect")
         while not connected:
             try: 
                 #print("Trying to connect")
                 self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.client_socket.connect((host, port))
+                print("connected")
                 connected = True
             except ConnectionRefusedError:
                 iter += 1
@@ -44,8 +47,9 @@ class RemoteReferee:
                 continue
     
     def start_client(self):
+        print("starting client")
         #### USE FACTORY
-        while True: 
+        while True:
             resp = self.client_socket.recv(self.buffer) 
             resp = resp.decode("UTF-8")
             #there is nothing coming from the server, so it has disconnected
@@ -82,7 +86,8 @@ class RemoteReferee:
           
         elif command[0] == "make-a-move":
             try:
-                if not self.player or self.player.get_stone() == "":
+                if not self.player or self.player.get_stone() == "" or \
+                    self.player.ended:
                     return CRAZY_GO
                 if not checkhistory(command[1], self.player.get_stone()): 
                     return ILLEGAL_HISTORY_MESSAGE
@@ -90,9 +95,12 @@ class RemoteReferee:
             except (StoneException, BoardException, IndexError):
                 #print("2")
                 return CRAZY_GO
-        else:
-            return CRAZY_GO
 
+        elif command[0] == "end-game":
+            try:
+                self.player.end_game()
+            except PlayerException:
+                return CRAZY_GO
 
 if __name__ == "__main__":
     RemoteReferee()

@@ -6,17 +6,21 @@ from typing import List
 
 from definitions import *
 from player_factory import PlayerFactory
+from tournament import League
+from tournament import Cup
 import time
 import random
 from referee import Referee
 import json
+from threading import Thread
 
 class Administrator:
     
     def __init__(self, tournament: str, num_players: str):
         self.check_inputs(tournament, num_players)
         self.load_config()
-        self.get_remote_players()
+        self.get_players()
+        self.start_tournament()
 
     def check_inputs(self, tournament: str, num_players: str):
         if tournament == "-league" or tournament != "-cup":
@@ -26,6 +30,7 @@ class Administrator:
             self.num_players = int(num_players)
         except ValueError as e: 
             raise Exception("Number players should be an integer")
+        print(self.tournament, self.num_players)
         
     def load_config(self):
         config_file = open(GO_CONFIG_PATH, 'r')
@@ -36,56 +41,63 @@ class Administrator:
         self.port = netData['port']
         self.default_player_path = netData['default-player']
     
-    def get_remote_players(self):
+    def get_players(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.host , self.port))
-        self.server_socket.listen(self.num_players)
         self.players = []
-        while True: 
+        print("getting players")
+        while self.num_players != len(self.players):
+            print("started loop")
+            self.server_socket.listen()
             conn, addr = self.server_socket.accept()
+            print("new player on conn: ",conn)
             proxy_player = PlayerFactory(connection=conn).create()
             self.players.append(proxy_player)
+            print(self.players)
+        self.make_players()
     
     def make_players(self):
         self.num_players = nextPowerOf2(self.num_players)
         while self.num_players != len(self.players):
             default_player = PlayerFactory(path=self.default_player_path).create()
             self.players.append(default_player)
+            print("made a new player")
         self.register_players()
 
     def register_players(self):
+        print("registering")
         for p in range(len(self.players)):
             resp = self.players[p].register()
             if not resp:
-                self.players[p] = None
-        
-
-                
+                #Replace player that doesn't register with a default player
+                self.players[p] = PlayerFactory(path=self.default_player_path).create()
 
     def start_tournament(self):
-    def start_game(self):
-        
-        choice = random.randint(0, 1)
-        if choice:
-            referee = Referee(self.proxy_player, self.default_player)
-        else:
-            referee = Referee(self.default_player, self.proxy_player)
-       # referee = Referee(self.proxy_player, self.default_player) if choice else Referee(self.default_player, self.proxy_player)
-        print(json.dumps(referee.get_winner()))
+        print("starting tournament")
+        if self.tournament == "cup":
+            tournament_results = Cup(self.players).get_results()
+        elif self.tournament == "league":
+            tournament_results = League(self.players, self.default_player_path).get_results()
+        self.print_results(tournament_results)
         self.close_connection()
+
+    def print_results(self, results: dict):
+        print(json.dumps(results))
         
     def close_connection(self):
-        if self.proxy_player.is_connected():
-            self.conn.shutdown(1)
-            self.conn.close()
-        else:
-            self.conn.close()
+        for player in self.players:
+            if player.is_connected:
+                player.conn.shutdown(1)
+                player.conn.close()
+        #shutdown the server connection
+        self.server_socket.shutdown(socket.SHUT_RDWR)
+        self.server_socket.close()
 
 if __name__ == "__main__":
-    cmdline = sys.argv
-    if len(cmdline) != 2:
+    print(sys.argv)
+    if len(sys.argv) != 3:
         raise Exception("Incorrect number of command line arguments")
-    tournament = cmdline[0]
-    num_players = cmdline[1]
+    tournament = sys.argv[1]
+    num_players = sys.argv[2]
     Administrator(tournament, num_players)

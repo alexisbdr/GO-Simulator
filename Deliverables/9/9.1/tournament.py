@@ -3,6 +3,7 @@ from player_factory import PlayerFactory
 from math import log2
 import random
 from itertools import combinations
+from definitions import CHEATING_PLAYER
 
 class Cup:
 
@@ -37,21 +38,23 @@ class Cup:
             
 class League:
 
-    def __init__(self, players: list):
+    def __init__(self, players: list, default_path:str):
         self.players = players
+        self.default_player = default_path
         self.player_score = {}
         for player in self.players: 
             self.player_score[player] = 0
         self.game_results = {}
+        self.run()
 
     def run(self):
         schedule = combinations(range(len(self.players)), 2)
         for index, g in enumerate(schedule): 
             game = Referee(self.players[g[0]], self.players[g[1]]).get_results()
             if game[2]:
-                new_player = PlayerFactory(remote=True).create()
+                new_player = PlayerFactory(path=self.default_player).create()
                 cheating_player = game[1][0]
-                self.player_score[cheating_player] = "Cheat"
+                self.player_score[cheating_player] = CHEATING_PLAYER
                 self.player_score[new_player] = 0
                 self.player_score[game[0][0]] += 1
                 if cheating_player == self.players[g[0]]:
@@ -66,7 +69,8 @@ class League:
                     if cheating_player == winner:
                         loser_player = played_game[0] if winner == played_game[1] else played_game[1]
                         self.game_results[played_game] = loser_player
-                        self.player_score[self.players[loser_player]] += 1
+                        if self.player_score[self.players[loser_player]] != CHEATING_PLAYER:
+                            self.player_score[self.players[loser_player]] += 1
             else: 
                 #Draw situation
                 winner,loser = 0,1

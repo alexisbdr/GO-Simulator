@@ -17,7 +17,8 @@ class AbstractPlayer(ABC):
     def __init__(self):
         self.name = ""
         self.stone = ""
-        self.registered = False    
+        self.registered = False
+        self.ended = False 
 
     def register(self):
         if self.registered:
@@ -39,6 +40,7 @@ class AbstractPlayer(ABC):
         if stone not in STONE:
             raise StoneException("Invalid Stone in Player")
         self.stone = stone
+        self.ended = False
 
     def receive_stones(self, stone: str):
         self.set_stone(stone)
@@ -52,6 +54,16 @@ class AbstractPlayer(ABC):
     
     def get_opponent_color(self):
         return "B" if self.get_stone() == "W" else "W"
+    
+    def end_game(self):
+        if self.ended:
+            raise PlayerException("Player has already been notified of game end")
+        self.ended = True
+        self.stone = ""
+        return "OK"
+    
+    def is_connected(self):
+        return False
     
     @abstractmethod
     def make_move(self, boards: List, n: int) -> str:
@@ -88,6 +100,10 @@ class ProxyPlayer(AbstractPlayer):
     def make_move(self, boards):
         command = ["make-a-move"]
         command.append(boards)
+        return self.send(command)
+    
+    def end_game(self):
+        command = ["end-game"]
         return self.send(command)
     
     def is_connected(self):
