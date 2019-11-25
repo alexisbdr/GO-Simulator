@@ -34,6 +34,8 @@ class AbstractPlayer(ABC):
     def set_stone(self, stone: str):
         if not self.registered:
             raise PlayerException("Player has not been registered yet")
+        if self.stone in STONE:
+            raise StoneException("Player has already received stones")
         if stone not in STONE:
             raise StoneException("Invalid Stone in Player")
         self.stone = stone

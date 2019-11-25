@@ -2,11 +2,13 @@ import sys
 import json
 from json import JSONDecodeError
 from rulechecker import *
-from utilities import readConfig, readJSON
-from player import Player
+from utilities import readConfig
+from utilities import readJSON
+from player_factory import PlayerFactory
 import time
 import socket
-from exceptions import *
+from exceptions import StoneException
+from exceptions import BoardException
 
 class RemoteReferee: 
     
@@ -17,7 +19,6 @@ class RemoteReferee:
         self.player = None
         self.connect_socket(netData)
         self.start_client()
-        
         
     def connect_socket(self, data: dict):
         host = data['IP']
@@ -36,7 +37,8 @@ class RemoteReferee:
             except ConnectionRefusedError:
                 iter += 1
                 if iter == 20:
-                    sys.exit()
+                    #see here
+                    break
                 self.client_socket.close()
                 time.sleep(2)
                 continue
@@ -46,38 +48,47 @@ class RemoteReferee:
         while True: 
             resp = self.client_socket.recv(self.buffer) 
             resp = resp.decode("UTF-8")
-            if resp == "close":
-                self.client_socket.shutdown(1)
+            #there is nothing coming from the server, so it has disconnected
+            if not resp:
+                #self.client_socket.shutdown(socket.SHUT_WR)
                 self.client_socket.close()
                 #print("Client closed")
                 break
             elif resp: 
                 resp_json = readJSON(resp)
                 output = self.parse_command(resp_json[0])
+                #print(output)
+                if output == "close":
+                    self.client_socket.shutdown(1)
+                    self.client_socket.close()
+                    break
                 self.client_socket.send(str.encode(output))
+            
 
     def parse_command(self, command):
         if command[0] == "register":
-            if isinstance(self.player, Player):
+            if self.player:
                 return CRAZY_GO
-            self.player = Player()
+            self.player = PlayerFactory(remote=True).create()
+            self.player.register()
             return self.player.get_name()
     
         elif command[0] == "receive-stones":
             try:
-                self.player.set_color(command[1])
+                self.player.set_stone(command[1])
                 return 'RECEIVE'
             except (StoneException, AttributeError):
                 return CRAZY_GO
           
         elif command[0] == "make-a-move":
             try:
-                if not isinstance(self.player, Player) or self.player.get_color == "":
+                if not self.player or self.player.get_stone() == "":
                     return CRAZY_GO
-                if not checkhistory(command[1], self.player.get_color()): 
+                if not checkhistory(command[1], self.player.get_stone()): 
                     return ILLEGAL_HISTORY_MESSAGE
-                return self.player.make_move_two(command[1])
+                return self.player.make_move(command[1])   
             except (StoneException, BoardException, IndexError):
+                #print("2")
                 return CRAZY_GO
         else:
             return CRAZY_GO

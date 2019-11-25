@@ -14,11 +14,12 @@ class Referee:
         self.player2 = player2
         self.pass_flag = False
         self.winner_player = None
+        self.results = []
         self.game_over = False
         self.start_game()
     
-    def get_winner(self):
-        return self.winner_player
+    def get_results(self):
+        return self.results
             
     def update_boards(self, new_board):
         self.old_boards = self.boards
@@ -34,51 +35,30 @@ class Referee:
         self.pass_flag = True if move == PASS_OUTPUT else False
         return False
     
-    def score_winner(self, score: dict):# -> str:
-        if score["B"] == score["W"]:
-            return sorted([self.player1.get_name(), self.player2.get_name()])
-        winner_key = max(score, key = score.get)
-        self.winner_player = self.player1.get_name() if \
-            winner_key == "B" else self.player2.get_name()
-        return [self.winner_player]
     
     def update_state(self, Point: str):
         #print(self.current_player.get_name(), Point)
         if self.check_pass_flag(Point):
-            self.winner_player = self.score_winner(Board(self.boards[0]).count_score())
+            self.end_game()
             self.game_over = True
             return
         try:
             new_board = place_stone(self.boards[0], self.current_player.get_stone(), Point) 
         except BoardPointException:
             new_board = False
-        
-        
         if new_board:
             #for row in new_board:
                 #print(row)
             self.update_boards(new_board)
             self.switch_player()
-            
         else:
             self.switch_player()
-            self.winner_player = [self.current_player.get_name()]
+            self.end_game(cheating=True)
             self.game_over = True
         return
 
     def start_game(self): 
-
-        resp = self.player1.register()
-        if not resp:
-            self.winner_player = []
-            self.game_over = True
-            return
-        resp = self.player2.register()
-        if not resp:
-            self.winner_player = []
-            self.game_over = True
-            return
-
+        
         resp = self.player1.receive_stones("B")
         if not resp:
             self.winner_player = []
@@ -90,12 +70,38 @@ class Referee:
             self.game_over = True
             return
 
-
         self.boards = [Board().get_board()]
         self.current_player = self.player1
         while not self.game_over:
             point = self.current_player.make_move(self.boards)
             self.update_state(point)
+    
+    def end_game(self, cheating=False):
+        """
+        Sets the results list:
+        [(winner_player: score), (loser_player: score), cheating_flag]
+        """
+        score = self.boards[0].count_score()
+        score_player1 = score["B"]
+        score_player2 = score["W"]
+        if not cheating:
+            self.results = [(self.player1, score_player1), 
+                (self.player2, score_player2)]
+            self.results = sorted(self.results, key=lambda x : x[1], reversed=True)
+            self.results.append(cheating)
+        else:
+            if self.current_player == self.player1:
+                self.results = [(self.current_player, score_player1), (self.player2, score_player2)]
+                self.results.append(cheating)
+            else:
+                self.results = [(self.current_player, score_player2), (self.player1, score_player1)]
+                self.results.append(cheating)
+
+        
+
+        
+
+
 
 
             

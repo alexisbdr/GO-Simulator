@@ -12,12 +12,10 @@ import json
 
 class Administrator:
     
-    def __init__(self, tournament: str, num_players: int):
-        self.handle_inputs(tournament, num_players)
+    def __init__(self):
         self.load_config()
         self.create_server_conn()
 
-    def handle
     def load_config(self):
         config_file = open(GO_CONFIG_PATH, 'r')
         config_file = config_file.read()
@@ -57,10 +55,4 @@ class Administrator:
         else:
             self.conn.close()
 
-if __name__ == "__main__":
-    cmdline = sys.argv
-    if len(cmdline) != 2:
-        raise Exception("Incorrect number of command line arguments")
-    tournament = cmdline[0]
-    num_players = cmdline[1]
-    Administrator(tournament, num_players)
+Administrator()
