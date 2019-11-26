@@ -59,7 +59,6 @@ class Referee:
                 #print(row)
             self.update_boards(new_board)
             self.switch_player()
-            
         else:
             self.switch_player()
             self.winner_player = [self.current_player.get_name()]

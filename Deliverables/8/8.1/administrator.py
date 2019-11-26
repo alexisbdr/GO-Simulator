@@ -15,7 +15,7 @@ class Administrator:
     def __init__(self):
         self.load_config()
         self.create_server_conn()
-    
+
     def load_config(self):
         config_file = open(GO_CONFIG_PATH, 'r')
         config_file = config_file.read()
@@ -54,6 +54,5 @@ class Administrator:
             self.conn.close()
         else:
             self.conn.close()
-
 
 Administrator()

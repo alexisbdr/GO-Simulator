@@ -1,21 +1,25 @@
-from player import ProxyPlayer, SimpleValidPlayers, CapturePlayers
+from player import ProxyPlayer
+from player import SimpleValidPlayers 
+from player import CapturePlayers
+from player import InvalidPlayers
 import importlib.util
 from definitions import DEFAULT_PLAYER_CLASS
 import random
 
 
 class PlayerFactory():
-    def __init__(self, connection=None, path=None, player_cls=None):
+    def __init__(self, connection=None, path=None, remote=False):
         self.connection = connection
         self.path = path
-        self.player_cls = player_cls
+        self.remote = remote
 
     def create(self):
         if self.connection:
             return self.createProxy()
         elif self.path:
             return self.createDefault()
-        return self.createRemote()
+        else:
+            return self.createRemote()
 
     def createProxy(self):
         player = ProxyPlayer()
@@ -33,6 +37,12 @@ class PlayerFactory():
         def all_subclasses(cls):
             return set(cls.__subclasses__()).union(
                 [s for c in cls.__subclasses__() for s in all_subclasses(c)]) 
-        valid_players = all_subclasses(self.player_cls)
+        choice = random.randint(0,2)
+        if not choice:
+            valid_players = list(all_subclasses(CapturePlayers))
+        elif choice == 1: 
+            valid_players = list(all_subclasses(SimpleValidPlayers))
+        else:
+            valid_players = list(all_subclasses(InvalidPlayers))
         choice = random.randint(0, len(valid_players) -1)
         return valid_players[choice]()

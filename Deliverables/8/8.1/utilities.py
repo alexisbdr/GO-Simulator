@@ -1,5 +1,7 @@
 import json
 
+
+
 def readJSON(text):
     objs = []
     decoder = json.JSONDecoder()
