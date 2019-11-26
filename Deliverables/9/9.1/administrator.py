@@ -138,8 +138,8 @@ def create_socket(host, port):
     return server_socket
 
 if __name__ == "__main__":
-    host, port, path = load_config()
-    socket = create_socket(host, port)
+    #host, port, path = load_config()
+    socket = create_socket(localhost, 8080)
     print(sys.argv)
     if len(sys.argv) != 3:
         raise Exception("Incorrect number of command line arguments")
