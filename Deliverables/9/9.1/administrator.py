@@ -37,23 +37,26 @@ class Administrator:
         
     def get_players(self):
         self.players = []
+        connections = []
         print("getting players")
         self.server_socket.listen(self.num_players)
-        while self.num_players != len(self.players):
+        while self.num_players != len(connections):
             #print("started loop")
             conn, addr = self.server_socket.accept()
             print("new player on conn: ",conn)
+            connections.append(conn)
+            #print(self.players)
+        self.make_players(connections)
+    
+    def make_players(self, connection_list):
+        self.num_players = nextPowerOf2(self.num_players)
+        for conn in connection_list:
             proxy_player = PlayerFactory(connection=conn).create()
             self.players.append(proxy_player)
-            #print(self.players)
-        self.make_players()
-    
-    def make_players(self):
-        self.num_players = nextPowerOf2(self.num_players)
         while self.num_players != len(self.players):
             default_player = PlayerFactory(path=self.default_player_path).create()
             self.players.append(default_player)
-            #print("made a new player")
+            print("made a new player")
         self.register_players()
 
     def register_players(self):
