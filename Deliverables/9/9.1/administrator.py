@@ -66,6 +66,7 @@ class Administrator:
             if not resp:
                 #Replace player that doesn't register with a default player
                 self.players[p] = PlayerFactory(path=self.default_player_path).create()
+                self.players[p].register()
 
     def start_tournament(self):
         #print("starting tournament")
