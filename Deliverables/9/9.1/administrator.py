@@ -40,7 +40,6 @@ class Administrator:
         #print("getting players")
         while self.num_players != len(self.players):
             #print("started loop")
-            self.server_socket.listen()
             conn, addr = self.server_socket.accept()
             #print("new player on conn: ",conn)
             proxy_player = PlayerFactory(connection=conn).create()
@@ -135,6 +134,7 @@ def create_socket(host, port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((host , port))
+    server_socket.listen()
     return server_socket
 
 if __name__ == "__main__":
