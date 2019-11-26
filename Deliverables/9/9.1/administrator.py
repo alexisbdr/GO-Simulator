@@ -22,7 +22,7 @@ class Administrator:
         self.server_socket = socket
         self.default_player_path = path
         self.check_inputs(tournament, num_players)
-        self.get_players()
+        self.get_connections()
         self.start_tournament()
 
     def check_inputs(self, tournament: str, num_players: str):
@@ -35,8 +35,7 @@ class Administrator:
             raise Exception("Number players should be an integer")
         #print(self.tournament, self.num_players)
         
-    def get_players(self):
-        self.players = []
+    def get_connections(self):
         connections = []
         print("getting players")
         self.server_socket.listen(self.num_players)
@@ -49,6 +48,7 @@ class Administrator:
         self.make_players(connections)
     
     def make_players(self, connection_list):
+        self.players = []
         self.num_players = nextPowerOf2(self.num_players)
         for conn in connection_list:
             proxy_player = PlayerFactory(connection=conn).create()
@@ -124,6 +124,7 @@ class Administrator:
         #shutdown the server connection
         #self.server_socket.shutdown(socket.SHUT_RDWR)
         self.server_socket.close()
+        sys.exit(0)
 
 def load_config():
     config_file = open(GO_CONFIG_PATH, 'r')

@@ -14,7 +14,6 @@ class Cup:
         self.run(self.players)
     
     def run(self, players: list):
-        print("starting cup")
         next_round_players = []
         if len(players) == 1:
             self.results['winner'] = players[0].get_name()

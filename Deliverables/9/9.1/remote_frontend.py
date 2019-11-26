@@ -62,6 +62,10 @@ class RemoteReferee:
                 resp_json = readJSON(resp)
                 output = self.parse_command(resp_json[0])
                 #print(output)
+                if output == "OK":
+                    self.client_socket.send(str.encode(output))
+                    self.client_socket.shutdown(1)
+                    self.client_socket.close()
                 if output == "close":
                     self.client_socket.shutdown(1)
                     self.client_socket.close()
