@@ -38,6 +38,7 @@ class Administrator:
     def get_players(self):
         self.players = []
         #print("getting players")
+        self.server_socket.listen(self.num_players)
         while self.num_players != len(self.players):
             #print("started loop")
             conn, addr = self.server_socket.accept()
@@ -134,12 +135,11 @@ def create_socket(host, port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((host , port))
-    server_socket.listen()
     return server_socket
 
 if __name__ == "__main__":
-    #host, port, path = load_config()
-    socket = create_socket(localhost, 8080)
+    host, port, path = load_config()
+    socket = create_socket(host, port)
     print(sys.argv)
     if len(sys.argv) != 3:
         raise Exception("Incorrect number of command line arguments")
