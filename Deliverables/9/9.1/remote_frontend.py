@@ -54,8 +54,8 @@ class RemoteReferee:
                 resp = self.client_socket.recv(self.buffer) 
                 resp = resp.decode("UTF-8")
             except ConnectionResetError:
-                self.client_socket.shutdown(1)
                 self.client_socket.close()
+                break
             #there is nothing coming from the server, so it has disconnected
             if not resp:
                 #self.client_socket.shutdown(socket.SHUT_WR)
