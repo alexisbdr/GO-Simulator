@@ -29,13 +29,13 @@ class RemoteReferee:
         connected = False
         #Connect
         iter = 0
-        print("trying to connect")
+        #print("trying to connect")
         while not connected:
             try: 
                 #print("Trying to connect")
                 self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.client_socket.connect((host, port))
-                print("connected")
+                #print("connected")
                 connected = True
             except ConnectionRefusedError:
                 iter += 1
@@ -47,7 +47,7 @@ class RemoteReferee:
                 continue
     
     def start_client(self):
-        print("starting client")
+        #print("starting client")
         #### USE FACTORY
         while True:
             resp = self.client_socket.recv(self.buffer) 
@@ -66,6 +66,7 @@ class RemoteReferee:
                     self.client_socket.shutdown(1)
                     self.client_socket.close()
                     break
+                #print(output)
                 self.client_socket.send(str.encode(output))
             
 
@@ -93,12 +94,11 @@ class RemoteReferee:
                     return ILLEGAL_HISTORY_MESSAGE
                 return self.player.make_move(command[1])   
             except (StoneException, BoardException, IndexError):
-                #print("2")
                 return CRAZY_GO
 
         elif command[0] == "end-game":
             try:
-                self.player.end_game()
+                return self.player.end_game()
             except PlayerException:
                 return CRAZY_GO
 

@@ -52,8 +52,9 @@ class Referee:
             self.update_boards(new_board)
             self.switch_player()
         else:
+            #print(new_board)
             self.switch_player()
-            self.end_game()
+            self.end_game(cheating=True)
             self.game_over = True
         return
 
@@ -85,20 +86,20 @@ class Referee:
         resp1 = self.player1.end_game()
         resp2 = self.player2.end_game()
         
-        score = self.boards[0].count_score()
+        score = Board(self.boards[0]).count_score()
         score_player1 = score["B"]
         score_player2 = score["W"]
         if not cheating:
             #Send end message to both and see if one of them disconnects
             self.results = [[self.player1, score_player1], 
-                [self.player2, score_player2], cheating]
-            self.results = sorted(self.results, key=lambda x : x[1], reversed=True)
+                [self.player2, score_player2]]
+            self.results = sorted(self.results, key=lambda x : x[1], reverse=True)
         else:
             if self.current_player == self.player1:
-                self.results = [(self.current_player, score_player1), (self.player2, score_player2), cheating]
+                self.results = [(self.current_player, score_player1), (self.player2, score_player2)]
             else:
-                self.results = [(self.current_player, score_player2), (self.player1, score_player1), cheating]
-
+                self.results = [(self.current_player, score_player2), (self.player1, score_player1)]
+        self.results.append(cheating)
         
 
         

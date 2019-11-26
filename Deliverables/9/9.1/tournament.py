@@ -10,12 +10,13 @@ class Cup:
     def __init__(self, players: list):
         self.players = players
         self.results = {}
-        self.round = log2(len(self.players))
+        self.round = 1
         self.run(self.players)
     
     def run(self, players: list):
         next_round_players = []
         if len(players) == 1:
+            self.results['winner'] = players[0].get_name()
             return
         for p in range(0, len(players), 2):
             game = Referee(players[p], players[p+1]).get_results()
@@ -30,7 +31,7 @@ class Cup:
                 self.results[self.round].append(loser_player_name)
             else: 
                 self.results[self.round] = [loser_player_name]
-        self.round -= 1
+        self.round += 1
         self.run(next_round_players)
     
     def get_results(self):
@@ -49,12 +50,15 @@ class League:
 
     def run(self):
         schedule = combinations(range(len(self.players)), 2)
-        for index, g in enumerate(schedule): 
+        for index, g in enumerate(schedule):
+            #print(g)
             game = Referee(self.players[g[0]], self.players[g[1]]).get_results()
+            #print(game)
             if game[2]:
                 new_player = PlayerFactory(path=self.default_player).create()
+                new_player.register()
                 cheating_player = game[1][0]
-                self.player_score[cheating_player] = CHEATING_PLAYER
+                self.player_score[cheating_player] = -1
                 self.player_score[new_player] = 0
                 self.player_score[game[0][0]] += 1
                 if cheating_player == self.players[g[0]]:

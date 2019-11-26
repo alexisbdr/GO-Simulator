@@ -35,8 +35,6 @@ class AbstractPlayer(ABC):
     def set_stone(self, stone: str):
         if not self.registered:
             raise PlayerException("Player has not been registered yet")
-        if self.stone in STONE:
-            raise StoneException("Player has already received stones")
         if stone not in STONE:
             raise StoneException("Invalid Stone in Player")
         self.stone = stone
@@ -148,6 +146,8 @@ class DefaultPlayer(AbstractPlayer):
                 return result
         
         valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_stone())
+        if len(valid_moves) == 1:
+            return PASS_OUTPUT
         #If list is empty then there are no valid moves
         if not valid_moves: 
             return PASS_OUTPUT
@@ -276,6 +276,8 @@ class SimpleValidPlayers(AbstractPlayer):
         for new_point in all_string_points: 
             if rulecheck(boards, stone, new_point):
                 valid_moves.append(new_point)
+        if len(valid_moves) == 1:
+            return ["pass"]
         return valid_moves
     
 class ClassicValidPlayer(SimpleValidPlayers):
@@ -285,7 +287,7 @@ class ClassicValidPlayer(SimpleValidPlayers):
     def __init__(self):
         super().__init__()
         self.name = "Classic Valid Player"
-
+ 
     def make_move(self, boards:List):
         valid_moves = self.all_valid_moves(boards, self.get_stone())
         return valid_moves[0]
@@ -385,17 +387,19 @@ class TuringValidPlayer(CapturePlayers):
 
     def make_move(self, boards: List):# -> str:
         valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_stone())
+        if len(valid_moves) == 1:
+            return PASS_OUTPUT
         #If list is empty then there are no valid moves
         if not valid_moves: 
             return PASS_OUTPUT
         capture_point = self.make_move_capture(boards, valid_moves)
         #If no moves lead to an opponent capture - return first valid point
         if not capture_point:
-            choice = random.randint(0,len(valid_moves))
+            choice = random.randint(0,len(valid_moves) - 1)
             return valid_moves[choice]
         return capture_point
     
-class TuringAdvancedValidPlayer(CapturePlayers):
+"""class TuringAdvancedValidPlayer(CapturePlayers):
 
     def __init__(self):
         super().__init__()
@@ -423,15 +427,14 @@ class TuringAdvancedValidPlayer(CapturePlayers):
             return PASS_OUTPUT
 
 
-    def make_move_recursive(self, list_of_moves: List, boards:List) -> str:
-        """
+def make_move_recursive(self, list_of_moves: List, boards:List) -> str:
+    
         Steps: 
             1.Finds and iterates through valid player moves
             2.For each valid player move 
             3.Find and iterate through valid opponent moves
             4.Make valid opponent move
             5.Call self recursive move on new update board state after player and opponent valid moves
-        """
         boards = deepcopy(boards)
         valid_moves, valid_capture_moves = self.all_valid_moves(boards, self.get_stone())
         opposite_stone = self.get_opponent_color()
@@ -465,7 +468,7 @@ class TuringAdvancedValidPlayer(CapturePlayers):
                 choice = random.randint(0, len(list_of_moves)- 1)
                 return list_of_moves[choice]
             list_of_moves.pop()
-        return None
+        return None"""
 
 class InvalidPlayers(AbstractPlayer):
     
@@ -562,4 +565,17 @@ class OutOfBoundsInvalidPlayer(InvalidPlayers):
       
     def get_outofbounds_move(self, boards):
         return str(BOARD_COLUMNS_MAX + 1) + "-" + str(BOARD_COLUMNS_MAX + 1)
+
+class CloseConnectionInvalidPlayer(InvalidPlayers):
+    
+    def __init__(self):
+        super().__init__()
+        self.name = "Close Connection Invalid Player"
+
+    def make_move(self, boards: List):
+        if self.turn == self.invalid_turn:
+            return "close"
+        else:
+            self.turn+=1 
+            return self.make_valid_move(boards)
     

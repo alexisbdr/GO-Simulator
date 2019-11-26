@@ -1,7 +1,7 @@
 from player import ProxyPlayer
 from player import SimpleValidPlayers 
 from player import CapturePlayers
-from player import InvalidPlayers
+from player import InvalidPlayers, TuringValidPlayer
 import importlib.util
 from definitions import DEFAULT_PLAYER_CLASS
 import random

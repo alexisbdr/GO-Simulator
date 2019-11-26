@@ -3,6 +3,9 @@ import json
 def nextPowerOf2(n): 
   
     p = 1
+
+    if n <= 1:
+        return 2
     if (n and not(n & (n - 1))): 
         return n 
   
