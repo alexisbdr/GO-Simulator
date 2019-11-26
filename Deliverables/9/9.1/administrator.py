@@ -26,7 +26,7 @@ class Administrator:
         self.start_tournament()
 
     def check_inputs(self, tournament: str, num_players: str):
-        if tournament == "league" or tournament == "cup":
+        if tournament == "-league" or tournament == "-cup":
             self.tournament = tournament.strip("-")
         else: raise Exception("Invalid tournament input")
         try: 
