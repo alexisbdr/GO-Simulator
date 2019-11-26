@@ -50,8 +50,12 @@ class RemoteReferee:
         #print("starting client")
         #### USE FACTORY
         while True:
-            resp = self.client_socket.recv(self.buffer) 
-            resp = resp.decode("UTF-8")
+            try:
+                resp = self.client_socket.recv(self.buffer) 
+                resp = resp.decode("UTF-8")
+            except ConnectionResetError:
+                self.client_socket.close()
+                break
             #there is nothing coming from the server, so it has disconnected
             if not resp:
                 #self.client_socket.shutdown(socket.SHUT_WR)
