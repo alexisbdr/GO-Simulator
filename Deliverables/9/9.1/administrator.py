@@ -89,19 +89,18 @@ class Administrator:
                 val = item[1]
                 if val == prev_val:
                     if val == -1:
-                        print(",", key.get_name(), end="")
+                        print(key.get_name())
                     else:
-                        print(",", key.get_name(), "("+ str(val)+")", end="")
+                        print("   " + key.get_name(), "("+ str(val)+")")
                 else:
                     rank +=1
                     if val == -1:
-                        print("Cheater(s): ",end='')
-                        print(key.get_name(),end='')
+                        print("Cheater(s): ")
+                        print(key.get_name())
                     else:
                         print(str(rank)+". ",end='')
-                        print(key.get_name(), " ("+ str(val)+")",end='')
+                        print(key.get_name(), " ("+ str(val)+")")
                 prev_val = val
-                print()
 
         else:
             print("Winner: ", results["winner"])
@@ -119,15 +118,13 @@ class Administrator:
 
         
     def close_connection(self):
+        print("closing connections")
+        
         for player in self.players:
-            if not isinstance(player, DefaultPlayer) and player.is_connected():
+            if player.is_connected():
                 player.conn.shutdown(1)
                 player.conn.close()
-                
-        #shutdown the server connection
-        #self.server_socket.shutdown(socket.SHUT_RDWR)
         self.server_socket.close()
-        sys.exit(0)
 
 def load_config():
     config_file = open(GO_CONFIG_PATH, 'r')
