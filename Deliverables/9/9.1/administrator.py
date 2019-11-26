@@ -42,7 +42,7 @@ class Administrator:
         while self.num_players != len(connections):
             #print("started loop")
             conn, addr = self.server_socket.accept()
-            print("new player on conn: ",conn)
+            #print("new player on conn: ",conn)
             connections.append(conn)
             #print(self.players)
         self.make_players(connections)
@@ -56,7 +56,7 @@ class Administrator:
         while self.num_players != len(self.players):
             default_player = PlayerFactory(path=self.default_player_path).create()
             self.players.append(default_player)
-            print("made a new player")
+            #print("made a new player")
         self.register_players()
 
     def register_players(self):
@@ -88,15 +88,18 @@ class Administrator:
                 key = item[0]
                 val = item[1]
                 if val == prev_val:
-                    print(", ", key.get_name(), " (", val,")", end="")
+                    if val == -1:
+                        print(",", key.get_name(), end="")
+                    else:
+                        print(",", key.get_name(), "("+ str(val)+")", end="")
                 else:
                     rank +=1
                     if val == -1:
                         print("Cheater(s): ",end='')
                         print(key.get_name(),end='')
                     else:
-                        print(str(rank),". ",end='')
-                        print(key.get_name(), " (", val,")",end='')
+                        print(str(rank)+". ",end='')
+                        print(key.get_name(), " ("+ str(val)+")",end='')
                 prev_val = val
                 print()
 
@@ -145,7 +148,7 @@ def create_socket(host, port):
 if __name__ == "__main__":
     host, port, path = load_config()
     socket = create_socket(host, port)
-    print(sys.argv)
+    #print(sys.argv)
     if len(sys.argv) != 3:
         raise Exception("Incorrect number of command line arguments")
     tournament = sys.argv[1].strip("-")
