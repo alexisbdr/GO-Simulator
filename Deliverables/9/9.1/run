@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 administrator.py 
+python3 administrator.py $1 $2
