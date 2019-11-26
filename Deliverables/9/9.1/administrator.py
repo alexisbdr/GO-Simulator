@@ -26,8 +26,8 @@ class Administrator:
         self.start_tournament()
 
     def check_inputs(self, tournament: str, num_players: str):
-        if tournament == "-league" or tournament == "-cup":
-            self.tournament = tournament.strip("-")
+        if tournament == "league" or tournament == "cup":
+            self.tournament = tournament
         else: raise Exception("Invalid tournament input")
         try: 
             self.num_players = int(num_players)
@@ -148,6 +148,6 @@ if __name__ == "__main__":
     print(sys.argv)
     if len(sys.argv) != 3:
         raise Exception("Incorrect number of command line arguments")
-    tournament = sys.argv[1]
+    tournament = sys.argv[1].strip("-")
     num_players = sys.argv[2]
     Administrator(tournament, num_players, socket, path)
