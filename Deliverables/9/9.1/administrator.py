@@ -18,9 +18,10 @@ import operator
 
 class Administrator:
     
-    def __init__(self, tournament: str, num_players: str):
+    def __init__(self, tournament: str, num_players: str, socket, path):
+        self.server_socket = socket
+        self.default_player_path = path
         self.check_inputs(tournament, num_players)
-        self.load_config()
         self.get_players()
         self.start_tournament()
 
@@ -34,19 +35,7 @@ class Administrator:
             raise Exception("Number players should be an integer")
         #print(self.tournament, self.num_players)
         
-    def load_config(self):
-        config_file = open(GO_CONFIG_PATH, 'r')
-        config_file = config_file.read()
-        netData = readJSON(config_file)
-        netData = netData[0]
-        self.host = netData['IP']
-        self.port = netData['port']
-        self.default_player_path = netData['default-player']
-    
     def get_players(self):
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_socket.bind((self.host , self.port))
         self.players = []
         #print("getting players")
         while self.num_players != len(self.players):
@@ -132,9 +121,28 @@ class Administrator:
         #self.server_socket.shutdown(socket.SHUT_RDWR)
         self.server_socket.close()
 
+def load_config():
+    config_file = open(GO_CONFIG_PATH, 'r')
+    config_file = config_file.read()
+    netData = readJSON(config_file)
+    netData = netData[0]
+    host = netData['IP']
+    port = netData['port']
+    default_player_path = netData['default-player']
+    return host, port, default_player_path
+
+def create_socket(host, port):
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((host , port))
+    return server_socket
+
 if __name__ == "__main__":
+    host, port, path = load_config()
+    socket = create_socket(host, port)
+    print(sys.argv)
     if len(sys.argv) != 3:
         raise Exception("Incorrect number of command line arguments")
-    tournament = sys.argv[1].strip("-")
+    tournament = sys.argv[1]
     num_players = sys.argv[2]
-    Administrator(tournament, num_players)
+    Administrator(tournament, num_players, socket, path)
