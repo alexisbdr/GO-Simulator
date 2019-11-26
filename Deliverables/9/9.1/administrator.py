@@ -37,12 +37,12 @@ class Administrator:
         
     def get_players(self):
         self.players = []
-        #print("getting players")
+        print("getting players")
         self.server_socket.listen(self.num_players)
         while self.num_players != len(self.players):
             #print("started loop")
             conn, addr = self.server_socket.accept()
-            #print("new player on conn: ",conn)
+            print("new player on conn: ",conn)
             proxy_player = PlayerFactory(connection=conn).create()
             self.players.append(proxy_player)
             #print(self.players)

@@ -14,12 +14,14 @@ class Cup:
         self.run(self.players)
     
     def run(self, players: list):
+        print("starting cup")
         next_round_players = []
         if len(players) == 1:
             self.results['winner'] = players[0].get_name()
             return
         for p in range(0, len(players), 2):
             game = Referee(players[p], players[p+1]).get_results()
+            print(game)
             winner, loser = 0,1
             if game[0][1] == game[1][1]:
                 coin_flip = random.randint(0,1)
@@ -49,11 +51,12 @@ class League:
         self.run()
 
     def run(self):
+        print("starting league")
         schedule = combinations(range(len(self.players)), 2)
         for index, g in enumerate(schedule):
             #print(g)
             game = Referee(self.players[g[0]], self.players[g[1]]).get_results()
-            #print(game)
+            print(game)
             if game[2]:
                 new_player = PlayerFactory(path=self.default_player).create()
                 new_player.register()
