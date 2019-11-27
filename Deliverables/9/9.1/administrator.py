@@ -81,7 +81,7 @@ class Administrator:
             tournament_results = League(self.players, self.default_player_path).get_results()
             for player in tournament_results:
                 self.close_connection(player)
-                
+
         self.print_results(tournament_results)
 
     def print_results(self, results: dict):
@@ -125,9 +125,15 @@ class Administrator:
 
         
     def close_connection(self, player):
+        
         if player.is_connected():
-            player.conn.shutdown(1)
-            player.conn.close()
+            print("disconnecting player", player)
+            try:
+                player.conn.shutdown(1)
+                player.conn.close()
+            except OSError:
+                print("player already disconnected")
+                return
         return
 
 def load_config():
