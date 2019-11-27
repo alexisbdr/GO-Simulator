@@ -118,8 +118,9 @@ class Administrator:
 
         
     def close_connection(self):
-        #print("closing connections")
+        print("closing connections")
         for player in self.players:
+            print(player.is_connected())
             if player.is_connected():
                 player.conn.shutdown(1)
                 player.conn.close()
