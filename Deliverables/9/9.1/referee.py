@@ -61,17 +61,17 @@ class Referee:
     def start_game(self): 
         
         resp = self.player1.receive_stones("B")
-        if not resp:
+        """if not resp:
             self.end_game(cheating=True)
             #self.results = [(self.player2, 0), (self.player1, 0), True]
             self.game_over = True
-            return
+            return"""
         resp = self.player2.receive_stones("W")
-        if not resp:
+        """if not resp:
             self.end_game(cheating=True)
             #self.results = [(self.player1, 0), (self.player2, 0), True]
             self.game_over = True
-            return
+            return"""
 
         self.boards = [Board().get_board()]
         self.current_player = self.player1
