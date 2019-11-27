@@ -46,6 +46,7 @@ class Administrator:
             connections.append(conn)
             #print(self.players)
         self.make_players(connections)
+        self.server_socket.close()
     
     def make_players(self, connection_list):
         self.players = []
@@ -123,8 +124,6 @@ class Administrator:
             if player.is_connected():
                 player.conn.shutdown(1)
                 player.conn.close()
-        #self.server_socket.shutdown(1)
-        self.server_socket.close()
         sys.exit(0)
         return
 
