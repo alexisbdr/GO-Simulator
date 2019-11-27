@@ -106,6 +106,7 @@ class ProxyPlayer(AbstractPlayer):
         if not result:
             self.client_connected = False
             return False
+        return result
     
     def is_connected(self):
         return self.client_connected
@@ -123,7 +124,6 @@ class ProxyPlayer(AbstractPlayer):
         except BrokenPipeError:
             self.client_connected = False
             return False
-        
 
 
 class DefaultPlayer(AbstractPlayer):
