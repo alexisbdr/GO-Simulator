@@ -81,9 +81,6 @@ class ProxyPlayer(AbstractPlayer):
     def register(self):
         super().register()
         self.name = self.send(["register"])
-        if not self.name:
-            self.client_connected = False
-            return False
         return self.name
 
     def receive_stones(self, color):
@@ -102,9 +99,6 @@ class ProxyPlayer(AbstractPlayer):
         command = ["make-a-move"]
         command.append(boards)
         result = self.send(command)
-        if not result:
-            self.client_connected = False
-            return False
         return result
     
     def end_game(self):
@@ -126,6 +120,7 @@ class ProxyPlayer(AbstractPlayer):
             print("received message", resp)
             return resp
         except BrokenPipeError:
+            print("remote player not connected")
             self.client_connected = False
             return False
 
