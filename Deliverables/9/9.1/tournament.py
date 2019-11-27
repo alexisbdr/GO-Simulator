@@ -53,7 +53,7 @@ class League:
         print("starting league")
         schedule = combinations(range(len(self.players)), 2)
         for index, g in enumerate(schedule):
-            #print(g)
+            print(g)
             game = Referee(self.players[g[0]], self.players[g[1]]).get_results()
             print(game)
             if game[2]:

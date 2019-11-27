@@ -120,11 +120,12 @@ class Administrator:
     def close_connection(self):
         print("closing connections")
         for player in self.players:
-            print(player.is_connected())
             if player.is_connected():
                 player.conn.shutdown(1)
                 player.conn.close()
+        #self.server_socket.shutdown(1)
         self.server_socket.close()
+        sys.exit(0)
         return
 
 def load_config():
