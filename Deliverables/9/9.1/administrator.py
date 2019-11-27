@@ -37,7 +37,7 @@ class Administrator:
         
     def get_connections(self):
         connections = []
-        print("getting players")
+        #print("getting players")
         self.server_socket.listen(self.num_players)
         while self.num_players != len(connections):
             #print("started loop")
@@ -118,13 +118,13 @@ class Administrator:
 
         
     def close_connection(self):
-        print("closing connections")
-        
+        #print("closing connections")
         for player in self.players:
             if player.is_connected():
                 player.conn.shutdown(1)
                 player.conn.close()
         self.server_socket.close()
+        return
 
 def load_config():
     config_file = open(GO_CONFIG_PATH, 'r')

@@ -140,6 +140,8 @@ class DefaultPlayer(AbstractPlayer):
         if not choice:
             return self.make_invalid_move(boards)"""
 
+        return PASS_OUTPUT
+
         if self.depth > 1:
             result = self.make_move_future(boards)
             if result:
