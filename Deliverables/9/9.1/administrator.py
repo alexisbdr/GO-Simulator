@@ -73,10 +73,16 @@ class Administrator:
         #print("starting tournament")
         if self.tournament == "cup":
             tournament_results = Cup(self.players).get_results()
+            for key in tournament_results:
+                for p in tournament_results[key]:
+                    self.close_connection(p)
+            
         elif self.tournament == "league":
             tournament_results = League(self.players, self.default_player_path).get_results()
+            for player in tournament_results:
+                self.close_connection(player)
+                
         self.print_results(tournament_results)
-        self.close_connection()
 
     def print_results(self, results: dict):
         print("===== Final Rankings =====")
@@ -104,7 +110,7 @@ class Administrator:
                 prev_val = val
 
         else:
-            print("Winner: ", results["winner"])
+            print("Winner: ", results["winner"][0].get_name())
             for key, val in results.items():
                 if key == 'winner':
                     continue
@@ -112,21 +118,16 @@ class Administrator:
                 string = ""
                 for i, p in enumerate(val):
                     if i == 0:
-                        string += p
+                        string += p.get_name()
                     else:
-                        string += ", " + p
+                        string += ", " + p.get_name()
                 print("Eliminated in round ", int(key), ": ", string)
 
         
-    def close_connection(self):
-        print("closing connections")
-        for player in self.players:
-            print(player, player.is_connected())
-            if player.is_connected():
-                player.conn.shutdown(1)
-                player.conn.close()
-
-        sys.exit(0)
+    def close_connection(self, player):
+        if player.is_connected():
+            player.conn.shutdown(1)
+            player.conn.close()
         return
 
 def load_config():
@@ -154,3 +155,4 @@ if __name__ == "__main__":
     tournament = sys.argv[1].strip("-")
     num_players = sys.argv[2]
     Administrator(tournament, num_players, socket, path)
+    sys.exit(0)

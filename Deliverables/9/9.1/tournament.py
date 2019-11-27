@@ -16,7 +16,7 @@ class Cup:
     def run(self, players: list):
         next_round_players = []
         if len(players) == 1:
-            self.results['winner'] = players[0].get_name()
+            self.results['winner'] = [players[0]]
             return
         for p in range(0, len(players), 2):
             game = Referee(players[p], players[p+1]).get_results()
@@ -27,7 +27,7 @@ class Cup:
                 winner = coin_flip
                 loser = 0 if winner else 1
             next_round_players.append(game[winner][0])
-            loser_player_name = game[loser][0].get_name()
+            loser_player_name = game[loser][0]
             if self.round in self.results:
                 self.results[self.round].append(loser_player_name)
             else: 
@@ -63,9 +63,6 @@ class League:
                 self.player_score[cheating_player] = -1
                 self.player_score[new_player] = 0
                 self.player_score[game[0][0]] += 1
-                if cheating_player.is_connected():
-                    cheating_player.conn.shutdown(1)
-                    cheating_player.conn.close()
                 if cheating_player == self.players[g[0]]:
                     self.players[g[0]] = new_player
                     self.game_results[g] = g[1]
