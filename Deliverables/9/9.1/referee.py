@@ -62,12 +62,14 @@ class Referee:
         
         resp = self.player1.receive_stones("B")
         if not resp:
-            self.results = [(self.player2, 0), (self.player1, 0), True]
+            self.end_game(cheating=True)
+            #self.results = [(self.player2, 0), (self.player1, 0), True]
             self.game_over = True
             return
         resp = self.player2.receive_stones("W")
         if not resp:
-            self.results = [(self.player1, 0), (self.player2, 0), True]
+            self.end_game(cheating=True)
+            #self.results = [(self.player1, 0), (self.player2, 0), True]
             self.game_over = True
             return
 
