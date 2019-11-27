@@ -85,7 +85,7 @@ class RemoteReferee:
         elif command[0] == "receive-stones":
             try:
                 self.player.set_stone(command[1])
-                return 'RECEIVE'
+                return ' '
             except (StoneException, AttributeError):
                 return CRAZY_GO
           
