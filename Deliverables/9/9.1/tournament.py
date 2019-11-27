@@ -63,6 +63,9 @@ class League:
                 self.player_score[cheating_player] = -1
                 self.player_score[new_player] = 0
                 self.player_score[game[0][0]] += 1
+                if cheating_player.is_connected():
+                    cheating_player.conn.shutdown(1)
+                    cheating_player.conn.close()
                 if cheating_player == self.players[g[0]]:
                     self.players[g[0]] = new_player
                     self.game_results[g] = g[1]
@@ -77,6 +80,7 @@ class League:
                         self.game_results[played_game] = loser_player
                         if self.player_score[self.players[loser_player]] != CHEATING_PLAYER:
                             self.player_score[self.players[loser_player]] += 1
+                
             else: 
                 #Draw situation
                 winner,loser = 0,1
@@ -92,6 +96,7 @@ class League:
                 else: self.game_results[g] = g[1]
     
     def get_results(self):
+        print(self.players)
         return self.player_score
         
 

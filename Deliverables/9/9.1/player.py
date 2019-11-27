@@ -81,6 +81,9 @@ class ProxyPlayer(AbstractPlayer):
     def register(self):
         super().register()
         self.name = self.send(["register"])
+        if not self.name:
+            self.client_connected = False
+            return False
         return self.name
 
     def receive_stones(self, color):
@@ -98,7 +101,11 @@ class ProxyPlayer(AbstractPlayer):
     def make_move(self, boards):
         command = ["make-a-move"]
         command.append(boards)
-        return self.send(command)
+        result = self.send(command)
+        if not result:
+            self.client_connected = False
+            return False
+        return result
     
     def end_game(self):
         command = ["end-game"]
