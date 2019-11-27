@@ -102,7 +102,10 @@ class ProxyPlayer(AbstractPlayer):
     
     def end_game(self):
         command = ["end-game"]
-        return self.send(command)
+        result = self.send(command)
+        if not result:
+            self.client_connected = False
+            return False
     
     def is_connected(self):
         return self.client_connected
@@ -111,15 +114,16 @@ class ProxyPlayer(AbstractPlayer):
         print(message)
         try:
             self.conn.send(str.encode(json.dumps(message)))
+            resp = self.conn.recv(1024).decode("UTF-8")
+            print(resp)
+            #if not resp:
+                #self.client_connected = False
+                #return False
+            return resp
         except BrokenPipeError:
             self.client_connected = False
             return False
-        resp = self.conn.recv(1024).decode("UTF-8")
-        print(resp)
-        if not resp:
-            self.client_connected = False
-            return False
-        return resp
+        
 
 
 class DefaultPlayer(AbstractPlayer):
@@ -284,7 +288,7 @@ class SimpleValidPlayers(AbstractPlayer):
         for new_point in all_string_points: 
             if rulecheck(boards, stone, new_point):
                 valid_moves.append(new_point)
-        if len(valid_moves) == 1:
+        if len(valid_moves) <= 1:
             return ["pass"]
         return valid_moves
     

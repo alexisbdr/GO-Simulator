@@ -37,7 +37,7 @@ class Referee:
     
     
     def update_state(self, Point: str):
-        print(self.current_player.get_name(), Point)
+        #print(self.current_player.get_name(), Point)
         if self.check_pass_flag(Point):
             self.end_game()
             self.game_over = True
@@ -47,12 +47,12 @@ class Referee:
         except BoardPointException:
             new_board = False
         if new_board:
-            for row in new_board:
-                print(row)
+            #for row in new_board:
+                #print(row)
             self.update_boards(new_board)
             self.switch_player()
         else:
-            print(new_board)
+            #print(new_board)
             self.switch_player()
             self.end_game(cheating=True)
             self.game_over = True

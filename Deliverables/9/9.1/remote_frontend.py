@@ -83,6 +83,7 @@ class RemoteReferee:
             return self.player.get_name()
     
         elif command[0] == "receive-stones":
+            #return "close"
             try:
                 self.player.set_stone(command[1])
                 return ' '
@@ -101,6 +102,7 @@ class RemoteReferee:
                 return CRAZY_GO
 
         elif command[0] == "end-game":
+            #return " "
             try:
                 return self.player.end_game()
             except PlayerException:
