@@ -104,9 +104,6 @@ class ProxyPlayer(AbstractPlayer):
     def end_game(self):
         command = ["end-game"]
         result = self.send(command)
-        if not result:
-            #self.client_connected = False
-            return False
         return result
     
     def is_connected(self):
@@ -121,7 +118,7 @@ class ProxyPlayer(AbstractPlayer):
             return resp
         except BrokenPipeError:
             print("remote player not connected")
-            self.client_connected = False
+            #self.client_connected = False
             return False
 
 

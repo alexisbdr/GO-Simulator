@@ -77,14 +77,8 @@ class Administrator:
             
         elif self.tournament == "league":
             tournament_results = League(self.players, self.default_player_path).get_results()
-<<<<<<< HEAD
             [self.close_connection(p) for p in tournament_results]
                 
-=======
-            for player in tournament_results:
-                self.close_connection(player)
-
->>>>>>> e79363af7eab1df9ef2185754336bdf0b668caed
         self.print_results(tournament_results)
 
     def print_results(self, results: dict):
@@ -134,7 +128,7 @@ class Administrator:
             try:
                 player.conn.shutdown(1)
                 player.conn.close()
-            except OSError:
+            except OSError, BrokenPipeError:
                 print("player already disconnected")
                 return
         return
@@ -164,4 +158,3 @@ if __name__ == "__main__":
     tournament = sys.argv[1].strip("-")
     num_players = sys.argv[2]
     Administrator(tournament, num_players, socket, path)
-    sys.exit(0)
