@@ -93,6 +93,7 @@ class ProxyPlayer(AbstractPlayer):
         super().set_stone(color)
         command = ["receive-stones"]
         command.append(color)
+        print(command)
         return self.send(command)
 
     def make_move(self, boards):
