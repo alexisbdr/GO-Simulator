@@ -73,14 +73,11 @@ class Administrator:
         #print("starting tournament")
         if self.tournament == "cup":
             tournament_results = Cup(self.players).get_results()
-            for key in tournament_results:
-                for p in tournament_results[key]:
-                    self.close_connection(p)
+            [self.close_connection(p) for key in tournament_results for p in tournament_results[key]]
             
         elif self.tournament == "league":
             tournament_results = League(self.players, self.default_player_path).get_results()
-            for player in tournament_results:
-                self.close_connection(player)
+            [self.close_connection(p) for p in tournament_results]
                 
         self.print_results(tournament_results)
 
