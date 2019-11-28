@@ -126,10 +126,11 @@ class Administrator:
         if player.is_connected():
             print("disconnecting player", player)
             try:
-                player.conn.shutdown(1)
+                player.conn.shutdown(socket.SHUT_RDWR)
                 player.conn.close()
-            except (OSError, BrokenPipeError):
-                print("player already disconnected")
+            except (OSError, BrokenPipeError) as e:
+                player.conn.close()
+                print("player already disconnected, error: ", e)
                 return
         return
 
