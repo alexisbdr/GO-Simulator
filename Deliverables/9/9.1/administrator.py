@@ -126,7 +126,7 @@ class Administrator:
         if player.is_connected():
             print("disconnecting player", player)
             try:
-                player.conn.shutdown(socket.SHUT_RDWR)
+                player.conn.shutdown(1)
                 player.conn.close()
             except (OSError, BrokenPipeError) as e:
                 player.conn.close()

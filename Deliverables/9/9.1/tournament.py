@@ -91,6 +91,7 @@ class League:
                 if winning_player == self.players[g[0]]:
                     self.game_results[g] = g[0]
                 else: self.game_results[g] = g[1]
+        return
     
     def get_results(self):
         print(self.players)
