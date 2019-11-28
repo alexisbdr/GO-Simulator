@@ -112,7 +112,8 @@ class ProxyPlayer(AbstractPlayer):
     def send(self, message):
         print("sent message", message)
         try:
-            self.conn.send(str.encode(json.dumps(message)))
+            message = json.dumps(message)
+            self.conn.send(message.encode("UTF-8"))
             resp = self.conn.recv(131072).decode("UTF-8")
             print("received message", resp)
             return resp
