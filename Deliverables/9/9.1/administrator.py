@@ -131,7 +131,6 @@ class Administrator:
             except (OSError, BrokenPipeError):
                 print("player already disconnected")
                 return
-        player.conn.close()
         return
 
 def load_config():
