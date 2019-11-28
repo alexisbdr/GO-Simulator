@@ -114,8 +114,8 @@ class ProxyPlayer(AbstractPlayer):
         print("sent message", message)
         try:
             message = json.dumps(message)
-            self.conn.sendall(message)
-            resp = self.conn.recv(131072).decode("UTF-8")
+            self.conn.sendall(message.encode())
+            resp = self.conn.recv(4096).decode("UTF-8")
             print("received message", resp)
             return resp
         except BrokenPipeError:
