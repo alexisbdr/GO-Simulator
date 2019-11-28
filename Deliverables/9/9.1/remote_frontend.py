@@ -52,7 +52,9 @@ class RemoteReferee:
         while True:
             try:
                 resp = self.client_socket.recv(self.buffer) 
+                print(resp)
                 resp = resp.decode("UTF-8")
+                print(resp)
             except ConnectionResetError:
                 self.client_socket.close()
                 break
