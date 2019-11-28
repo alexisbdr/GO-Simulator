@@ -105,7 +105,7 @@ class ProxyPlayer(AbstractPlayer):
         command = ["end-game"]
         result = self.send(command)
         if not result:
-            self.client_connected = False
+            #self.client_connected = False
             return False
         return result
     
