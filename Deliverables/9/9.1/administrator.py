@@ -40,7 +40,7 @@ class Administrator:
         #print("getting players")
         self.server_socket.listen(self.num_players)
         while self.num_players != len(connections):
-            #print("started loop")
+            print("started loop")
             conn, addr = self.server_socket.accept()
             #print("new player on conn: ",conn)
             connections.append(conn)
@@ -49,6 +49,7 @@ class Administrator:
         self.server_socket.close()
     
     def make_players(self, connection_list):
+        print("making player ")
         self.players = []
         self.num_players = nextPowerOf2(self.num_players)
         for conn in connection_list:
@@ -64,6 +65,7 @@ class Administrator:
         #print("registering")
         for p in range(len(self.players)):
             resp = self.players[p].register()
+            print("registered")
             if not resp:
                 #Replace player that doesn't register with a default player
                 self.players[p] = PlayerFactory(path=self.default_player_path).create()
@@ -146,6 +148,7 @@ def load_config():
 
 def create_socket(host, port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.settimeout(20)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((host , port))
     return server_socket
