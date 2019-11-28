@@ -68,6 +68,7 @@ class Administrator:
         #print("registering")
         for p in range(len(self.players)):
             resp = self.players[p].register()
+            print("registered")
             if not resp:
                 #Replace player that doesn't register with a default player
                 self.players[p] = PlayerFactory(path=self.default_player_path).create()
