@@ -37,23 +37,27 @@ class Administrator:
         
     def get_connections(self):
         connections = []
-        #print("getting players")
+        self.players = []
+        print("getting players")
         self.server_socket.listen(self.num_players)
-        while self.num_players != len(connections):
+        while self.num_players != len(self.players):
             #print("started loop")
             conn, addr = self.server_socket.accept()
-            #print("new player on conn: ",conn)
-            connections.append(conn)
-            #print(self.players)
-        self.make_players(connections)
-        self.server_socket.close()
-    
-    def make_players(self, connection_list):
-        self.players = []
-        self.num_players = nextPowerOf2(self.num_players)
-        for conn in connection_list:
             proxy_player = PlayerFactory(connection=conn).create()
             self.players.append(proxy_player)
+            print("new player on conn: ",conn)
+            #connections.append(conn)
+            #print(self.players)
+        self.make_players()
+        self.server_socket.close()
+       
+    
+    def make_players(self):
+        #self.players = []
+        self.num_players = nextPowerOf2(self.num_players)
+        #for conn in connection_list:
+            #proxy_player = PlayerFactory(connection=conn).create()
+            #self.players.append(proxy_player)
         while self.num_players != len(self.players):
             default_player = PlayerFactory(path=self.default_player_path).create()
             self.players.append(default_player)
@@ -80,6 +84,7 @@ class Administrator:
             [self.close_connection(p) for p in tournament_results]
                 
         self.print_results(tournament_results)
+        
 
     def print_results(self, results: dict):
         print("===== Final Rankings =====")
@@ -126,12 +131,14 @@ class Administrator:
         if player.is_connected():
             print("disconnecting player", player)
             try:
-                player.conn.shutdown(socket.SHUT_RDWR)
+                player.conn.shutdown(1)
                 player.conn.close()
             except (OSError, BrokenPipeError) as e:
                 player.conn.close()
                 print("player already disconnected, error: ", e)
                 return
+        elif not isinstance(player, DefaultPlayer):
+            player.conn.close()
         return
 
 def load_config():
