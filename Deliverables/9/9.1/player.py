@@ -10,6 +10,7 @@ from exceptions import PlayerException, StoneException
 from abc import ABC, abstractmethod
 import random
 import copy
+import struct
 #kill $(lsof -t -i:8080)
 
 class AbstractPlayer(ABC):
@@ -114,7 +115,8 @@ class ProxyPlayer(AbstractPlayer):
         print("sent message", message)
         try:
             message = json.dumps(message)
-            self.conn.sendall(message.encode("UTF-8"))
+            message = bytes(message, "utf-8")
+            self.conn.send(message)
             resp = self.conn.recv(4096).decode("UTF-8")
             print("received message", resp)
             return resp
