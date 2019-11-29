@@ -35,12 +35,12 @@ int main(int argc, char const *argv[])
 		return -1; 
 	} 
     while (1){
-        
+    
+        char buffer[4096] = {0}; 
         valread = read(sock, buffer, 4096);
-        printf("message received: \n %s", buffer);
+        printf("\n %s \n", buffer);
         
         send(sock , return_message , strlen(return_message) , 0 ); 
-	    printf("Client responded\n"); 
     };
     return 0;
 } 
