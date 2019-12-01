@@ -117,7 +117,7 @@ class ProxyPlayer(AbstractPlayer):
             message = json.dumps(message)
             message = bytes(message, "utf-8")
             self.conn.send(message)
-            resp = self.conn.recv(4096).decode("UTF-8")
+            resp = str(self.conn.recv(4096), "utf-8")
             print("received message", resp)
             return resp
         except BrokenPipeError:

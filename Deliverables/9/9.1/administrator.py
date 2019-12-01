@@ -74,55 +74,17 @@ class Administrator:
     def start_tournament(self):
         #print("starting tournament")
         if self.tournament == "cup":
+            _tournament = Cup(self.players)
             tournament_results = Cup(self.players).get_results()
             [self.close_connection(p) for key in tournament_results for p in tournament_results[key]]
             
         elif self.tournament == "league":
-            tournament_results = League(self.players, self.default_player_path).get_results()
+            _tournament = League(self.players, self.default_player_path)
+            tournament_results = _tournament.get_results()
             [self.close_connection(p) for p in tournament_results]
                 
-        self.print_results(tournament_results)
+        _tournament.print_results()
 
-    def print_results(self, results: dict):
-        print("===== Final Rankings =====")
-        
-        if self.tournament == 'league':
-            results = sorted(results.items(), key=lambda kv: kv[1], reverse=True)
-            prev_val = -1
-            rank = 0
-            for item in results:
-                key = item[0]
-                val = item[1]
-                if val == prev_val:
-                    if val == -1:
-                        print(key.get_name())
-                    else:
-                        print("   " + key.get_name(), "("+ str(val)+")")
-                else:
-                    rank +=1
-                    if val == -1:
-                        print("Cheater(s): ")
-                        print(key.get_name())
-                    else:
-                        print(str(rank)+". ",end='')
-                        print(key.get_name(), " ("+ str(val)+")")
-                prev_val = val
-
-        else:
-            print("Winner: ", results["winner"][0].get_name())
-            for key, val in results.items():
-                if key == 'winner':
-                    continue
-            
-                string = ""
-                for i, p in enumerate(val):
-                    if i == 0:
-                        string += p.get_name()
-                    else:
-                        string += ", " + p.get_name()
-                print("Eliminated in round ", int(key), ": ", string)
-
-        
     def close_connection(self, player):
         
         if player.is_connected():
