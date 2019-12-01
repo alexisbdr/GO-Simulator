@@ -82,11 +82,13 @@ class Referee:
     def end_game(self, cheating=False):
         """
         Sets the results list:
-        [(winner_player, score, cheating_flag), (loser_player, score, cheating_flag)]
+            [(winner_player, score), (loser_player, score), cheating_flag]
+        Two main cases: 
+            -No Cheating: order the list by the player with the largest score returned by the board class
+            -Cheating: current_player is the winner - figure out if it is player1 or player2 
+                by comparing object addresses
         """
-        #Update both players with the end game signal - think about the ordering in this
         resp1 = self.player1.end_game()
-
         if not resp1 or resp1 != "OK":
             self.results = [(self.player2, 0), (self.player1, 0), True]
             return
@@ -100,7 +102,6 @@ class Referee:
         score_player1 = score["B"]
         score_player2 = score["W"]
         if not cheating:
-            #Send end message to both and see if one of them disconnects
             self.results = [[self.player1, score_player1], 
                 [self.player2, score_player2]]
             self.results = sorted(self.results, key=lambda x : x[1], reverse=True)
