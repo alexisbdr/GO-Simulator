@@ -4,14 +4,13 @@
 #include <arpa/inet.h> 
 #include <unistd.h>
 #include <string.h>
-#include <iostream> 
 #define PORT 8080 
 
 int main(int argc, char const *argv[]) 
 { 
 	int sock = 0, valread; 
 	struct sockaddr_in serv_addr; 
-	char *return_message = "read correctly"; 
+	char *return_message = "pass"; 
 	char buffer[4096] = {0}; 
 	
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
@@ -39,7 +38,7 @@ int main(int argc, char const *argv[])
     
         char buffer[4096] = {0}; 
         valread = read(sock, buffer, 4096);
-		std::cout << buffer ;
+		//buffer ;
 		printf("\n %s \n", buffer);
         
         send(sock , return_message , strlen(return_message) , 0 ); 

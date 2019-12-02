@@ -86,7 +86,6 @@ class RemoteReferee:
             #return "close"
             try:
                 self.player.set_stone(command[1])
-                return ' '
             except (StoneException, AttributeError):
                 return CRAZY_GO
           

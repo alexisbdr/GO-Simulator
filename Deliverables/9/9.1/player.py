@@ -88,7 +88,9 @@ class ProxyPlayer(AbstractPlayer):
         super().set_stone(color)
         command = ["receive-stones"]
         command.append(color)
-        return self.send(command)
+        message = json.dumps(command)
+        message = message.encode()
+        self.conn.send(message)
     
     def set_stone(self, color):
         super().set_stone(color)
@@ -115,9 +117,9 @@ class ProxyPlayer(AbstractPlayer):
         print("sent message", message)
         try:
             message = json.dumps(message)
-            message = bytes(message, "utf-8")
+            message = message.encode()
             self.conn.send(message)
-            resp = str(self.conn.recv(4096), "utf-8")
+            resp = self.conn.recv(4096).decode()
             print("received message", resp)
             return resp
         except BrokenPipeError:
@@ -149,7 +151,7 @@ class DefaultPlayer(AbstractPlayer):
         if not choice:
             return self.make_invalid_move(boards)"""
 
-        return PASS_OUTPUT
+        #return PASS_OUTPUT
 
         if self.depth > 1:
             result = self.make_move_future(boards)
