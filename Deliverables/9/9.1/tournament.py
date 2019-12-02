@@ -51,26 +51,20 @@ class Cup:
     
     def print_results(self):
         print("===== Final Rankings =====")
-        results = sorted(self.results.items(), key=lambda kv: kv[1], reverse=True)
-        prev_val = -1
-        rank = 0
-        for item in results:
-            key = item[0]
-            val = item[1]
-            if val == prev_val:
-                if val == -1:
-                    print(key.get_name())
+        print("Winner: ", self.results["winner"][0].get_name())
+        for key, val in self.results.items():
+            if key == 'winner':
+                continue
+        
+            string = ""
+            for i, p in enumerate(val):
+                if i == 0:
+                    string += p.get_name()
                 else:
-                    print("   " + key.get_name(), "("+ str(val)+")")
-            else:
-                rank +=1
-                if val == -1:
-                    print("Cheater(s): ")
-                    print(key.get_name())
-                else:
-                    print(str(rank)+". ",end='')
-                    print(key.get_name(), " ("+ str(val)+")")
-            prev_val = val
+                    string += ", " + p.get_name()
+            print("Eliminated in round ", int(key), ": ", string)
+
+       
 
 class League:
 
@@ -151,19 +145,27 @@ class League:
     
     def print_results(self):
         print("===== Final Rankings =====")
-        print("Winner: ", self.player_score["winner"][0].get_name())
-        for key, val in self.player_score.items():
-            if key == 'winner':
-                continue
-        
-            string = ""
-            for i, p in enumerate(val):
-                if i == 0:
-                    string += p.get_name()
+        results = sorted(self.player_score.items(), key=lambda kv: kv[1], reverse=True)
+        prev_val = -1
+        rank = 0
+        for item in results:
+            key = item[0]
+            val = item[1]
+            if val == prev_val:
+                if val == -1:
+                    print(key.get_name())
                 else:
-                    string += ", " + p.get_name()
-            print("Eliminated in round ", int(key), ": ", string)
-
+                    print("   " + key.get_name(), "("+ str(val)+")")
+            else:
+                rank +=1
+                if val == -1:
+                    print("Cheater(s): ")
+                    print(key.get_name())
+                else:
+                    print(str(rank)+". ",end='')
+                    print(key.get_name(), " ("+ str(val)+")")
+            prev_val = val
+        
                         
 
                 

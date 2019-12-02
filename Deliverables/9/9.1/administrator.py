@@ -52,6 +52,7 @@ class Administrator:
         print("making player ")
         self.players = []
         self.num_players = nextPowerOf2(self.num_players)
+        print(self.num_players)
         for conn in connection_list:
             proxy_player = PlayerFactory(connection=conn).create()
             self.players.append(proxy_player)

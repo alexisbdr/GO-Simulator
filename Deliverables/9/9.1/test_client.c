@@ -2,8 +2,9 @@
 #include <stdio.h> 
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
-#include <unistd.h> 
-#include <string.h> 
+#include <unistd.h>
+#include <string.h>
+#include <iostream> 
 #define PORT 8080 
 
 int main(int argc, char const *argv[]) 
@@ -38,7 +39,8 @@ int main(int argc, char const *argv[])
     
         char buffer[4096] = {0}; 
         valread = read(sock, buffer, 4096);
-        printf("\n %s \n", buffer);
+		std::cout << buffer ;
+		printf("\n %s \n", buffer);
         
         send(sock , return_message , strlen(return_message) , 0 ); 
     };

@@ -125,7 +125,6 @@ class ProxyPlayer(AbstractPlayer):
             #self.client_connected = False
             return False
 
-
 class DefaultPlayer(AbstractPlayer):
     def __init__(self):
         super().__init__()
