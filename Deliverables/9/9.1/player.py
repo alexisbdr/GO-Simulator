@@ -87,14 +87,9 @@ class ProxyPlayer(AbstractPlayer):
         super().set_stone(color)
         command = ["receive-stones"]
         command.append(color)
-        return self.send(command)
-    
-    def set_stone(self, color):
-        super().set_stone(color)
-        command = ["receive-stones"]
-        command.append(color)
-        print(command)
-        return self.send(command)
+        message = json.dumps(command)
+        self.conn.sendall(message.encode())
+        return
 
     def make_move(self, boards):
         command = ["make-a-move"]
