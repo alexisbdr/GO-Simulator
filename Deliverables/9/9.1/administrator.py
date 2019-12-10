@@ -6,8 +6,7 @@ from typing import List
 
 from definitions import *
 from player_factory import PlayerFactory
-from tournament import League
-from tournament import Cup
+from tournament import Tournament
 import time
 import random
 from referee import Referee
@@ -37,24 +36,27 @@ class Administrator:
         
     def get_connections(self):
         connections = []
-        #print("getting players")
-        self.server_socket.listen(self.num_players)
-        while self.num_players != len(connections):
-            print("started loop")
-            conn, addr = self.server_socket.accept()
-            #print("new player on conn: ",conn)
-            connections.append(conn)
-            #print(self.players)
-        self.make_players(connections)
-        self.server_socket.close()
-    
-    def make_players(self, connection_list):
-        print("making player ")
         self.players = []
-        self.num_players = nextPowerOf2(self.num_players)
-        for conn in connection_list:
+        print("getting players")
+        self.server_socket.listen(self.num_players)
+        while self.num_players != len(self.players):
+            #print("started loop")
+            conn, addr = self.server_socket.accept()
             proxy_player = PlayerFactory(connection=conn).create()
             self.players.append(proxy_player)
+            print("new player on conn: ",conn)
+            #connections.append(conn)
+            #print(self.players)
+        self.make_players()
+        self.server_socket.close()
+       
+    
+    def make_players(self):
+        #self.players = []
+        self.num_players = nextPowerOf2(self.num_players)
+        #for conn in connection_list:
+            #proxy_player = PlayerFactory(connection=conn).create()
+            #self.players.append(proxy_player)
         while self.num_players != len(self.players):
             default_player = PlayerFactory(path=self.default_player_path).create()
             self.players.append(default_player)
@@ -73,54 +75,12 @@ class Administrator:
 
     def start_tournament(self):
         #print("starting tournament")
-        if self.tournament == "cup":
-            tournament_results = Cup(self.players).get_results()
-            [self.close_connection(p) for key in tournament_results for p in tournament_results[key]]
-            
-        elif self.tournament == "league":
-            tournament_results = League(self.players, self.default_player_path).get_results()
-            [self.close_connection(p) for p in tournament_results]
-                
-        self.print_results(tournament_results)
+        run_tournament = Tournament(self.tournament, self.players, self.default_player_path)
+        participating_players = run_tournament.get_participating_players()
+        for p in participating_players:
+            self.close_connection(p)
 
-    def print_results(self, results: dict):
-        print("===== Final Rankings =====")
-        
-        if self.tournament == 'league':
-            results = sorted(results.items(), key=lambda kv: kv[1], reverse=True)
-            prev_val = -1
-            rank = 0
-            for item in results:
-                key = item[0]
-                val = item[1]
-                if val == prev_val:
-                    if val == -1:
-                        print(key.get_name())
-                    else:
-                        print("   " + key.get_name(), "("+ str(val)+")")
-                else:
-                    rank +=1
-                    if val == -1:
-                        print("Cheater(s): ")
-                        print(key.get_name())
-                    else:
-                        print(str(rank)+". ",end='')
-                        print(key.get_name(), " ("+ str(val)+")")
-                prev_val = val
-
-        else:
-            print("Winner: ", results["winner"][0].get_name())
-            for key, val in results.items():
-                if key == 'winner':
-                    continue
-            
-                string = ""
-                for i, p in enumerate(val):
-                    if i == 0:
-                        string += p.get_name()
-                    else:
-                        string += ", " + p.get_name()
-                print("Eliminated in round ", int(key), ": ", string)
+        run_tournament.print_results()      
 
         
     def close_connection(self, player):
@@ -134,6 +94,8 @@ class Administrator:
                 player.conn.close()
                 print("player already disconnected, error: ", e)
                 return
+        elif not isinstance(player, DefaultPlayer):
+            player.conn.close()
         return
 
 def load_config():
