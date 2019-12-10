@@ -20,6 +20,14 @@ class AbstractPlayer(ABC):
         self.registered = False
         self.ended = False 
 
+    def __eq__(self, other):
+        if isinstance(other, AbstractPlayer):
+            return self.name == other.name
+        return False
+
+    def __hash__(self):
+        return id(self)
+
     def register(self):
         if self.registered:
             raise PlayerException("Player has already been registered")
@@ -106,12 +114,12 @@ class ProxyPlayer(AbstractPlayer):
         return self.client_connected
 
     def send(self, message):
-        print("sent message", message)
+        #print("sent message", message)
         try:
             message = json.dumps(message)
             self.conn.sendall(message.encode())
             resp = self.conn.recv(4096).decode("UTF-8")
-            print("received message", resp)
+            #print("received message", resp)
             return resp
         except BrokenPipeError:
             print("remote player not connected")
