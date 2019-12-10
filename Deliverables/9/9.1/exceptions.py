@@ -20,3 +20,7 @@ class StoneException(Error):
 class PlayerException(Error):
     def __init__(self, message=None):
         self.msg = message
+
+class TournamentException(Error):
+    def __init__(self, message=None):
+        self.msg = message
