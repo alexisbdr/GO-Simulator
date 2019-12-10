@@ -1,7 +1,6 @@
 from player import ProxyPlayer
-from player import SimpleValidPlayers 
-from player import CapturePlayers
-from player import InvalidPlayers, TuringValidPlayer
+from player import RemoteTestingPlayer
+from player_strategy import create_strategy
 import importlib.util
 from definitions import DEFAULT_PLAYER_CLASS
 import random
@@ -33,6 +32,7 @@ class PlayerFactory():
         #player.set_name("Default Player")
         return player
     
+    """
     def createRemote(self):
         def all_subclasses(cls):
             return set(cls.__subclasses__()).union(
@@ -46,3 +46,8 @@ class PlayerFactory():
             valid_players = list(all_subclasses(InvalidPlayers))
         choice = random.randint(0, len(valid_players) -1)
         return valid_players[choice]()
+    """
+
+    def createRemote(self):
+        strategy = create_strategy()
+        return RemoteTestingPlayer.set_strategy(strategy)
