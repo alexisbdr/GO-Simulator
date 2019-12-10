@@ -1,0 +1,23 @@
+
+<GoGame>:
+    canvas.before:
+        Color:
+            rgba: 1, 0, 0, 0.1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BoxLayout:
+        pos_hint: {'x':0.05, 'top':0.95}
+        size_hint: 0.9, 0.9
+        orientation: 'vertical'
+        Label:
+            text: ''
+            size_hint: 1.0, 0.80
+        FloatLayout:
+            size_hint: 1.0, 0.20
+            orientation: 'horizontal'
+            Button:
+                text: 'Back to Title'
+                pos_hint: {'x': 0.75, 'center_y': 0.5}
+                size_hint: 0.20, 0.5
+                on_release: root.switch_to_title_screen()
