@@ -50,4 +50,6 @@ class PlayerFactory():
 
     def createRemote(self):
         strategy = create_strategy()
-        return RemoteTestingPlayer().set_strategy(strategy)
+        player = RemoteTestingPlayer()
+        player.set_strategy(strategy)
+        return player

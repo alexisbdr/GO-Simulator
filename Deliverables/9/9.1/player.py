@@ -280,6 +280,7 @@ class RemoteTestingPlayer(AbstractPlayer):
     def set_strategy(self, strategy):
         self.strategy = strategy
         self.name = strategy.__class__.__name__
+        print(self.name)
     
     def make_move(self, boards: List):
         self.strategy.apply_strategy(boards, self.get_stone())
