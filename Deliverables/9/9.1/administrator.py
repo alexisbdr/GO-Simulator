@@ -12,7 +12,6 @@ import random
 from referee import Referee
 import json
 from threading import Thread
-from player import DefaultPlayer
 import operator
 
 class Administrator:
@@ -67,7 +66,6 @@ class Administrator:
         #print("registering")
         for p in range(len(self.players)):
             resp = self.players[p].register()
-            print("registered")
             if not resp:
                 #Replace player that doesn't register with a default player
                 self.players[p] = PlayerFactory(path=self.default_player_path).create()
@@ -84,7 +82,6 @@ class Administrator:
 
         
     def close_connection(self, player):
-        
         if player.is_connected():
             print("disconnecting player", player)
             try:
@@ -94,8 +91,6 @@ class Administrator:
                 player.conn.close()
                 print("player already disconnected, error: ", e)
                 return
-        elif not isinstance(player, DefaultPlayer):
-            player.conn.close()
         return
 
 def load_config():
