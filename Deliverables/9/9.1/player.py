@@ -20,14 +20,6 @@ class AbstractPlayer(ABC):
         self.registered = False
         self.ended = False 
 
-    def __eq__(self, other):
-        if isinstance(other, AbstractPlayer):
-            return self.name == other.name
-        return False
-
-    def __hash__(self):
-        return id(self)
-
     def register(self):
         if self.registered:
             raise PlayerException("Player has already been registered")
@@ -74,6 +66,14 @@ class AbstractPlayer(ABC):
     @abstractmethod
     def make_move(self, boards: List, n: int) -> str:
         pass
+
+    def __eq__(self, other):
+        if isinstance(other, AbstractPlayer):
+            return self.name == other.name
+        return False
+
+    def __hash__(self):
+        return id(self)
 
 class ProxyPlayer(AbstractPlayer):
     
@@ -139,7 +139,6 @@ class RandomStrategyPlayer(AbstractPlayer):
     def set_strategy(self, strategy):
         self.strategy = strategy
         self.name = strategy.__class__.__name__
-        print(self.name)
     
     def make_move(self, boards: List):
         if not self.strategy: 

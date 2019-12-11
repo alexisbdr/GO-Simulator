@@ -29,8 +29,8 @@ class PlayerFactory():
         module = __import__(self.path, fromlist=[DEFAULT_PLAYER_CLASS])
         myclass = getattr(module, DEFAULT_PLAYER_CLASS)
         strategy = create_strategy()
-        player = myclass().set_strategy(strategy)
-        #player.set_name("Default Player")
+        player = myclass()
+        player.set_strategy(strategy)
         return player
     
     def createRemote(self):
