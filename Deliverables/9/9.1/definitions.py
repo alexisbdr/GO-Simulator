@@ -29,6 +29,6 @@ CRAZY_GO = "GO has gone crazy!"
 
 N = 1
 
-DEFAULT_PLAYER_CLASS = "DefaultPlayer"
+DEFAULT_PLAYER_CLASS = "RemoteTestingPlayer"
 
 CHEATING_PLAYER = "cheat"
