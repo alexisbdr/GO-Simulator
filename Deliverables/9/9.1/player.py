@@ -134,6 +134,7 @@ class RandomStrategyPlayer(AbstractPlayer):
     """
     def __init__(self):
         super().__init__()
+        self.strategy = None
     
     def set_strategy(self, strategy):
         self.strategy = strategy
@@ -142,5 +143,5 @@ class RandomStrategyPlayer(AbstractPlayer):
     
     def make_move(self, boards: List):
         if not self.strategy: 
-            raise Exception("Please ")
+            raise Exception("Set Strategy before playing the move")
         self.strategy.apply_strategy(boards, self.get_stone())
