@@ -12,7 +12,6 @@ import random
 from referee import Referee
 import json
 from threading import Thread
-from player import DefaultPlayer
 import operator
 
 class Administrator:

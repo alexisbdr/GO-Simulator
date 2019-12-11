@@ -1,5 +1,5 @@
 from player import ProxyPlayer
-from player import RemoteTestingPlayer
+from player import RandomStrategyPlayer
 from player_strategy import create_strategy
 import importlib.util
 from definitions import DEFAULT_PLAYER_CLASS
