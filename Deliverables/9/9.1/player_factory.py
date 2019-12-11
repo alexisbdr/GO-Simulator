@@ -28,7 +28,8 @@ class PlayerFactory():
     def createDefault(self):
         module = __import__(self.path, fromlist=[DEFAULT_PLAYER_CLASS])
         myclass = getattr(module, DEFAULT_PLAYER_CLASS)
-        player = myclass()
+        strategy = create_strategy()
+        player = myclass().set_strategy(strategy)
         #player.set_name("Default Player")
         return player
     
