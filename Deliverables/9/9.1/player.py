@@ -120,6 +120,9 @@ class ProxyPlayer(AbstractPlayer):
             self.conn.sendall(message.encode("UTF-8"))
             resp = self.conn.recv(4096).decode("UTF-8")
             #print("received message", resp)
+            if not resp:
+                self.client_connected = False
+                return False
             return resp
         except BrokenPipeError:
             print("remote player not connected")
@@ -283,4 +286,6 @@ class RemoteTestingPlayer(AbstractPlayer):
         print(self.name)
     
     def make_move(self, boards: List):
+        if not self.strategy: 
+            raise Exception("Please ")
         self.strategy.apply_strategy(boards, self.get_stone())

@@ -84,7 +84,6 @@ class Administrator:
 
         
     def close_connection(self, player):
-        
         if player.is_connected():
             print("disconnecting player", player)
             try:
@@ -94,8 +93,6 @@ class Administrator:
                 player.conn.close()
                 print("player already disconnected, error: ", e)
                 return
-        elif not isinstance(player, DefaultPlayer):
-            player.conn.close()
         return
 
 def load_config():
