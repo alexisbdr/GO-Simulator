@@ -25,6 +25,10 @@ def get_all_string_points() -> List[str]:
 class BoardPoint:
 
     def __init__(self, Point: str):
+
+        if not isinstance(Point, str):
+            raise TypeError("BoardPoint class should received a string as input")
+
         self.PointString = Point
         try:
             separatedString = self.PointString.split("-")

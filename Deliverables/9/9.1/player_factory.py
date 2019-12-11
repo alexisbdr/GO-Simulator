@@ -1,4 +1,4 @@
-from player import ProxyPlayer
+from player import ProxyConnectionPlayer
 from player import RandomStrategyPlayer
 from player_strategy import create_strategy
 import importlib.util
@@ -21,7 +21,7 @@ class PlayerFactory():
             return self.createRemote()
 
     def createProxy(self):
-        player = ProxyPlayer()
+        player = ProxyConnectionPlayer()
         player.set_conn(self.connection)
         return player
 

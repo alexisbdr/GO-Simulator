@@ -32,3 +32,5 @@ N = 1
 DEFAULT_PLAYER_CLASS = "RandomStrategyPlayer"
 
 CHEATING_PLAYER = "cheat"
+
+END_GAME_MESSAGE = "OK"

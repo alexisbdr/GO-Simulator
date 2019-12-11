@@ -2,11 +2,12 @@ import json
 import typing
 from typing import List, Union
 from copy import deepcopy
-from board import Board,get_all_string_points
+from board import Board,get_all_string_points,BoardPoint
 from rulechecker import *
 from definitions import *
 from utilities import readConfig
-from exceptions import PlayerException, StoneException
+from exceptions import PlayerException, PlayerStateViolation, PlayerTypeError
+from exceptions import BoardPointException, StoneException
 from abc import ABC, abstractmethod
 import random
 import copy
@@ -17,32 +18,18 @@ class AbstractPlayer(ABC):
     def __init__(self):
         self.name = ""
         self.stone = ""
-        self.registered = False
-        self.ended = False 
 
     def register(self):
-        if self.registered:
-            raise PlayerException("Player has already been registered")
-        self.registered = True
         return self.name
         
     #some methods we will need
     def get_name(self):# -> str:
-        if self.registered:
-            return self.name
-        raise PlayerException("Player has not been registered yet")
-    
-    def set_stone(self, stone: str):
-        if not self.registered:
-            raise PlayerException("Player has not been registered yet")
-        if stone not in STONE:
-            raise StoneException("Invalid Stone in Player")
-        self.stone = stone
-        self.ended = False
+        return self.name
 
     def receive_stones(self, stone: str):
-        self.set_stone(stone)
-        return "RECEIVE"
+        if stone not in STONE: 
+            raise StoneException("Invalid Stone in Player")
+        self.stone = stone
     
     def get_stone(self):
         if self.stone:
@@ -54,17 +41,14 @@ class AbstractPlayer(ABC):
         return "B" if self.get_stone() == "W" else "W"
     
     def end_game(self):
-        if self.ended:
-            raise PlayerException("Player has already been notified of game end")
-        self.ended = True
         self.stone = ""
-        return "OK"
+        return END_GAME_MESSAGE
     
     def is_connected(self):
         return False
     
     @abstractmethod
-    def make_move(self, boards: List, n: int) -> str:
+    def make_move(self, boards: List) -> str:
         pass
 
     def __eq__(self, other):
@@ -75,7 +59,105 @@ class AbstractPlayer(ABC):
     def __hash__(self):
         return id(self)
 
-class ProxyPlayer(AbstractPlayer):
+class ProxyStateContractPlayer(AbstractPlayer):
+
+    def __init__(self, player):
+        self.player = player
+        self.registered = False
+        self.received = False
+        self.ended = True
+
+    def register(self):
+        if self.registered:
+            raise PlayerStateViolation("Player has already been registered")
+        return self.player.register()
+        
+    def get_name(self):
+        if self.registered:
+            return self.player.name
+        raise PlayerStateViolation("Player has not been registered yet")
+    
+    def receive_stones(self, stone: str):
+        if not self.registered: 
+            raise PlayerStateViolation("Player has not been registered yet")
+        if self.received: 
+            raise PlayerStateViolation("Player has received stones")
+        if not self.ended: 
+            raise PlayerStateViolation("Player has been given stones but is still playing a game")
+        self.ended = False
+        self.player.receive_stones(stone)
+    
+    def get_stone(self):
+        if self.received:
+            return self.player.get_stone()
+        else: 
+            raise StoneException("Player has no stones")
+
+    def make_move(self, boards: List):
+        if not self.received: 
+            raise PlayerStateViolation("Player asked to make a move but has not received stones")
+        if self.ended: 
+            raise PlayerStateViolation("Player asked to make a move but has already been notified of end game")
+        return self.player.make_move(boards)
+
+    def end_game(self):
+        if self.ended:
+            raise PlayerStateViolation("Player has already been notified of game end")
+        self.ended = True
+        return self.player.end_game()
+
+class ProxyTypeContractPlayer(AbstractPlayer):
+    
+    def __init__(self, player):
+        self.player = player
+
+    def register(self):
+        register_resp = self.player.register()
+        if not isinstance(register_resp, str):
+            raise PlayerTypeError("Player returned a non-string object as it's name")
+        return register_resp
+        
+    def get_name(self):
+        name = self.player.name
+        if not isinstance(name, str):
+            raise PlayerTypeError("Player returned a non-string objects as it's name")
+        return name
+    
+    def receive_stones(self, stone: str):
+        if not isinstance(stone, str):
+            raise PlayerTypeError("Player received a non-string objects as it's stone")
+        if stone not in STONE: 
+            raise PlayerTypeError("Player received an invalid stone")
+        self.player.receive_stones(stone)
+    
+    def get_stone(self):
+        stone = self.player.get_stone()
+        if not isinstance(stone, str):
+            raise PlayerTypeError("Player returned a non-string object as it's stone")
+        if stone not in STONE:
+            raise PlayerTypeError("Player returned a invalid stone as it's stone")
+        return stone
+
+    def make_move(self, boards: List):
+        if not isinstance(boards, list):
+            raise PlayerTypeError("Player received non-list object for make-a-move")
+        not_nested_list = any(not isinstance(b, list) for b in boards)
+        if not_nested_list: 
+            raise PlayerTypeError("Player should received a nested list object in make-a-move")
+        point_resp = self.player.make_move(boards)
+        try: 
+            BoardPoint(point_resp)
+        except (TypeError, BoardPointException) as e: 
+            raise PlayerTypeError("Player returned an invalid point from make move with error: {}".format(e))
+
+    def end_game(self):
+        end_game_resp = self.player.end_game()
+        if not isinstance(end_game_resp, str):
+            raise PlayerTypeError("Player returned a non-string object as it's end game message")
+        if end_game_resp != END_GAME_MESSAGE: 
+            raise PlayerTypeError("Player returned an illegal end-game message")
+
+class ProxyConnectionPlayer(AbstractPlayer):
     
     def _init__(self):
         self.name = ""
@@ -90,13 +172,12 @@ class ProxyPlayer(AbstractPlayer):
         self.name = self.send(["register"])
         return self.name
 
-    def receive_stones(self, color):
-        super().set_stone(color)
+    def receive_stones(self, stone: str):
+        super().receive_stones(stone)
         command = ["receive-stones"]
-        command.append(color)
+        command.append(stone)
         message = json.dumps(command)
         self.conn.sendall(message.encode())
-        return
 
     def make_move(self, boards):
         command = ["make-a-move"]
@@ -142,5 +223,5 @@ class RandomStrategyPlayer(AbstractPlayer):
     
     def make_move(self, boards: List):
         if not self.strategy: 
-            raise Exception("Set Strategy before playing the move")
+            raise PlayerException("Strategy player has been asked to make a move but does not have a strategy")
         self.strategy.apply_strategy(boards, self.get_stone())
