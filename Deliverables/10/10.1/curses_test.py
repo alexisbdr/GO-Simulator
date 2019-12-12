@@ -80,6 +80,23 @@ def build_gameboard(term):
         column += len(keycode) + (spacing * 2)
     return board
 
+def build_title(term):
+    pass
+
+def build_active_players(term):
+    pass
+
+def build_eliminated_players(term):
+    pass
+
+def build_current_standings(term):
+    pass
+
+def build_schedule(term):
+    pass
+
+def build_current_game(term):
+    pass
 
 def add_score(score, pts, level):
     """Add points to score, determine and return new score and level."""
