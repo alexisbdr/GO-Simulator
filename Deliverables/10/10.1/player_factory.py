@@ -2,19 +2,22 @@ from player import ProxyPlayer
 from player import RandomStrategyPlayer
 from player_strategy import create_strategy
 import importlib.util
-from definitions import DEFAULT_PLAYER_CLASS
+from definitions import DEFAULT_PLAYER_CLASS, GUI_PLAYER_CLASS
 import random
 
 
 class PlayerFactory():
-    def __init__(self, connection=None, path=None, remote=False):
+    def __init__(self, connection=None, path=None, remote=False, gui=False):
         self.connection = connection
         self.path = path
         self.remote = remote
+        self.gui = gui
 
     def create(self):
         if self.connection:
             return self.createProxy()
+        elif self.gui:
+            return self.createGUI()
         elif self.path:
             return self.createDefault()
         else:
@@ -31,6 +34,12 @@ class PlayerFactory():
         strategy = create_strategy()
         player = myclass()
         player.set_strategy(strategy)
+        return player
+
+    def createGUI(self):
+        module = __import__(self.path, fromlist=[GUI_PLAYER_CLASS])
+        myclass = getattr(module, GUI_PLAYER_CLASS)
+        player = myclass()
         return player
     
     def createRemote(self):

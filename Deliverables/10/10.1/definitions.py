@@ -29,7 +29,9 @@ CRAZY_GO = "GO has gone crazy!"
 
 N = 1
 
-DEFAULT_PLAYER_CLASS = "DefaultPlayer"
+DEFAULT_PLAYER_CLASS = "RandomStrategyPlayer"
+
+GUI_PLAYER_CLASS = "GUIPlayer"
 
 CHEATING_PLAYER = "cheat"
 END_GAME_MESSAGE = "OK"
