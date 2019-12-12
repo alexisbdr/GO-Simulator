@@ -5,7 +5,7 @@ from board import Board
 from rulechecker import checkhistory, place_stone
 from definitions import *
 import json
-from exceptions import BoardPointException
+from exceptions import BoardPointException, PlayerStateViolation, PlayerTypeError
 
 
 class Referee: 
@@ -70,6 +70,7 @@ class Referee:
         while not self.game_over:
             response = self.current_player.make_move(self.boards)
             self.update_state(response)
+
     
     def end_game(self, cheating=False):
         """
@@ -78,12 +79,11 @@ class Referee:
         """
         #Update both players with the end game signal - think about the ordering in this
         resp1 = self.player1.end_game()
-
+        resp2 = self.player2.end_game()
         if not resp1 or resp1 != "OK":
             self.results = [(self.player2, 0), (self.player1, 0), True]
             return
-        
-        resp2 = self.player2.end_game()
+                
         if not resp2 or resp2 != "OK":
             self.results = [(self.player1, 0), (self.player2, 0), True]
             return

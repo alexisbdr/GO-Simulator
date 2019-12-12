@@ -59,15 +59,17 @@ class Administrator:
         while self.num_players != len(self.players):
             default_player = PlayerFactory(path=self.default_player_path).create()
             self.players.append(default_player)
-            #print("made a new player")
+            print("made a new player")
         self.register_players()
 
     def register_players(self):
         #print("registering")
         for p in range(len(self.players)):
             resp = self.players[p].register()
+            print(resp)
             if not resp:
                 #Replace player that doesn't register with a default player
+                print("replacing player")
                 self.players[p] = PlayerFactory(path=self.default_player_path).create()
                 self.players[p].register()
 
@@ -77,7 +79,6 @@ class Administrator:
         participating_players = run_tournament.get_participating_players()
         for p in participating_players:
             self.close_connection(p)
-
         run_tournament.print_results()      
 
         
@@ -85,10 +86,9 @@ class Administrator:
         if player.is_connected():
             print("disconnecting player", player)
             try:
-                player.conn.shutdown(1)
-                player.conn.close()
+                player.close_connection(True)
             except (OSError, BrokenPipeError) as e:
-                player.conn.close()
+                player.close_connection(False)
                 print("player already disconnected, error: ", e)
                 return
         return

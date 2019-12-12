@@ -24,7 +24,7 @@ def place_stone(board: Board, Stone: str, Point: str):# -> Board:
     board = deepcopy(board)
     board = Board(board)
     #Check for pass
-    if Stone == "pass" or Point == "pass":
+    if Stone == PASS_OUTPUT or Point == PASS_OUTPUT:
         return board.board
     #Check empty intersection
     if board.occupied(Point):

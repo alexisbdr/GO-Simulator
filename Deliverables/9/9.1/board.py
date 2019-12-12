@@ -9,12 +9,12 @@ from definitions import *
 from typing import Any, List, Union
 
 def check_maybestone(Stone: str, Operation:str = ""):
-    if(Stone not in MAYBE_STONE):
-        raise MaybestoneException("Invalid MaybeStone - cannot perform " + Operation + " operation")
+    if Stone not in MAYBE_STONE:
+        raise MaybestoneException("Invalid MaybeStone - cannot perform {} operation for stone: ".format(Operation, Stone))
 
 def check_stone(Stone: str, Operation: str = ""):
-    if(Stone not in STONE):
-        raise StoneException("Invalid Stone - cannot perform " + Operation + " operation")
+    if Stone not in STONE:
+        raise StoneException("Invalid Stone - cannot perform {} operation for stone: {}".format(Operation, Stone))
 
 def get_all_string_points() -> List[str]:
     return [
@@ -25,6 +25,10 @@ def get_all_string_points() -> List[str]:
 class BoardPoint:
 
     def __init__(self, Point: str):
+
+        if not isinstance(Point, str):
+            raise BoardPointException("BoardPoint class should receive a string as input, received {} instead".format(Point))
+
         self.PointString = Point
         try:
             separatedString = self.PointString.split("-")
@@ -33,11 +37,11 @@ class BoardPoint:
             self.x_ind = self.x - 1
             self.y_ind = self.y - 1
         except: 
-            raise BoardPointException("Point is not in the right format")
+            raise BoardPointException("Point {} is not in the right format, should be ROW-COL".format(Point))
         if(not (self.x >= BOARD_COLUMNS_MIN and self.x <= BOARD_COLUMNS_MAX)):
-            raise BoardPointException("Point is out of bounds")
+            raise BoardPointException("Point {} is out of bounds".format(Point))
         elif(not (self.y >= BOARD_ROWS_MIN and self.y <= BOARD_COLUMNS_MAX)):
-            raise BoardPointException("Point is out of bounds")
+            raise BoardPointException("Point {} is out of bounds".format(Point))
 
 class Board: 
 
@@ -140,7 +144,7 @@ class Board:
     def place(self, Stone: str, Point: str) -> Union[List[List], str]:
         check_stone(Stone, "place")
         if self.occupied(Point):
-            raise BoardException("Point is occupied")
+            raise BoardException("Point {} is occupied".format(Point))
         else: 
             self.Set(Point, Stone)
             return self.board
