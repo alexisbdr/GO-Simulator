@@ -80,9 +80,9 @@ class Administrator:
         participating_players = run_tournament.get_participating_players()
         for p in participating_players:
             self.close_connection(p)
-        run_tournament.print_results()      
-
-        
+        run_tournament.print_results()  
+        return
+            
     def close_connection(self, player):
         if player.is_connected():
             print("disconnecting player", player)
