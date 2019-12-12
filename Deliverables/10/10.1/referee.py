@@ -5,12 +5,13 @@ from board import Board
 from rulechecker import checkhistory, place_stone
 from definitions import *
 import json
-from exceptions import BoardPointException, PlayerStateViolation, PlayerTypeError
-
+from exceptions import BoardPointException
+from observer import RefereeObserver
 
 class Referee: 
 
     def __init__(self, player1, player2):
+        self.observers = []
         self.player1 = player1
         self.player2 = player2
         self.pass_flag = False
@@ -18,6 +19,18 @@ class Referee:
         self.results = []
         self.game_over = False
         self.start_game()
+
+    def attach(self, observer):
+        print("Subject: Attached an observer.")
+        self.observers.append(observer)
+
+    def notify(self):
+        """
+        Trigger an update in each subscriber.
+        """
+        print("Subject: Notifying observers...")
+        for observer in self.observers:
+            observer.update(self)
     
     def get_results(self):
         return self.results
@@ -44,7 +57,6 @@ class Referee:
             self.game_over = True
             return
         try:
-            #This will break out no matter what point you give it
             new_board = place_stone(self.boards[0], self.current_player.get_stone(), Point) 
         except BoardPointException:
             new_board = False
@@ -68,9 +80,8 @@ class Referee:
         self.boards = [Board().get_board()]
         self.current_player = self.player1
         while not self.game_over:
-            response = self.current_player.make_move(self.boards)
-            self.update_state(response)
-
+            point = self.current_player.make_move(self.boards)
+            self.update_state(point)
     
     def end_game(self, cheating=False):
         """
@@ -79,11 +90,12 @@ class Referee:
         """
         #Update both players with the end game signal - think about the ordering in this
         resp1 = self.player1.end_game()
-        resp2 = self.player2.end_game()
+
         if not resp1 or resp1 != "OK":
             self.results = [(self.player2, 0), (self.player1, 0), True]
             return
-                
+        
+        resp2 = self.player2.end_game()
         if not resp2 or resp2 != "OK":
             self.results = [(self.player1, 0), (self.player2, 0), True]
             return
