@@ -20,10 +20,12 @@ class PlayerFactory():
     def create(self):
         if self.connection:
             return self.createProxy()
-        elif self.gui:
+        elif self.path and self.gui:
             return self.createGUI()
         elif self.path:
             return self.createDefault()
+        elif self.remote and self.gui:
+            return self.createGUI()
         else:
             return self.createRemote()
 
