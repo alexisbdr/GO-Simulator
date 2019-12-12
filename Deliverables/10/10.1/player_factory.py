@@ -3,6 +3,7 @@ from player import RandomStrategyPlayer
 from player import ProxyStateContractPlayer, ProxyStateContractStrategyPlayer
 from player import ProxyTypeContractConnectionPlayer, ProxyTypeContractStrategyPlayer
 from player_strategy import create_strategy
+from player_strategy import MonteCarloStrategy
 import importlib.util
 from definitions import DEFAULT_PLAYER_CLASS, GUI_PLAYER_CLASS
 import random
@@ -11,11 +12,12 @@ import random
 
 class PlayerFactory():
     
-    def __init__(self, connection=None, path=None, remote=False, gui=False):
+    def __init__(self, connection=None, path=None, remote=False, gui=False, ai=False):
         self.connection = connection
         self.path = path
         self.remote = remote
         self.gui = gui
+        self.ai = ai
 
     def create(self):
         if self.connection:
@@ -26,6 +28,9 @@ class PlayerFactory():
             return self.createDefault()
         elif self.remote and self.gui and self.path:
             return self.createGUI()
+        elif self.ai:
+            print("Calling ai")
+            return self.createMonteCarloSearch()
         else:
             return self.createRemote()
 
@@ -53,4 +58,13 @@ class PlayerFactory():
         myclass = getattr(module, GUI_PLAYER_CLASS)
         player = myclass()
         return player
+    
+    def createMonteCarloSearch(self):
+        print("MAKING STRAT")
+        strategy = MonteCarloStrategy()
+        player = ProxyTypeContractStrategyPlayer(ProxyStateContractStrategyPlayer(RandomStrategyPlayer()))
+        player.set_strategy(strategy)
+        return player
+
+
     

@@ -1,3 +1,5 @@
 {
-    "python.pythonPath": "/anaconda3/envs/deliverable3/bin/python"
+    "python.pythonPath": "C:\\Python36\\python36.exe",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
 }

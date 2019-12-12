@@ -2,6 +2,10 @@ from typing import List
 import random
 from abc import ABC, abstractmethod
 from copy import deepcopy
+import numpy as np
+from collections import defaultdict
+
+from mcts import state, mc_search, mc_node
 
 from rulechecker import rulecheck, place_stone
 from board import get_all_string_points, Board
@@ -29,8 +33,9 @@ def create_strategy():
         return OutOfBoundsStrategy()
     elif choice == 9: 
         return CloseConnectionStrategy()
-    else: 
-        return ClassicStrategy()
+    elif choice == 10:
+        return CrazyStringStrategy() 
+    return ClassicStrategy()
         
 class PlayerStrategy(ABC):
     """
@@ -339,4 +344,31 @@ class CloseConnectionStrategy(IllegalPlayerStrategy):
         else:
             self.turn+=1 
             return self.make_valid_move(boards, stone)
-    
+
+class CrazyStringStrategy(IllegalPlayerStrategy):
+
+    def __init__(self):
+        self.random_string = ''.join([random.choice(string.ascii_letters + \
+            string.digits) for n in range(50)])
+        self.invalid_turn = random.randint(0,INVALID_TURN)
+        self.turn = 0
+
+    def apply_strategy(self, boards: List, stone):
+        if self.turn == self.invalid_turn:
+            print("CrazyString strategy doing illegal move at turn: {}".format(self.turn))
+            return self.random_string
+        else:
+            self.turn+=1 
+            return self.make_valid_move(boards, stone)
+
+class MonteCarloStrategy(PlayerStrategy):
+
+    def apply_strategy(self, boards: List, stone):
+        print("applying MC Strat")
+        _state = state.GoGameState(boards[0], stone)
+        root = mc_node.TwoPlayersGameMonteCarloTreeSearchNode(
+                state=_state,
+                parent=None)
+        mcts = MonteCarloTreeSearch(root)
+        assert mcts.best_action(3) 
+
