@@ -24,7 +24,7 @@ class PlayerFactory():
             return self.createGUI()
         elif self.path:
             return self.createDefault()
-        elif self.remote and self.gui:
+        elif self.remote and self.gui and self.path:
             return self.createGUI()
         else:
             return self.createRemote()

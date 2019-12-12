@@ -16,6 +16,7 @@ class RemoteReferee:
     buffer = 131072
 
     def __init__(self):
+        #, gui=True,path=netData['default-player']
         netData = readConfig(GO_CONFIG_PATH)[0]
         self.player = PlayerFactory(remote=True).create()
         self.connect_socket(netData)
