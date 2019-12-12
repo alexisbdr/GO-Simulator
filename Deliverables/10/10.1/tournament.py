@@ -5,9 +5,12 @@ import random
 from itertools import combinations
 from definitions import CHEATING_PLAYER
 from exceptions import TournamentException
+from observer import TournamentObserver
 
 class Tournament:
     def __init__(self, tournament_type: str, players: list, default_path: str):
+        self.observers = []
+        self.state = None
         if tournament_type == 'cup':
             self.tournament = Cup(players)
         elif tournament_type == 'league':
@@ -20,6 +23,18 @@ class Tournament:
     
     def get_participating_players(self):
         return self.tournament.get_participating_players()
+
+    def attach(self, observer):
+        print("Subject: Attached an observer.")
+        self.observers.append(observer)
+
+    def notify(self):
+        """
+        Trigger an update in each subscriber.
+        """
+        print("Subject: Notifying observers...")
+        for observer in self.observers:
+            observer.update(self)
 
 class Cup:
 

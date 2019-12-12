@@ -6,11 +6,12 @@ from rulechecker import checkhistory, place_stone
 from definitions import *
 import json
 from exceptions import BoardPointException
-
+from observer import RefereeObserver
 
 class Referee: 
 
     def __init__(self, player1, player2):
+        self.observers = []
         self.player1 = player1
         self.player2 = player2
         self.pass_flag = False
@@ -18,6 +19,18 @@ class Referee:
         self.results = []
         self.game_over = False
         self.start_game()
+
+    def attach(self, observer):
+        print("Subject: Attached an observer.")
+        self.observers.append(observer)
+
+    def notify(self):
+        """
+        Trigger an update in each subscriber.
+        """
+        print("Subject: Notifying observers...")
+        for observer in self.observers:
+            observer.update(self)
     
     def get_results(self):
         return self.results
