@@ -44,7 +44,6 @@ class Referee:
             self.game_over = True
             return
         try:
-            #This will break out no matter what point you give it
             new_board = place_stone(self.boards[0], self.current_player.get_stone(), Point) 
         except BoardPointException:
             new_board = False
@@ -68,8 +67,8 @@ class Referee:
         self.boards = [Board().get_board()]
         self.current_player = self.player1
         while not self.game_over:
-            response = self.current_player.make_move(self.boards)
-            self.update_state(response)
+            point = self.current_player.make_move(self.boards)
+            self.update_state(point)
     
     def end_game(self, cheating=False):
         """
