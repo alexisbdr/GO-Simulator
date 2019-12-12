@@ -350,7 +350,7 @@ class GUIPlayer(AbstractPlayer):
             self.win.close()
             return END_GAME_MESSAGE
         except GraphicsError:
-            pass
+            return False
 
 
     def init_game(self):
