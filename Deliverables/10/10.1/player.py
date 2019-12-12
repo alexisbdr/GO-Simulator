@@ -14,6 +14,7 @@ import copy
 from socket import socket
 from graphics import *
 import rulechecker
+import utilities
 #kill $(lsof -t -i:8080)
 
 class AbstractPlayer(ABC):
@@ -56,7 +57,7 @@ class AbstractPlayer(ABC):
 
     def __eq__(self, other):
         if isinstance(other, AbstractPlayer):
-            return self.get_name() == other.get_name()
+            return self.__hash__() == other.__hash__()
         return False
 
     def __hash__(self):
@@ -252,12 +253,13 @@ class ProxyConnectionPlayer(AbstractPlayer):
         self.conn.close()
 
     def send(self, message):
-        #print("sent message to", self.get_name(), message)
+        print("sent message to", self.get_name(), message)
         try:
             message = json.dumps(message)
             self.conn.sendall(message.encode("UTF-8"))
             resp = self.conn.recv(4096).decode("UTF-8")
-            #print("received message", resp)
+            resp = utilities.readJSON(resp)[0]
+            print("received message", resp)
             if not resp:
                 self.client_connected = False
                 return False
