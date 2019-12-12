@@ -27,7 +27,7 @@ class BoardPoint:
     def __init__(self, Point: str):
 
         if not isinstance(Point, str):
-            raise TypeError("BoardPoint class should receive a string as input, received {} instead".format(Point))
+            raise BoardPointException("BoardPoint class should receive a string as input, received {} instead".format(Point))
 
         self.PointString = Point
         try:
