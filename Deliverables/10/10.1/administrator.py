@@ -12,10 +12,8 @@ import random
 from referee import Referee
 import json
 from threading import Thread
-from player import DefaultPlayer
 import operator
 from observer import AdminObserver
-
 class Administrator:
     
     def __init__(self, tournament: str, num_players: str, socket, path):
@@ -26,8 +24,6 @@ class Administrator:
         self.check_inputs(tournament, num_players)
         self.get_connections()
         self.start_tournament()
-
-    
     def attach(self, observer):
         print("Subject: Attached an observer.")
         self.observers.append(observer)
@@ -38,9 +34,7 @@ class Administrator:
         """
         print("Subject: Notifying observers...")
         for observer in self.observers:
-            observer.update(self)
-
-
+            observer.update(self)    
     def check_inputs(self, tournament: str, num_players: str):
         if tournament == "league" or tournament == "cup":
             self.tournament = tournament
@@ -77,16 +71,17 @@ class Administrator:
         while self.num_players != len(self.players):
             default_player = PlayerFactory(path=self.default_player_path).create()
             self.players.append(default_player)
-            #print("made a new player")
+            print("made a new player")
         self.register_players()
 
     def register_players(self):
         #print("registering")
         for p in range(len(self.players)):
             resp = self.players[p].register()
-            print("registered")
+            print(resp)
             if not resp:
                 #Replace player that doesn't register with a default player
+                print("replacing player")
                 self.players[p] = PlayerFactory(path=self.default_player_path).create()
                 self.players[p].register()
 
@@ -96,23 +91,18 @@ class Administrator:
         participating_players = run_tournament.get_participating_players()
         for p in participating_players:
             self.close_connection(p)
-
         run_tournament.print_results()      
 
         
     def close_connection(self, player):
-        
         if player.is_connected():
             print("disconnecting player", player)
             try:
-                player.conn.shutdown(1)
-                player.conn.close()
+                player.close_connection(True)
             except (OSError, BrokenPipeError) as e:
-                player.conn.close()
+                player.close_connection(False)
                 print("player already disconnected, error: ", e)
                 return
-        elif not isinstance(player, DefaultPlayer):
-            player.conn.close()
         return
 
 def load_config():

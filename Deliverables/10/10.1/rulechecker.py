@@ -39,7 +39,6 @@ def place_stone(board: Board, Stone: str, Point: str):# -> Board:
     suicide_board = suicide_board.remove_nonliberties(Stone)
     #Illegal Suicide
     if suicide_board != updated_board.board:
-        print("suicide")
         return False
     return updated_board.board
 
