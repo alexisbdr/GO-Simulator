@@ -50,6 +50,7 @@ class MonteCarloTreeSearchNode(ABC):
             (c.q / c.n) + c_param * np.sqrt((2 * np.log(self.n) / c.n))
             for c in self.children
         ]
+        print(self.children)
         return self.children[np.argmax(choices_weights)]
 
     def rollout_policy(self, possible_moves):        
@@ -60,7 +61,7 @@ class TwoPlayersGameMonteCarloTreeSearchNode(MonteCarloTreeSearchNode):
 
     def __init__(self, state, parent=None):
         super().__init__(state, parent)
-        self._number_of_visits = 0.
+        self._number_of_visits = 0
         self._results = defaultdict(int)
         self._untried_actions = None
 
@@ -81,8 +82,8 @@ class TwoPlayersGameMonteCarloTreeSearchNode(MonteCarloTreeSearchNode):
         return self._number_of_visits
 
     def expand(self):
-        action = self.untried_actions.pop()
-        next_state = self.state.move(action)
+        point = self.untried_actions.pop()
+        next_state = self.state.place(point)
         child_node = TwoPlayersGameMonteCarloTreeSearchNode(
             next_state, parent=self
         )
@@ -97,8 +98,8 @@ class TwoPlayersGameMonteCarloTreeSearchNode(MonteCarloTreeSearchNode):
         while not current_rollout_state.is_game_over():
             valid_moves = current_rollout_state.all_valid_moves()
             point = self.rollout_policy(valid_moves)
-            current_rollout_state = current_rollout_state.place(action)
-        return current_rollout_state.game_result
+            current_rollout_state = current_rollout_state.place(point)
+        return current_rollout_state.game_score
 
     def backpropagate(self, result):
         self._number_of_visits += 1.

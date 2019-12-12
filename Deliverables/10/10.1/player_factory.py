@@ -52,7 +52,7 @@ class PlayerFactory():
         player = ProxyTypeContractStrategyPlayer(ProxyStateContractStrategyPlayer(RandomStrategyPlayer()))
         player.set_strategy(strategy)
         return player
-
+    
     def createGUI(self):
         module = __import__(self.path, fromlist=[GUI_PLAYER_CLASS])
         myclass = getattr(module, GUI_PLAYER_CLASS)

@@ -11,11 +11,12 @@ class MonteCarloTreeSearch(object):
     def best_action(self, simulations_number):
         """
         """
-        for _ in range(0, simulations_number):            
+        for _ in range(0, simulations_number):
             v = self._tree_policy()
             reward = v.rollout()
             v.backpropagate(reward)
         # to select best child go for exploitation only
+        print("returning best child")
         return self.root.best_child(c_param=0.)
 
     def _tree_policy(self):
