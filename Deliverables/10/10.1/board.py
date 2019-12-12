@@ -154,14 +154,18 @@ class Board:
             return self.board
     
     def remove_nonliberties(self, Stone: str):
+        points_to_remove = self.get_nonliberties(Stone)
+        for point in points_to_remove:
+            self.board = self.remove(Stone, point)
+        return self.board
+
+    def get_nonliberties(self, Stone: str):
         points_to_check = self.get_points(Stone)
         points_to_remove = []
         for point in points_to_check: 
             if not self.reachable(point, EMPTY_STONE):
                 points_to_remove.append(point)
-        for point in points_to_remove:
-            self.board = self.remove(Stone, point)
-        return self.board
+        return points_to_remove
     
     def check_future_liberties(self, Point: str, Stone: str):
         self.place(Stone, Point)

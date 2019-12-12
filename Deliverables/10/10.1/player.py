@@ -114,12 +114,12 @@ class ProxyPlayer(AbstractPlayer):
         return self.client_connected
 
     def send(self, message):
-        #print("sent message", message)
+        print("sent message", message)
         try:
             message = json.dumps(message)
             self.conn.sendall(message.encode())
             resp = self.conn.recv(4096).decode("UTF-8")
-            #print("received message", resp)
+            print("received message", resp)
             return resp
         except BrokenPipeError:
             print("remote player not connected")
@@ -150,8 +150,6 @@ class DefaultPlayer(AbstractPlayer):
         """choice = random.randint(0, 100)
         if not choice:
             return self.make_invalid_move(boards)"""
-
-        return PASS_OUTPUT
 
         if self.depth > 1:
             result = self.make_move_future(boards)

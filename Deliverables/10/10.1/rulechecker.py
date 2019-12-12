@@ -24,7 +24,7 @@ def place_stone(board: Board, Stone: str, Point: str):# -> Board:
     board = deepcopy(board)
     board = Board(board)
     #Check for pass
-    if Stone == "pass" or Point == "pass":
+    if Stone == PASS_OUTPUT or Point == PASS_OUTPUT:
         return board.board
     #Check empty intersection
     if board.occupied(Point):
@@ -39,6 +39,7 @@ def place_stone(board: Board, Stone: str, Point: str):# -> Board:
     suicide_board = suicide_board.remove_nonliberties(Stone)
     #Illegal Suicide
     if suicide_board != updated_board.board:
+        print("suicide")
         return False
     return updated_board.board
 
