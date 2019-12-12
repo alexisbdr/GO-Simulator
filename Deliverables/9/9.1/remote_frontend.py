@@ -1,6 +1,5 @@
 import sys
 import json
-from json import JSONDecodeError
 from rulechecker import *
 from utilities import readConfig
 from utilities import readJSON
@@ -10,6 +9,7 @@ import socket
 from exceptions import StoneException
 from exceptions import BoardException
 from exceptions import PlayerException
+from exceptions import PlayerStateViolation, PlayerTypeError
 
 class RemoteReferee: 
     
@@ -17,7 +17,7 @@ class RemoteReferee:
 
     def __init__(self):
         netData = readConfig(GO_CONFIG_PATH)[0]
-        self.player = None
+        self.player = PlayerFactory(remote=True).create()
         self.connect_socket(netData)
         self.start_client()
         
@@ -76,36 +76,41 @@ class RemoteReferee:
 
     def parse_command(self, command):
         
+        if not isinstance(command, list): 
+            return "close"
+
         if command[0] == "register":
-            if self.player:
-                return CRAZY_GO
-            self.player = PlayerFactory(remote=True).create()
-            self.player.register()
-            return self.player.get_name()
+            try: 
+                return self.player.register()
+            except (PlayerStateViolation, PlayerTypeError) as e: 
+                print("REGISTER: Remote Player proxies found a problem with error: {} in register".format(e))
+                return "close"
     
         elif command[0] == "receive-stones":
             try:
-                self.player.set_stone(command[1])
+                self.player.receive_stones(command[1])
                 return
-            except (StoneException, AttributeError):
-                return CRAZY_GO
+            except (StoneException, PlayerStateViolation, PlayerTypeError) as e:
+                print("RECEIVE: Remote Player proxies found a problem with error: {} in receive".format(e))
+                return "close"
           
         elif command[0] == "make-a-move":
             try:
-                if not self.player or self.player.get_stone() == "" or \
-                    self.player.ended:
+                if not self.player or self.player.get_stone() == "":
                     return CRAZY_GO
                 if not checkhistory(command[1], self.player.get_stone()): 
                     return ILLEGAL_HISTORY_MESSAGE
                 return self.player.make_move(command[1])   
-            except (StoneException, BoardException, IndexError):
-                return CRAZY_GO
+            except (StoneException, BoardException, IndexError, PlayerStateViolation, PlayerTypeError) as e:
+                print("MAKE MOVE: Remote Player proxies found a problem with error: {} in make move".format(e))
+                return "close"
 
         elif command[0] == "end-game":
             try:
                 return self.player.end_game()
-            except PlayerException:
-                return CRAZY_GO
+            except (PlayerTypeError, PlayerStateViolation) as e:
+                print("END GAME: Remote Player proxies found a problem with error: {}".format(e))
+                return "close"
 
 if __name__ == "__main__":
     RemoteReferee()

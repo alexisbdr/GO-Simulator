@@ -5,7 +5,7 @@ from board import Board
 from rulechecker import checkhistory, place_stone
 from definitions import *
 import json
-from exceptions import BoardPointException
+from exceptions import BoardPointException, PlayerStateViolation, PlayerTypeError
 
 class Referee: 
 
@@ -69,6 +69,7 @@ class Referee:
         while not self.game_over:
             response = self.current_player.make_move(self.boards)
             self.update_state(response)
+
     
     def end_game(self, cheating=False):
         """
