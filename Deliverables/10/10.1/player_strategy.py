@@ -364,13 +364,11 @@ class CrazyStringStrategy(IllegalPlayerStrategy):
 class MonteCarloStrategy(PlayerStrategy):
 
     def apply_strategy(self, boards: List, stone):
-        print("Calling Monte Carlo Strat")
         _state = state.GoGameState(boards, stone)
         root = mc_node.TwoPlayersGameMonteCarloTreeSearchNode(
                 state=_state,
                 parent=None)
         mcts_search = mc_search.MonteCarloTreeSearch(root)
-        best = mcts_search.best_action(3) 
-        print(best)
+        best = mcts_search.best_action(20).state.point
         return best
 

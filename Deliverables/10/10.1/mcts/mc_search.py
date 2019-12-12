@@ -16,8 +16,8 @@ class MonteCarloTreeSearch(object):
             reward = v.rollout()
             v.backpropagate(reward)
         # to select best child go for exploitation only
-        print("returning best child")
-        return self.root.best_child(c_param=0.)
+        print([child.state.point for child in self.root.children])
+        return self.root.best_child()
 
     def _tree_policy(self):
         """

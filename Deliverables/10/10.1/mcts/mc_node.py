@@ -50,7 +50,6 @@ class MonteCarloTreeSearchNode(ABC):
             (c.q / c.n) + c_param * np.sqrt((2 * np.log(self.n) / c.n))
             for c in self.children
         ]
-        print(self.children)
         return self.children[np.argmax(choices_weights)]
 
     def rollout_policy(self, possible_moves):        
@@ -73,8 +72,8 @@ class TwoPlayersGameMonteCarloTreeSearchNode(MonteCarloTreeSearchNode):
 
     @property
     def q(self):
-        wins = self._results[self.parent.state.next_to_move]
-        loses = self._results[-1 * self.parent.state.next_to_move]
+        wins = self._results[self.parent.state.stone]
+        loses = self._results[-1 * self.parent.state.stone]
         return wins - loses
 
     @property
@@ -95,6 +94,7 @@ class TwoPlayersGameMonteCarloTreeSearchNode(MonteCarloTreeSearchNode):
 
     def rollout(self):
         current_rollout_state = self.state
+        prev_point = ""
         while not current_rollout_state.is_game_over():
             valid_moves = current_rollout_state.all_valid_moves()
             point = self.rollout_policy(valid_moves)
