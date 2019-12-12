@@ -51,6 +51,6 @@ class PlayerFactory():
     def createGUI(self):
         module = __import__(self.path, fromlist=[GUI_PLAYER_CLASS])
         myclass = getattr(module, GUI_PLAYER_CLASS)
-        player = myclass()
+        player = ProxyTypeContractStrategyPlayer(ProxyStateContractStrategyPlayer(myclass()))
         return player
     

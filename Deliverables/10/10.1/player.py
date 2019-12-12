@@ -115,7 +115,6 @@ class ProxyStateContractPlayer(AbstractPlayer):
         return self.player.make_move(boards)
 
     def end_game(self):
-        print("state : end game")
         if self.ended:
             raise PlayerStateViolation("Player has already been notified of game end")
         self.ended = True
@@ -178,9 +177,8 @@ class ProxyTypeContractPlayer(AbstractPlayer):
         return self.player.make_move(boards)
 
     def end_game(self):
-        end_game_resp = self.player.end_game()
-        print("type : end game")
-        if not isinstance(end_game_resp, str):
+        end_game_resp = self.player.end_game()         
+        if not end_game_resp is False and not isinstance(end_game_resp, str):
             raise PlayerTypeError("Player returned a non-string object as it's end game message: {}".format(end_game_resp))
         return end_game_resp
 
@@ -254,7 +252,7 @@ class ProxyConnectionPlayer(AbstractPlayer):
         self.conn.close()
 
     def send(self, message):
-        print("sent message", message)
+        print("sent message to", self.get_name(), message)
         try:
             message = json.dumps(message)
             self.conn.sendall(message.encode("UTF-8"))
@@ -350,6 +348,7 @@ class GUIPlayer(AbstractPlayer):
             self.alert('Click anywhere to continue')
             self.win.getMouse()
             self.win.close()
+            return END_GAME_MESSAGE
         except GraphicsError:
             pass
 
@@ -489,12 +488,13 @@ class GUIPlayer(AbstractPlayer):
             try:
                 click = self.win.getMouse()
                 return_point = self.pixels_to_move(click)
-                print(return_point)
+        
                 if not return_point:
                     continue
                 if return_point != PASS_OUTPUT:
                     try:
                         new_board = board.place(self.stone, return_point)
+                        new_board = board.remove_nonliberties(self.opposing_stone)
                         self.add_stone_to_board(return_point, self.player_points, self.stone)
                     except (BoardPointException, BoardException):
                         continue

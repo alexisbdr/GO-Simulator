@@ -1,14 +1,15 @@
 from typing import List
 import random
+import string
 from abc import ABC, abstractmethod
 from copy import deepcopy
 
 from rulechecker import rulecheck, place_stone
 from board import get_all_string_points, Board
-from definitions import PASS_OUTPUT, BOARD_COLUMNS_MAX, BOARD_COLUMNS_MIN
+from definitions import PASS_OUTPUT, BOARD_COLUMNS_MAX, BOARD_COLUMNS_MIN, INVALID_TURN
 
 def create_strategy():
-    choice = random.randint(0,9)
+    choice = random.randint(0,10)
     if choice == 0: 
         return ClassicStrategy()
     elif choice == 1: 
@@ -29,6 +30,8 @@ def create_strategy():
         return OutOfBoundsStrategy()
     elif choice == 9: 
         return CloseConnectionStrategy()
+    elif choice == 10: 
+        return CrazyStringStrategy()
     else: 
         return ClassicStrategy()
         
@@ -87,7 +90,7 @@ class RandomStrategy(SimplePlayerStrategy):
         if valid_moves:
             choice = random.randint(0, len(valid_moves) - 1)
             return valid_moves[choice]
-        return "pass"
+        return PASS_OUTPUT
 
 class EndGameStrategy(SimplePlayerStrategy):
 
@@ -99,7 +102,7 @@ class EndGameStrategy(SimplePlayerStrategy):
     def apply_strategy(self, boards: List, stone: str):
         if self.turn == self.pass_turn or self.pass_flag:
             self.pass_flag = True
-            return "pass"
+            return PASS_OUTPUT
         valid_moves = self.all_valid_moves(boards, stone)
         return valid_moves[0]
 
@@ -212,7 +215,7 @@ class TuringAdvancedValidPlayer(CapturePlayerStrategy):
         for move in valid_moves:
             list_of_moves.append(move)
             if self.make_move_capture(boards, [move], stone):
-                choice = random.randint(0,len(list_of_moves) - 1)
+                choice = random.randint(0, len(list_of_moves) - 1)
                 return list_of_moves[choice]
             new_board = place_stone(boards[0], stone, move)
             valid_opponent_moves, valid_opponent_capture_moves = self.all_valid_moves([new_board, boards[0], boards[1]], opposite_stone)
@@ -241,7 +244,7 @@ class IllegalPlayerStrategy(PlayerStrategy):
         valid_moves = self.all_valid_moves(boards, stone)
         #print(valid_moves)
         if valid_moves:
-            choice_index = random.randint(0, len(valid_moves)-1)
+            choice_index = random.randint(0, len(valid_moves) - 1)
             return valid_moves[choice_index]
         return "pass"
 
@@ -269,6 +272,7 @@ class OccupiedStrategy(IllegalPlayerStrategy):
     def apply_strategy(self, boards: List, stone):
         
         if self.turn == self.invalid_turn:
+            print("Occupied strategy doing illegal move at turn: {}".format(self.turn))
             return self.get_occupied_move(boards, stone)
         else:
             self.turn+=1 
@@ -277,18 +281,20 @@ class OccupiedStrategy(IllegalPlayerStrategy):
     def get_occupied_move(self, boards, stone):
         board = Board(boards[0])
         opposite_points = board.get_points(self.get_opponent_color(stone))
-        choice_index = random.randint(0, len(opposite_points))
-        return opposite_points[choice_index]
+        choice_index = random.randint(0, len(opposite_points) - 1)
+        if opposite_points: return opposite_points[choice_index]
+        return PASS_OUTPUT
 
 class SuicideStrategy(IllegalPlayerStrategy):
 
     def __init__(self):
-        self.invalid_turn = random.randint(0,100)
+        self.invalid_turn = random.randint(0,INVALID_TURN)
         self.turn = 0
 
     def apply_strategy(self, boards: List, stone):
         
         if self.turn == self.invalid_turn:
+            print("Suicide strategy doing illegal move at turn: {}".format(self.turn))
             return self.get_suicide_move(boards, stone)
         else:
             self.turn+=1 
@@ -300,25 +306,26 @@ class SuicideStrategy(IllegalPlayerStrategy):
         suicide_points = []
         for point in empty_points:
             board_copy = deepcopy(board)
-            board_copy.place(point, stone)
+            board_copy.place(stone, point)
             result = board_copy.reachable(point, " ")
             if not result:
                 suicide_points.append(point)
         
         if suicide_points:
-            choice_index = random.randint(0, len(suicide_points))
+            choice_index = random.randint(0, len(suicide_points) - 1)
             return suicide_points[choice_index]
 
-        return False
+        return PASS_OUTPUT
 
 class OutOfBoundsStrategy(IllegalPlayerStrategy):
 
     def __init__(self):
-        self.invalid_turn = random.randint(0,100)
+        self.invalid_turn = random.randint(0,INVALID_TURN)
         self.turn = 0
 
     def apply_strategy(self, boards: List, stone):
         if self.turn == self.invalid_turn:
+            print("OutOfBounds strategy doing illegal move at turn: {}".format(self.turn))
             return self.get_outofbounds_move()
         else:
             self.turn+=1 
@@ -330,13 +337,29 @@ class OutOfBoundsStrategy(IllegalPlayerStrategy):
 class CloseConnectionStrategy(IllegalPlayerStrategy):
     
     def __init__(self):
-        self.invalid_turn = random.randint(0,100)
+        self.invalid_turn = random.randint(0,INVALID_TURN)
         self.turn = 0
 
     def apply_strategy(self, boards: List, stone):
         if self.turn == self.invalid_turn:
+            print("CloseConn strategy doing illegal move at turn: {}".format(self.turn))
             return "close"
         else:
             self.turn+=1 
             return self.make_valid_move(boards, stone)
-    
+
+class CrazyStringStrategy(IllegalPlayerStrategy):
+
+    def __init__(self):
+        self.random_string = ''.join([random.choice(string.ascii_letters + \
+            string.digits) for n in range(50)])
+        self.invalid_turn = random.randint(0,INVALID_TURN)
+        self.turn = 0
+
+    def apply_strategy(self, boards: List, stone):
+        if self.turn == self.invalid_turn:
+            print("CrazyString strategy doing illegal move at turn: {}".format(self.turn))
+            return self.random_string
+        else:
+            self.turn+=1 
+            return self.make_valid_move(boards, stone)
