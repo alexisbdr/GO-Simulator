@@ -5,7 +5,7 @@ from board import Board
 from rulechecker import checkhistory, place_stone
 from definitions import *
 import json
-from exceptions import BoardPointException, PlayerStateViolation, PlayerTypeError
+from exceptions import BoardPointException, PlayerStateViolation, PlayerTypeError, BoardException
 
 
 class Referee: 
@@ -47,7 +47,7 @@ class Referee:
         try:
             #This will break out no matter what point you give it
             new_board = place_stone(self.boards[0], self.current_player.get_stone(), Point) 
-        except BoardPointException:
+        except (BoardPointException, BoardException):
             new_board = False
         if new_board:
             for row in new_board:

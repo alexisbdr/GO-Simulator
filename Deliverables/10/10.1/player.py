@@ -6,7 +6,7 @@ from board import Board,get_all_string_points,BoardPoint
 from rulechecker import *
 from definitions import *
 from utilities import readConfig
-from exceptions import StoneException, PlayerStateViolation, PlayerTypeError
+from exceptions import StoneException, PlayerStateViolation, PlayerTypeError, BoardPointException
 from player_strategy import PlayerStrategy
 from abc import ABC, abstractmethod
 import random
@@ -300,6 +300,7 @@ class GUIPlayer(AbstractPlayer):
         self.top_message = None
         self.win = GraphWin('Alexis & Kelly\'s Go Game', WINDOW_WIDTH, WINDOW_HEIGHT)
         self.win.setBackground(color_rgb(181, 171, 170))
+        self.window_open = True
 
     def alert(self, message: str):
         """
@@ -338,15 +339,15 @@ class GUIPlayer(AbstractPlayer):
         Output: None
         Description: Show the 'GAME OVER' screen
         """
-        game_over_rect = Rectangle(Point(HALF_WINDOW_WIDTH - GAME_OVER_RECTANGLE , HALF_WINDOW_HEIGHT), \
-                                    Point(HALF_WINDOW_WIDTH + GAME_OVER_RECTANGLE , HALF_WINDOW_HEIGHT + 40))
-        game_over_rect.setFill('white')
-        game_over_rect.draw(self.win)
-        game_over_text = Text(game_over_rect.getCenter(), "GAME OVER")
-        game_over_text.setTextColor('black')
-        game_over_text.draw(self.win)
-        self.alert('Click anywhere to continue')
         try:
+            game_over_rect = Rectangle(Point(HALF_WINDOW_WIDTH - GAME_OVER_RECTANGLE , HALF_WINDOW_HEIGHT), \
+                                        Point(HALF_WINDOW_WIDTH + GAME_OVER_RECTANGLE , HALF_WINDOW_HEIGHT + 40))
+            game_over_rect.setFill('white')
+            game_over_rect.draw(self.win)
+            game_over_text = Text(game_over_rect.getCenter(), "GAME OVER")
+            game_over_text.setTextColor('black')
+            game_over_text.draw(self.win)
+            self.alert('Click anywhere to continue')
             self.win.getMouse()
             self.win.close()
         except GraphicsError:
@@ -484,16 +485,24 @@ class GUIPlayer(AbstractPlayer):
         draw it on the board. Call remove stones to show captures.
         """
         board = Board(boards[0])
-        try:
-            click = self.win.getMouse()
-            return_point = self.pixels_to_move(click)
-            if return_point != PASS_OUTPUT:
-                self.add_stone_to_board(return_point, self.player_points, self.stone)
-                new_board = board.place(self.stone, return_point)
-                self.remove_stones(Board(new_board))
-            return return_point
-        except GraphicsError:
-            return "close"
+        while(True):
+            try:
+                click = self.win.getMouse()
+                return_point = self.pixels_to_move(click)
+                print(return_point)
+                if not return_point:
+                    continue
+                if return_point != PASS_OUTPUT:
+                    try:
+                        new_board = board.place(self.stone, return_point)
+                        self.add_stone_to_board(return_point, self.player_points, self.stone)
+                    except (BoardPointException, BoardException):
+                        continue
+                    self.remove_stones(Board(new_board))
+                break
+            except GraphicsError:
+                return "close"
+        return return_point
 
     def pixels_to_move(self,mouse_point: Point):
         """
