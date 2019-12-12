@@ -5,17 +5,16 @@ from board import Board, get_all_string_points
 
 class GoGameState():
 
-    def __init__(self, boards:List, stone:str):
+    def __init__(self, boards:List, stone:str, prev_move: str = ""):
         self.board = Board(boards[0])
         self.boards_list = boards
         self.stone = stone
-        self.pass_flag1 = False
-        self.pass_flag2 = False
+        self.prev_move = prev_move
+        self.game_over = False
 
     @property
     def game_score(self):
-        if not self.pass_flag1 or not self.pass_flag2:
-            return None
+        
         score = self.board.count_score()
         score_playerB = score["B"]
         score_playerW = score["W"]
@@ -28,19 +27,17 @@ class GoGameState():
 
     def is_game_over(self):
         #Add some kind of cache in here for precomputed
-        return self.game_score is not None
+        return self.game_over
 
     def get_opponent_color(self, stone):
         return "B" if stone == "W" else "W"
     
     def place(self, point):
-        if point == "pass":
-            if self.pass_flag1: 
-                self.pass_flag2 = True
-            self.pass_flag1 = True
+        if point == "pass" and prev_move == "pass":
+            self.game_over = True
         new_board = place_stone(self.boards_list[0], self.stone, point)
         new_boards = [new_board] + self.boards_list[:2]
-        return GoGameState(new_boards, self.get_opponent_color(self.stone))
+        return GoGameState(new_boards, self.get_opponent_color(self.stone), prev_move = point)
 
     def all_valid_moves(self):
         valid_moves = []
