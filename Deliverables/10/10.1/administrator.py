@@ -14,15 +14,32 @@ import json
 from threading import Thread
 from player import DefaultPlayer
 import operator
+from observer import AdminObserver
 
 class Administrator:
     
     def __init__(self, tournament: str, num_players: str, socket, path):
+        self.observers = []
+        self.state = None
         self.server_socket = socket
         self.default_player_path = path
         self.check_inputs(tournament, num_players)
         self.get_connections()
         self.start_tournament()
+
+    
+    def attach(self, observer):
+        print("Subject: Attached an observer.")
+        self.observers.append(observer)
+
+    def notify(self):
+        """
+        Trigger an update in each subscriber.
+        """
+        print("Subject: Notifying observers...")
+        for observer in self.observers:
+            observer.update(self)
+
 
     def check_inputs(self, tournament: str, num_players: str):
         if tournament == "league" or tournament == "cup":
