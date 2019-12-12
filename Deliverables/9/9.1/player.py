@@ -87,6 +87,7 @@ class ProxyStateContractPlayer(AbstractPlayer):
         if self.received: 
             raise PlayerStateViolation("Player has received stones")
         self.received = True
+        self.ended = False
         self.player.receive_stones(stone)
     
     def get_stone(self):
