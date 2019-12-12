@@ -34,16 +34,9 @@ def create_strategy():
         return OutOfBoundsStrategy()
     elif choice == 9: 
         return CloseConnectionStrategy()
-<<<<<<< HEAD
     elif choice == 10:
         return CrazyStringStrategy() 
     return ClassicStrategy()
-=======
-    elif choice == 10: 
-        return CrazyStringStrategy()
-    else: 
-        return ClassicStrategy()
->>>>>>> 66781892bdb3e14f34f5589236214bb1a74ce934
         
 class PlayerStrategy(ABC):
     """
@@ -373,7 +366,6 @@ class CrazyStringStrategy(IllegalPlayerStrategy):
         else:
             self.turn+=1 
             return self.make_valid_move(boards, stone)
-<<<<<<< HEAD
 
 class MonteCarloStrategy(PlayerStrategy):
 
@@ -383,8 +375,6 @@ class MonteCarloStrategy(PlayerStrategy):
                 state=_state,
                 parent=None)
         mcts_search = mc_search.MonteCarloTreeSearch(root)
-        best = mcts_search.best_action(20).state.point
+        best = mcts_search.best_action(1).state.point
         return best
 
-=======
->>>>>>> 66781892bdb3e14f34f5589236214bb1a74ce934

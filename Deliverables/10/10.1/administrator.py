@@ -58,12 +58,8 @@ class Administrator:
             #proxy_player = PlayerFactory(connection=conn).create()
             #self.players.append(proxy_player)
         while self.num_players != len(self.players):
-<<<<<<< HEAD
             default_player = PlayerFactory(ai=True).create()
             #default_player = PlayerFactory(path=self.default_player_path, gui=True).create()
-=======
-            default_player = PlayerFactory(path=self.default_player_path).create()
->>>>>>> 66781892bdb3e14f34f5589236214bb1a74ce934
             self.players.append(default_player)
             print("made a new player")
         self.register_players()
