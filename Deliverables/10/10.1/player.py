@@ -262,7 +262,7 @@ class ProxyConnectionPlayer(AbstractPlayer):
                 self.client_connected = False
                 return False
             return resp
-        except BrokenPipeError:
+        except (BrokenPipeError, OSError):
             print("remote player not connected")
             #self.client_connected = False
             return False
