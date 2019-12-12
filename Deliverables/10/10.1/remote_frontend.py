@@ -65,6 +65,7 @@ class RemoteReferee:
             elif resp: 
                 resp_json = readJSON(resp)
                 output = self.parse_command(resp_json[0])
+                print(output)
                 if not output:
                     continue
                 if output == "close":
@@ -95,6 +96,7 @@ class RemoteReferee:
                 return "close"
           
         elif command[0] == "make-a-move":
+            print("inside make a move")
             try:
                 if not self.player or self.player.get_stone() == "":
                     return CRAZY_GO
