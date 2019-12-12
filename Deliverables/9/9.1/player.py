@@ -113,6 +113,7 @@ class ProxyStateContractPlayer(AbstractPlayer):
         return self.player.make_move(boards)
 
     def end_game(self):
+        print("state : end game")
         if self.ended:
             raise PlayerStateViolation("Player has already been notified of game end")
         self.ended = True
@@ -176,6 +177,7 @@ class ProxyTypeContractPlayer(AbstractPlayer):
 
     def end_game(self):
         end_game_resp = self.player.end_game()
+        print("type : end game")
         if not isinstance(end_game_resp, str):
             raise PlayerTypeError("Player returned a non-string object as it's end game message: {}".format(end_game_resp))
         return end_game_resp

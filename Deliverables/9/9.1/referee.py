@@ -78,7 +78,6 @@ class Referee:
         """
         #Update both players with the end game signal - think about the ordering in this
         resp1 = self.player1.end_game()
-
         if not resp1 or resp1 != "OK":
             self.results = [(self.player2, 0), (self.player1, 0), True]
             return
