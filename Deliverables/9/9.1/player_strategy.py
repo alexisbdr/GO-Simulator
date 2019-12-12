@@ -90,7 +90,7 @@ class RandomStrategy(SimplePlayerStrategy):
         if valid_moves:
             choice = random.randint(0, len(valid_moves) - 1)
             return valid_moves[choice]
-        return "pass"
+        return PASS_OUTPUT
 
 class EndGameStrategy(SimplePlayerStrategy):
 
@@ -102,7 +102,7 @@ class EndGameStrategy(SimplePlayerStrategy):
     def apply_strategy(self, boards: List, stone: str):
         if self.turn == self.pass_turn or self.pass_flag:
             self.pass_flag = True
-            return "pass"
+            return PASS_OUTPUT
         valid_moves = self.all_valid_moves(boards, stone)
         return valid_moves[0]
 
@@ -282,7 +282,8 @@ class OccupiedStrategy(IllegalPlayerStrategy):
         board = Board(boards[0])
         opposite_points = board.get_points(self.get_opponent_color(stone))
         choice_index = random.randint(0, len(opposite_points))
-        return opposite_points[choice_index]
+        if opposite_points: return opposite_points[choice_index]
+        return PASS_OUTPUT
 
 class SuicideStrategy(IllegalPlayerStrategy):
 
@@ -314,7 +315,7 @@ class SuicideStrategy(IllegalPlayerStrategy):
             choice_index = random.randint(0, len(suicide_points))
             return suicide_points[choice_index]
 
-        return False
+        return PASS_OUTPUT
 
 class OutOfBoundsStrategy(IllegalPlayerStrategy):
 
