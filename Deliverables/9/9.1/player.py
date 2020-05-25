@@ -82,6 +82,7 @@ class ProxyStateContractPlayer(AbstractPlayer):
         raise PlayerStateViolation("Player has not been registered yet")
     
     def receive_stones(self, stone: str):
+        print("Calling received stones")
         if not self.registered: 
             raise PlayerStateViolation("Player has not been registered yet")
         if self.received: 
@@ -281,3 +282,5 @@ class RandomStrategyPlayer(AbstractPlayer):
     
     def make_move(self, boards: List):
         return self.strategy.apply_strategy(boards, self.get_stone())
+
+

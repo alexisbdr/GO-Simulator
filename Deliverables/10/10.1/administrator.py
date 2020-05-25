@@ -11,8 +11,8 @@ import time
 import random
 from referee import Referee
 import json
-from threading import Thread
 import operator
+
 class Administrator:
     
     def __init__(self, tournament: str, num_players: str, socket, path):
@@ -58,7 +58,8 @@ class Administrator:
             #proxy_player = PlayerFactory(connection=conn).create()
             #self.players.append(proxy_player)
         while self.num_players != len(self.players):
-            default_player = PlayerFactory(path=self.default_player_path, gui=True).create()
+            default_player = PlayerFactory(ai=True).create()
+            #default_player = PlayerFactory(path=self.default_player_path, gui=True).create()
             self.players.append(default_player)
             print("made a new player")
         self.register_players()

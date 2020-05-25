@@ -3,6 +3,10 @@ import random
 import string
 from abc import ABC, abstractmethod
 from copy import deepcopy
+import numpy as np
+from collections import defaultdict
+
+from mcts import state, mc_search, mc_node
 
 from rulechecker import rulecheck, place_stone
 from board import get_all_string_points, Board
@@ -30,10 +34,9 @@ def create_strategy():
         return OutOfBoundsStrategy()
     elif choice == 9: 
         return CloseConnectionStrategy()
-    elif choice == 10: 
-        return CrazyStringStrategy()
-    else: 
-        return ClassicStrategy()
+    elif choice == 10:
+        return CrazyStringStrategy() 
+    return ClassicStrategy()
         
 class PlayerStrategy(ABC):
     """
@@ -363,3 +366,15 @@ class CrazyStringStrategy(IllegalPlayerStrategy):
         else:
             self.turn+=1 
             return self.make_valid_move(boards, stone)
+
+class MonteCarloStrategy(PlayerStrategy):
+
+    def apply_strategy(self, boards: List, stone):
+        _state = state.GoGameState(boards, stone)
+        root = mc_node.TwoPlayersGameMonteCarloTreeSearchNode(
+                state=_state,
+                parent=None)
+        mcts_search = mc_search.MonteCarloTreeSearch(root)
+        best = mcts_search.best_action(1).state.point
+        return best
+

@@ -1,3 +1,5 @@
 {
-    "python.pythonPath": "/anaconda3/envs/deliverable3/bin/python"
+    "python.pythonPath": "venv\\Scripts\\python.exe",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
 }
