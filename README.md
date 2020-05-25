@@ -41,6 +41,8 @@ Apart for building a fully functional (and extensively tested) GO Simulator the 
 * Strategy Pattern
   * Players are given a [PlayerStrategy](./Deliverables/10/10.1/player_strategy.py) that is randomly chosen allowing to play in many different ways
 
+### File Structure
+The up-to date and most recent code is in Deliverables/10/10.1
 
 ### CI 
 CI testing is done through Travis CI - see makefile for travis build instructions
