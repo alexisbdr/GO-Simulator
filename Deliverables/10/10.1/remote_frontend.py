@@ -66,16 +66,20 @@ class RemoteReferee:
             elif resp: 
                 resp_json = readJSON(resp)
                 output = self.parse_command(resp_json[0])
+                print(output)
                 if not output:
                     continue
                 if output == "close":
                     self.client_socket.shutdown(1)
                     self.client_socket.close()
                     break
-                self.client_socket.send(str.encode(output))
+
+                output = '"' + output + '"'
+                self.client_socket.send(output.encode('utf-8'))
             
 
     def parse_command(self, command):
+        print(command)
         
         if not isinstance(command, list): 
             return "close"

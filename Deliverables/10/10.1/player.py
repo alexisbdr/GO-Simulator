@@ -14,6 +14,7 @@ import copy
 from socket import socket
 #from graphics import *
 import rulechecker
+import utilities
 #kill $(lsof -t -i:8080)
 
 class AbstractPlayer(ABC):
@@ -56,7 +57,7 @@ class AbstractPlayer(ABC):
 
     def __eq__(self, other):
         if isinstance(other, AbstractPlayer):
-            return self.get_name() == other.get_name()
+            return self.__hash__() == other.__hash__()
         return False
 
     def __hash__(self):
@@ -257,12 +258,13 @@ class ProxyConnectionPlayer(AbstractPlayer):
             message = json.dumps(message)
             self.conn.sendall(message.encode("UTF-8"))
             resp = self.conn.recv(4096).decode("UTF-8")
-            #print("received message", resp)
+            resp = utilities.readJSON(resp)[0]
+            print("received message", resp)
             if not resp:
                 self.client_connected = False
                 return False
             return resp
-        except BrokenPipeError:
+        except (BrokenPipeError, OSError):
             print("remote player not connected")
             #self.client_connected = False
             return False
@@ -313,53 +315,181 @@ class RandomStrategyPlayer(AbstractPlayer):
 #             self.top_message.setSize(16)
 #             self.top_message.draw(self.win)
             
-#         self.top_message.setText(message)
+        self.top_message.setText(message)
 
-#     def register(self):
-#         super().register()
-#         self.init_game()
-#         return self.name
+    def register(self):
+        super().register()
+        self.init_game()
+        return self.name
 
-#     def receive_stones(self, color):
-#         super().receive_stones(color)
-#         self.notify_color()
-#         self.opposing_stone = 'W' if self.stone == "B" else "B"
-#         return
+    def receive_stones(self, color):
+        super().receive_stones(color)
+        self.notify_color()
+        self.opposing_stone = 'W' if self.stone == "B" else "B"
+        return
 
-#     def make_move(self, boards: List):
-#         self.draw_opponent_move(boards)
-#         move = self.get_click_move(boards)
-#         return move
+    def make_move(self, boards: List):
+        self.draw_opponent_move(boards)
+        move = self.get_click_move(boards)
+        return move
 
-#     def end_game(self):
-#         """
-#         Input: None
-#         Output: None
-#         Description: Show the 'GAME OVER' screen
-#         """
-#         try:
-#             game_over_rect = Rectangle(Point(HALF_WINDOW_WIDTH - GAME_OVER_RECTANGLE , HALF_WINDOW_HEIGHT), \
-#                                         Point(HALF_WINDOW_WIDTH + GAME_OVER_RECTANGLE , HALF_WINDOW_HEIGHT + 40))
-#             game_over_rect.setFill('white')
-#             game_over_rect.draw(self.win)
-#             game_over_text = Text(game_over_rect.getCenter(), "GAME OVER")
-#             game_over_text.setTextColor('black')
-#             game_over_text.draw(self.win)
-#             self.alert('Click anywhere to continue')
-#             self.win.getMouse()
-#             self.win.close()
-#         except GraphicsError:
-#             pass
+    def end_game(self):
+        """
+        Input: None
+        Output: None
+        Description: Show the 'GAME OVER' screen
+        """
+        try:
+            game_over_rect = Rectangle(Point(HALF_WINDOW_WIDTH - GAME_OVER_RECTANGLE , HALF_WINDOW_HEIGHT), \
+                                        Point(HALF_WINDOW_WIDTH + GAME_OVER_RECTANGLE , HALF_WINDOW_HEIGHT + 40))
+            game_over_rect.setFill('white')
+            game_over_rect.draw(self.win)
+            game_over_text = Text(game_over_rect.getCenter(), "GAME OVER")
+            game_over_text.setTextColor('black')
+            game_over_text.draw(self.win)
+            self.alert('Click anywhere to continue')
+            self.win.getMouse()
+            self.win.close()
+            return END_GAME_MESSAGE
+        except GraphicsError:
+            return False
 
 
-#     def init_game(self):
-#         """
-#         Input: None
-#         Output: None
-#         Description: Builds the first screen the user sees to get their name
-#         when done, it erases what it built and calls 'draw_board' and 'draw_pass'
-#         """
-#         sprites = []
+    def init_game(self):
+        """
+        Input: None
+        Output: None
+        Description: Builds the first screen the user sees to get their name
+        when done, it erases what it built and calls 'draw_board' and 'draw_pass'
+        """
+        sprites = []
+        
+        message = Text(Point(HALF_WINDOW_WIDTH - TEXTBOX_WIDTH * 2, HALF_WINDOW_HEIGHT - 20), "Enter your name:")
+        message.setTextColor('black')
+        sprites.append(message)
+
+        inputBox = Entry(Point(HALF_WINDOW_WIDTH, HALF_WINDOW_HEIGHT), TEXTBOX_WIDTH)
+        sprites.append(inputBox)
+
+        textAnchorPoint = inputBox.getAnchor()
+        rec_point1 = Point(textAnchorPoint.getX(), textAnchorPoint.getY() + 20)
+        rec_point2 = Point(textAnchorPoint.getX() + TEXTBOX_WIDTH * 4, textAnchorPoint.getY() + 40)
+        name_button = Rectangle(rec_point1, rec_point2)
+        name_button.setFill('white')
+        sprites.append(name_button)
+
+        name_button_text = Text(name_button.getCenter(), "Submit")
+        name_button_text.setTextColor('black')
+        sprites.append(name_button_text)
+
+        self.draw_sprites(sprites)
+        while(True):
+            inputStr = inputBox.getText()
+            click = self.win.checkMouse()
+            key = self.win.checkKey()
+            if (click and self.is_within_rectangle(rec_point1, rec_point2, click)) or \
+                (key and key == 'Return'):
+                break
+
+        self.name = inputStr
+        self.undraw_sprites(sprites)
+        self.draw_board()
+        self.draw_pass()
+
+    def draw_board(self):
+        """
+        Input: None
+        Output: None
+        Description: Draw the game board based on specs in the 'definitions' file
+        Stores all the "sprites" it drew in self.line_sprites for future deletion
+        """
+        #draw vertical lines
+        for x in range(BOARD_COLUMNS_MAX):
+            top_point = Point(LEFT_OFFSET + (SQUARE_SIZE * x), TOP_OFFSET)
+            bottom_point = Point(LEFT_OFFSET + (SQUARE_SIZE * x), TOP_OFFSET + BOARD_HEIGHT - SQUARE_SIZE)
+            ln = Line(top_point, bottom_point)
+            ln.setOutline('black')
+            ln.setWidth(3)
+            self.line_sprites.append(ln)
+
+        for y in range(BOARD_ROWS_MAX):
+            left_point = Point(LEFT_OFFSET, TOP_OFFSET + (SQUARE_SIZE * y))
+            right_point = Point(LEFT_OFFSET + BOARD_WIDTH - SQUARE_SIZE, TOP_OFFSET + (SQUARE_SIZE * y))
+            ln = Line(left_point, right_point)
+            ln.setOutline('black')
+            ln.setWidth(3)
+            self.line_sprites.append(ln)
+
+        self.draw_sprites(self.line_sprites)
+
+    def draw_pass(self):
+        """
+        Input: None
+        Output: None
+        Description: Draws the pass button with dimensions from the definitions file
+        """
+
+        left_corner = Point(LEFT_PASS_BUTTON, TOP_PASS_BUTTON)
+        right_corner = Point(RIGHT_PASS_BUTTON, BOTTOM_PASS_BUTTON)
+
+        pass_button = Rectangle(left_corner, right_corner)
+        pass_button.setFill(color_rgb(50, 75, 122))
+        pass_button.draw(self.win)
+
+        pass_center = pass_button.getCenter()
+        pass_text = Text(pass_center, 'PASS')
+        pass_text.setTextColor('white')
+        pass_text.setSize(15)
+        pass_text.draw(self.win)
+
+    def notify_color(self):
+        """
+        Input: None
+        Output: None
+        Description: Function to call alert method to display player name and stone
+        """
+
+        color = "WHITE"
+        if self.stone == "B":
+            color = "BLACK"
+
+        message = "Hello, " + self.name + "!" + "\nYou are the " + color + " stone."
+        self.alert(message)
+
+    def draw_opponent_move(self, boards):
+        """
+        Input: boards (list[list])
+        Output: None
+        Description: given at least two boards, uses the rulechecker to get the 
+        last move the opponent did. This move is then drawn onto the board
+        """
+
+        if len(boards) < 2:
+            return
+
+        # get the move that the opposing player just made
+        move = rulechecker.findAddedPoint(boards[1], boards[0])
+        self.alert("")
+        if move[0] == PASS_OUTPUT:
+            self.alert("Opponent passed")
+            return
+
+        # add that stone to the board
+        self.add_stone_to_board(move[1], self.opposing_points, move[0])
+        self.remove_stones(Board(boards[0]))
+
+    def get_click_move(self, boards):
+        """
+        Input: boards (list[list])
+        Output: point str
+        Description: Given the boards history, get the players input and 
+        draw it on the board. Call remove stones to show captures.
+        """
+        board = Board(boards[0])
+        while(True):
+            try:
+                click = self.win.getMouse()
+                return_point = self.pixels_to_move(click)
         
 #         message = Text(Point(HALF_WINDOW_WIDTH - TEXTBOX_WIDTH * 2, HALF_WINDOW_HEIGHT - 20), "Enter your name:")
 #         message.setTextColor('black')
